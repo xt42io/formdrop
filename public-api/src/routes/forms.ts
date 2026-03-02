@@ -9,13 +9,14 @@ export const formsRouter = Router();
 formsRouter.get("/", async (req, res) => {
   const apiKey = (req as any).apiKey;
 
-  if (apiKey.type !== "private") {
-    res.status(403).json({ error: "Private API key required" });
-    return;
-  }
-
   const userForms = await db
-    .select()
+    .select({
+      id: forms.id,
+      name: forms.name,
+      slug: forms.slug,
+      description: forms.description,
+      createdAt: forms.createdAt,
+    })
     .from(forms)
     .where(and(eq(forms.userId, apiKey.userId), isNull(forms.deletedAt)))
     .orderBy(desc(forms.createdAt));

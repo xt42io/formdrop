@@ -62,7 +62,7 @@ function ApiDocs() {
             <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
               <h3 className="font-semibold mb-4">Endpoint</h3>
               <code className="text-accent">
-                https://api.formdrop.io/f/:formSlug
+                https://api.formdrop.co/f/:formSlug
               </code>
             </div>
 
@@ -75,7 +75,7 @@ function ApiDocs() {
 
             <CodeBlock
               code={`// Example using fetch
-fetch('https://api.formdrop.io/f/my-form-slug', {
+fetch('https://api.formdrop.co/f/my-form-slug', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -101,7 +101,7 @@ fetch('https://api.formdrop.io/f/my-form-slug', {
               Retrieve a list of all your forms. Requires a private API key.
             </p>
             <CodeBlock
-              code={`curl https://api.formdrop.io/forms \\
+              code={`curl https://api.formdrop.co/forms \\
   -H "Authorization: Bearer YOUR_PRIVATE_KEY"`}
               language="bash"
             />
@@ -120,7 +120,7 @@ fetch('https://api.formdrop.io/f/my-form-slug', {
               key.
             </p>
             <CodeBlock
-              code={`curl https://api.formdrop.io/:formId/submissions \\
+              code={`curl https://api.formdrop.co/:formId/submissions \\
   -H "Authorization: Bearer YOUR_PRIVATE_KEY"`}
               language="bash"
             />
@@ -139,7 +139,7 @@ fetch('https://api.formdrop.io/f/my-form-slug', {
               key.
             </p>
             <CodeBlock
-              code={`curl -X DELETE https://api.formdrop.io/:formId/submissions/:submissionId \\
+              code={`curl -X DELETE https://api.formdrop.co/:formId/submissions/:submissionId \\
   -H "Authorization: Bearer YOUR_PRIVATE_KEY"`}
               language="bash"
             />

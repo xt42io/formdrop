@@ -6,16 +6,16 @@ import { eq, and, desc, isNull } from "drizzle-orm";
 export const submissionsRouter = Router();
 
 
-submissionsRouter.get("/:formId/submissions", async (req, res) => {
+submissionsRouter.get("/:slug/submissions", async (req, res) => {
   const apiKey = (req as any).apiKey;
-  const { formId } = req.params;
+  const { slug } = req.params;
 
   const [form] = await db
     .select()
     .from(forms)
     .where(
       and(
-        eq(forms.id, formId),
+        eq(forms.slug, slug),
         eq(forms.userId, apiKey.userId),
         isNull(forms.deletedAt),
       ),
@@ -30,7 +30,7 @@ submissionsRouter.get("/:formId/submissions", async (req, res) => {
   const formSubmissions = await db
     .select()
     .from(submissions)
-    .where(eq(submissions.formId, formId))
+    .where(eq(submissions.formId, form.id))
     .orderBy(desc(submissions.createdAt));
 
   res.json({ submissions: formSubmissions });

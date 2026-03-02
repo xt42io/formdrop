@@ -5,15 +5,10 @@ import { eq, and, desc, isNull } from "drizzle-orm";
 
 export const submissionsRouter = Router();
 
-// GET /:formId/submissions — get submissions for a form
+
 submissionsRouter.get("/:formId/submissions", async (req, res) => {
   const apiKey = (req as any).apiKey;
   const { formId } = req.params;
-
-  if (apiKey.type !== "private") {
-    res.status(403).json({ error: "Private API key required" });
-    return;
-  }
 
   const [form] = await db
     .select()

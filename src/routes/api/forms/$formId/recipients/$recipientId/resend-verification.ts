@@ -96,7 +96,7 @@ export const Route = createFileRoute(
           const verificationUrl = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
 
           await resend.emails.send({
-            from: "FormDrop <noreply@formdrop.io>",
+            from: "FormDrop <noreply@formdrop.co>",
             to: recipient.email,
             subject: "Verify your email address",
             react: RecipientVerificationEmail({

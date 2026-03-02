@@ -6,8 +6,6 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist",
     "rootDir": "./src",

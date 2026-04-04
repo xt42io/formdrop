@@ -23,3 +23,36 @@ formsRouter.get("/", async (req, res) => {
 
   res.json({ forms: userForms });
 });
+
+formsRouter.delete("/:formId", async (req, res) => {
+  try {
+    const apiKey = (req as any).apiKey;
+    const { formId } = req.params;
+
+    const [form] = await db
+      .select()
+      .from(forms)
+      .where(
+        and(
+          eq(forms.id, formId),
+          eq(forms.userId, apiKey.userId),
+          isNull(forms.deletedAt),
+        ),
+      )
+      .limit(1);
+
+    if (!form) {
+      res.status(404).json({ error: "Form not found" });
+      return;
+    }
+
+    await db
+      .update(forms)
+      .set({ deletedAt: new Date() })
+      .where(eq(forms.id, formId));
+
+    res.json({ success: true, message: "Form deleted" });
+  } catch {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});

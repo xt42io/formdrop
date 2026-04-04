@@ -120,7 +120,26 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
               key.
             </p>
             <CodeBlock
-              code={`curl https://api.formdrop.co/:formId/submissions \\
+              code={`curl https://api.formdrop.co/:formSlug/submissions \\
+  -H "Authorization: Bearer YOUR_PRIVATE_KEY"`}
+              language="bash"
+            />
+          </section>
+
+          {/* Delete Form */}
+          <section id="delete-form">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="px-3 py-1 text-sm font-bold text-red-700 bg-red-100 rounded-lg">
+                DELETE
+              </span>
+              <h2 className="text-2xl font-bold">Delete Form</h2>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Soft-delete a form and hide it from the dashboard and API. Use the
+              form&apos;s id (not slug). Requires your API key.
+            </p>
+            <CodeBlock
+              code={`curl -X DELETE https://api.formdrop.co/forms/:formId \\
   -H "Authorization: Bearer YOUR_PRIVATE_KEY"`}
               language="bash"
             />
@@ -135,12 +154,34 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
               <h2 className="text-2xl font-bold">Delete Submission</h2>
             </div>
             <p className="text-gray-600 mb-6">
-              Permanently delete a specific submission. Requires a private API
-              key.
+              Soft-delete a submission by id. It will no longer appear in list
+              endpoints. Requires your API key.
             </p>
             <CodeBlock
               code={`curl -X DELETE https://api.formdrop.co/:formId/submissions/:submissionId \\
   -H "Authorization: Bearer YOUR_PRIVATE_KEY"`}
+              language="bash"
+            />
+          </section>
+
+          {/* Bulk delete submissions */}
+          <section id="delete-submissions-bulk">
+            <div className="flex items-center gap-3 mb-4">
+              <span className="px-3 py-1 text-sm font-bold text-red-700 bg-red-100 rounded-lg">
+                DELETE
+              </span>
+              <h2 className="text-2xl font-bold">Delete Submissions (bulk)</h2>
+            </div>
+            <p className="text-gray-600 mb-6">
+              Soft-delete multiple submissions. Request body must be JSON with{" "}
+              <code>submissionIds</code> (array of ids). All ids must belong to
+              the form.
+            </p>
+            <CodeBlock
+              code={`curl -X DELETE https://api.formdrop.co/:formId/submissions \\
+  -H "Authorization: Bearer YOUR_PRIVATE_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"submissionIds":["uuid-one","uuid-two"]}'`}
               language="bash"
             />
           </section>

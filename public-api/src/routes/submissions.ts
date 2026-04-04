@@ -30,7 +30,12 @@ submissionsRouter.get("/:slug/submissions", async (req, res) => {
   const formSubmissions = await db
     .select()
     .from(submissions)
-    .where(eq(submissions.formId, form.id))
+    .where(
+      and(
+        eq(submissions.formId, form.id),
+        isNull(submissions.deletedAt),
+      ),
+    )
     .orderBy(desc(submissions.createdAt));
 
   res.json({ submissions: formSubmissions });

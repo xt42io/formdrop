@@ -1,0 +1,9 @@
+node_modules
+.turbo
+.output
+.nitro
+.tanstack
+dist
+packages/db/drizzle
+apps/web/src/routeTree.gen.ts
+docs/*.pdf

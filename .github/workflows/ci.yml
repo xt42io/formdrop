@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Turbo caches per task, so a PR that only touches apps/web skips the
+      # packages it didn't affect.
+      - name: Typecheck
+        run: npx turbo run typecheck
+
+      - name: Build
+        run: npx turbo run build
+
+      - name: Test
+        run: npx turbo run test

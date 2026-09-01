@@ -1,0 +1,95 @@
+/*
+ * FormDrop design tokens and primitive utilities.
+ *
+ * Imported by an app's Tailwind entry after `@import "tailwindcss"`, so the
+ * @theme values become Tailwind's own scales (`bg-accent-500`, `text-ink-600`,
+ * `rounded-card`, `shadow-lift`) rather than one-off values per app.
+ */
+
+@theme {
+  /* Brand ramp. --color-accent stays as the anchor so existing `bg-accent`,
+     `text-accent` usages keep working while new work uses the numbered steps. */
+  --color-accent: #6f63e4;
+  --color-accent-50: #f3f2fd;
+  --color-accent-100: #e9e6fb;
+  --color-accent-200: #d5cff8;
+  --color-accent-300: #b8aef2;
+  --color-accent-400: #9587ea;
+  --color-accent-500: #6f63e4;
+  --color-accent-600: #5b4ed6;
+  --color-accent-700: #4a3eb6;
+  --color-accent-800: #3d3494;
+  --color-accent-900: #342d76;
+  --color-accent-950: #201b4c;
+
+  /* Neutrals, biased a few degrees toward the brand hue so greys read as
+     chosen rather than inherited. */
+  --color-ink-50: #f7f6fa;
+  --color-ink-100: #eeecf3;
+  --color-ink-200: #dcd9e5;
+  --color-ink-300: #bdb9cb;
+  --color-ink-400: #928da5;
+  --color-ink-500: #6f6a83;
+  --color-ink-600: #565169;
+  --color-ink-700: #423e53;
+  --color-ink-800: #2b2836;
+  --color-ink-900: #1c1a24;
+  --color-ink-950: #14131a;
+
+  --color-canvas: #f8f7fc;
+
+  --radius-card: 1.25rem;
+  --radius-panel: 1.75rem;
+
+  --shadow-lift:
+    0 1px 2px -1px rgb(20 19 26 / 0.08), 0 12px 32px -12px rgb(20 19 26 / 0.16);
+  --shadow-panel:
+    0 1px 2px -1px rgb(20 19 26 / 0.06), 0 24px 60px -24px rgb(32 27 76 / 0.28);
+}
+
+/* Technical line field, jargons.run's pitch (48px, 1px lines), kept faint
+   enough to read as texture rather than as a grid. */
+@utility bg-lines {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 47px,
+      rgb(20 19 26 / 0.028) 47px 48px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 47px,
+      rgb(20 19 26 / 0.028) 47px 48px
+    );
+}
+
+@utility bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* Entrance animations run in CSS, not JS, and deliberately use the default
+   `animation-fill-mode: none`. The element's resting style is the visible one,
+   so if frames never tick — a throttled background tab, an embedded webview, a
+   crawler — the content still shows instead of being stranded at opacity 0. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@utility animate-enter {
+  animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@utility animate-enter-late {
+  animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-enter,
+  .animate-enter-late {
+    animation: none;
+  }
+}

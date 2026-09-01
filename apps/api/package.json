@@ -1,0 +1,30 @@
+{
+  "name": "@formdrop/api",
+  "version": "0.0.0",
+  "private": true,
+  "description": "FormDrop public API (Express today; migrates to Elysia in P2)",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@formdrop/db": "*",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "drizzle-orm": "^0.39.0",
+    "express": "^5.1.0",
+    "zeptomail": "^7.0.0"
+  },
+  "devDependencies": {
+    "@formdrop/tsconfig": "*",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.20.4",
+    "typescript": "^5.7.2"
+  }
+}

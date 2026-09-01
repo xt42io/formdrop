@@ -18,7 +18,7 @@ This PRD comes out of one conversation. Everything below traces back to somethin
 | 3 | "Landing page and dashboard" | Both surfaces in scope; docs inherit the system | W4, W5 |
 | 4 | "Change the icon library to hugeicons" | Finish the half-done migration and make it enforceable | W4 |
 | 5 | "The codebase needs a refactor" | Route grouping, shared domain logic, no duplicated schema, tests | W3 |
-| 6 | "Set up as a monorepo using Turborepo" | pnpm workspaces + Turborepo, apps and packages | W1 |
+| 6 | "Set up as a monorepo using Turborepo" | npm workspaces + Turborepo, apps and packages | W1 |
 | 7 | "The web app should stay as TanStack" | No framework change to the web app — explicit non-goal | — |
 | 8 | "The public API should be migrated to Elysia" (a backend framework) | `public-api/` leaves Express for Elysia | W2 |
 | 9 | "Docs too. Use Fumadocs" (a documentation framework) | Hand-coded TSX docs routes become an MDX site | W5 |
@@ -156,23 +156,25 @@ formdrop/
 │   ├── js/           @formdrop/js
 │   └── react/        @formdrop/react
 ├── turbo.json
-└── pnpm-workspace.yaml
+└── package.json          npm workspaces: apps/*, packages/*
 ```
 
 **Scope**
 
-- `pnpm-workspace.yaml` and a root `turbo.json` with `build`, `dev`, `lint`, `typecheck`, `test` pipelines and correct `dependsOn`/`outputs`. Move from npm to pnpm for the workspace protocol.
+- Root `package.json` declaring `workspaces: ["apps/*", "packages/*"]`, and a `turbo.json` with `build`, `dev`, `lint`, `typecheck`, `test` tasks and correct `dependsOn`/`outputs`.
 - Move the existing root app to `apps/web` unchanged — a mechanical move, no refactor in the same commit.
 - Extract `packages/db` from `src/db`: schema, `auth-schema`, client, the `drizzle/` migrations, `drizzle.config.ts` and the `db:*` scripts. **Delete `public-api/src/db`.**
 - Extract `packages/ui` — tokens and Tailwind preset first, primitives as W4 lands.
 - Shared `packages/tsconfig`, ESLint flat config, Prettier.
 - GitHub Actions running `turbo run lint typecheck build test` on PR, with remote caching.
 
-**Why this is the first phase:** `src/db/schema.ts` and `public-api/src/db/schema.ts` are duplicated copies that are *already* on different Drizzle versions (0.39 vs 0.44). Every schema change today is a two-file change with silent drift, and every other workstream in this document touches the schema.
+**Status: done (2026-09-01).** `apps/web`, `apps/api`, `packages/db`, `packages/ui` and `packages/tsconfig` are in place; the duplicated schema is deleted and both apps import `@formdrop/db`; `turbo run build` is green and a warm build is a full cache hit. Outstanding: 13 typecheck errors in the admin surface (see below), which are pre-existing and need D7's work.
+
+**Why this is the first phase:** `src/db/schema.ts` and `public-api/src/db/schema.ts` were duplicated copies on different Drizzle versions (0.39 vs 0.44). Every schema change today is a two-file change with silent drift, and every other workstream in this document touches the schema.
 
 **Acceptance**
 
-- `pnpm install && pnpm turbo build` builds every app from a clean clone.
+- `npm install && npm run build` builds every app from a clean clone.
 - Exactly one `schema.ts` in the repo.
 - A cached repeat build finishes in under 30 seconds.
 - CI blocks merge on a typecheck failure.

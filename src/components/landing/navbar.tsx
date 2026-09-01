@@ -5,48 +5,38 @@ export function Navbar() {
   const { data: session } = authClient.useSession();
 
   const links = [
-    {
-      href: "/pricing",
-      label: "Pricing",
-    },
-    {
-      href: "/docs",
-      label: "Docs",
-    },
-    // Only show Login if not logged in
-    ...(!session
-      ? [
-          {
-            href: "/login",
-            label: "Login",
-          },
-        ]
-      : []),
+    { href: "/pricing", label: "Pricing" },
+    { href: "/docs", label: "Docs" },
+    ...(!session ? [{ href: "/login", label: "Login" }] : []),
   ];
 
   return (
-    <div className="p-3 sticky top-0 z-50">
-      <div className="bg-white/80 backdrop-blur-md border border-gray-200 rounded-full flex items-center justify-between px-6 py-3 max-w-5xl mx-auto">
+    <div className="sticky top-0 z-50 p-3">
+      <div className="mx-auto flex max-w-5xl items-center justify-between rounded-3xl border border-ink-200/80 bg-white/75 py-2.5 pr-2.5 pl-5 backdrop-blur-md">
         <Link to="/" className="flex items-center gap-2">
-          <img src="/purple_icon.svg" alt="FormDrop Logo" className="w-7" />
-          <span className="font-bold text-gray-900">FormDrop</span>
+          <img src="/purple_icon.svg" alt="" className="w-6" />
+          <span className="font-semibold tracking-tight text-ink-950">
+            FormDrop
+          </span>
         </Link>
-        <div className="hidden md:flex gap-x-8">
+
+        <div className="hidden gap-x-7 md:flex">
           {links.map((link) => (
             <Link
               key={link.href}
               to={link.href}
-              className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-ink-600 transition-colors hover:text-ink-950"
             >
               {link.label}
             </Link>
           ))}
         </div>
+
         <Link
           to={session ? "/app/forms" : "/signup"}
-          className="rounded-full bg-accent text-white px-5 py-3 font-medium hover:bg-accent/90 transition-colors"
+          className="rounded-2xl bg-accent-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600"
         >
-          {session ? "Dashboard" : "Get Started"}
+          {session ? "Dashboard" : "Get started"}
         </Link>
       </div>
     </div>

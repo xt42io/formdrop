@@ -12,10 +12,8 @@ import {
 } from "@polar-sh/better-auth";
 import { Polar } from "@polar-sh/sdk";
 import { emailOTP } from "better-auth/plugins";
-import { Resend } from "resend";
 import { OTPEmail } from "@/emails/OTPEmail";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getResend } from "@/lib/email";
 
 const polarClient = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN,
@@ -46,7 +44,7 @@ export const auth = betterAuth({
         try {
           console.log(`Sending OTP email to ${email}`);
 
-          const { error } = await resend.emails.send({
+          const { error } = await getResend().emails.send({
             from: "FormDrop <onboarding@mail.formdrop.co>",
             to: email,
             subject: "Your Verification Code",

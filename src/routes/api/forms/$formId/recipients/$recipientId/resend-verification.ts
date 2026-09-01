@@ -3,11 +3,9 @@ import { db } from "@/db";
 import { forms, emailNotificationRecipients } from "@/db/schema";
 import { eq, and, isNull } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { Resend } from "resend";
 import { RecipientVerificationEmail } from "@/emails/RecipientVerificationEmail";
 import crypto from "crypto";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { getResend } from "@/lib/email";
 
 export const Route = createFileRoute(
   "/api/forms/$formId/recipients/$recipientId/resend-verification",
@@ -95,7 +93,7 @@ export const Route = createFileRoute(
           // Send verification email
           const verificationUrl = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
 
-          await resend.emails.send({
+          await getResend().emails.send({
             from: "FormDrop <noreply@formdrop.co>",
             to: recipient.email,
             subject: "Verify your email address",

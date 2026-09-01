@@ -1,55 +1,65 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRightDoubleIcon } from "@hugeicons/core-free-icons";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
+import { SubmissionFlow } from "./submission-flow";
+import { RotatingWord } from "./rotating-word";
 
 export function Hero() {
   const { data: session } = authClient.useSession();
 
   return (
-    <div className="max-w-5xl mx-auto mt-20 px-4 text-center relative">
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-50"></div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium mb-6">
-          <img
-            src="/yc.jpeg"
-            alt="Y Combinator"
-            className="h-4 w-4 rounded-sm"
-          />
-          Not backed by Y Combinator
-        </div>
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-gray-900 mb-6">
-          The backend for your <br />
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-gray-900 via-accent to-gray-900">
-            headless forms
+    <section className="relative pt-10 pb-20 sm:pt-14">
+      <div className="animate-enter relative mx-auto max-w-4xl px-6 text-center">
+        {/* segmented chip: the disclaimer on the left, the thing it disclaims
+            on the right, so the joke lands on the logo */}
+        <div className="inline-flex items-center gap-2 rounded-2xl border border-ink-200/80 bg-white/80 p-1 pl-3 text-xs backdrop-blur-sm">
+          <span className="font-medium text-ink-500">Not backed by</span>
+          <span className="inline-flex items-center gap-1.5 rounded-xl bg-ink-950 py-1 pr-2.5 pl-1 font-semibold text-white">
+            <img
+              src="/yc.jpeg"
+              alt=""
+              className="h-4 w-4 rounded-md object-cover"
+            />
+            Y Combinator
           </span>
+        </div>
+
+        <h1 className="mt-7 text-[clamp(1.9rem,6.4vw,4.5rem)] leading-[1.08] font-semibold tracking-[-0.035em] text-ink-950 sm:tracking-[-0.04em]">
+          <span className="flex flex-wrap items-center justify-center gap-x-[0.22em]">
+            The <RotatingWord /> form
+          </span>
+          <span className="block">backend for developers</span>
         </h1>
-        <p className="mt-6 text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Collect form submissions, view them in a dashboard, and get notified —
-          all without writing a single line of backend code.
+
+        <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-600">
+          Point your form at one URL. Submissions land in a dashboard and a
+          notification hits your inbox, Slack or Discord &mdash; no backend to
+          write.
         </p>
 
-        <div className="flex items-center justify-center gap-4 mt-10">
-          <Link to={session ? "/app/forms" : "/signup"}>
-            <span className="rounded-full bg-accent text-white px-8 py-4 hover:bg-accent/90 transition-all flex items-center gap-x-2 font-medium text-lg border border-accent hover:-translate-y-0.5">
-              {session ? "Go to Dashboard" : "Start for Free"}
-              <HugeiconsIcon icon={ArrowRightDoubleIcon} />
-            </span>
-          </Link>
-          <a
-            href="/docs"
-            className="px-8 py-4 rounded-full text-gray-600 hover:bg-gray-50 font-medium transition-colors"
+        <div className="mx-auto mt-9 w-full max-w-sm rounded-3xl border border-ink-200/70 bg-white/60 p-2 backdrop-blur-sm">
+          <Link
+            to={session ? "/app/forms" : "/signup"}
+            className="group flex items-center justify-center gap-1.5 rounded-2xl bg-accent-500 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:bg-accent-600"
           >
-            Read Documentation
-          </a>
+            {session ? "Go to dashboard" : "Start for free"}
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              size={18}
+              className="transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
+          <p className="py-2.5 text-center text-xs text-ink-500">
+            Free plan &middot; unlimited forms and submissions &middot; no card
+            required
+          </p>
         </div>
-      </motion.div>
-    </div>
+      </div>
+
+      <div className="animate-enter-late relative">
+        <SubmissionFlow />
+      </div>
+    </section>
   );
 }

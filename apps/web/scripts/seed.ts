@@ -10,18 +10,9 @@ import {
   usage,
 } from "@formdrop/db/schema";
 import { faker } from "@faker-js/faker";
-import crypto from "crypto";
 import { auth } from "../src/lib/auth";
 import { eq } from "drizzle-orm";
 import moment from "moment";
-
-// Generate API key
-const generateApiKey = (type: "public" | "private") => {
-  if (type === "public") {
-    return `fd_pk_${crypto.randomBytes(7).toString("hex")}`;
-  }
-  return `fd_sk_${crypto.randomBytes(24).toString("hex")}`;
-};
 
 async function seed() {
   console.log("🌱 Starting database seed...");

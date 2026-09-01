@@ -1,6 +1,5 @@
 import { recordNotificationUsage } from "./recordNotificationUsage";
 
-// @ts-ignore - zeptomail package has type definition issues
 import { SendMailClient } from "zeptomail";
 
 // Configure which email provider to use: 'plunk' or 'zepto'

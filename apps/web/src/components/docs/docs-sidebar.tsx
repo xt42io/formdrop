@@ -1,24 +1,30 @@
 import { Link } from "@tanstack/react-router";
-import { BookOpen, Rocket, Code, Settings } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  BookOpen01Icon,
+  CodeIcon,
+  RocketIcon,
+  Settings02Icon,
+} from "@hugeicons/core-free-icons";
 
 const sidebarItems = [
   {
     title: "Overview",
     items: [
-      { label: "Introduction", href: "/docs", icon: BookOpen, exact: true },
-      { label: "Getting Started", href: "/docs/getting-started", icon: Rocket },
+      { label: "Introduction", href: "/docs", icon: BookOpen01Icon, exact: true },
+      { label: "Getting Started", href: "/docs/getting-started", icon: RocketIcon },
     ],
   },
   {
     title: "Features",
     items: [
-      { label: "Forms", href: "/docs/forms", icon: Code },
-      { label: "Integrations", href: "/docs/integrations", icon: Settings },
+      { label: "Forms", href: "/docs/forms", icon: CodeIcon },
+      { label: "Integrations", href: "/docs/integrations", icon: Settings02Icon },
     ],
   },
   {
     title: "Developers",
-    items: [{ label: "API Reference", href: "/docs/api", icon: Code }],
+    items: [{ label: "API Reference", href: "/docs/api", icon: CodeIcon }],
   },
 ];
 
@@ -42,7 +48,7 @@ export function DocsSidebar() {
                     }}
                     className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-200/50 hover:text-gray-900 transition-all"
                   >
-                    <item.icon size={16} />
+                    <HugeiconsIcon icon={item.icon} size={16} />
                     {item.label}
                   </Link>
                 </li>

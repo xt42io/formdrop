@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Bell, MessageSquare, Table, Webhook } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Message01Icon,
+  Notification01Icon,
+  TableIcon,
+  WebhookIcon,
+} from "@hugeicons/core-free-icons";
 
 export const Route = createFileRoute("/docs/integrations")({
   component: IntegrationsDocs,
@@ -31,7 +37,7 @@ function IntegrationsDocs() {
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center text-orange-600">
-                <Bell size={20} />
+                <HugeiconsIcon icon={Notification01Icon} size={20} />
               </div>
               <h3 className="font-semibold text-lg">Email Notifications</h3>
             </div>
@@ -44,7 +50,7 @@ function IntegrationsDocs() {
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600">
-                <MessageSquare size={20} />
+                <HugeiconsIcon icon={Message01Icon} size={20} />
               </div>
               <h3 className="font-semibold text-lg">Slack & Discord</h3>
             </div>
@@ -64,7 +70,7 @@ function IntegrationsDocs() {
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-green-600">
-                <Table size={20} />
+                <HugeiconsIcon icon={TableIcon} size={20} />
               </div>
               <h3 className="font-semibold text-lg">Google Sheets</h3>
             </div>
@@ -79,7 +85,7 @@ function IntegrationsDocs() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
-                  <Webhook size={20} />
+                  <HugeiconsIcon icon={WebhookIcon} size={20} />
                 </div>
                 <h3 className="font-semibold text-lg text-gray-500">Webhooks</h3>
               </div>
@@ -96,7 +102,7 @@ function IntegrationsDocs() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center text-yellow-600">
-                  <Table size={20} />
+                  <HugeiconsIcon icon={TableIcon} size={20} />
                 </div>
                 <h3 className="font-semibold text-lg text-gray-500">Airtable</h3>
               </div>

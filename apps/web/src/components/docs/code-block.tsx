@@ -1,4 +1,5 @@
-import { Check, Copy } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 
 export function CodeBlock({
@@ -23,7 +24,11 @@ export function CodeBlock({
           onClick={copyToClipboard}
           className="p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors cursor-pointer"
         >
-          {copied ? <Check size={14} /> : <Copy size={14} />}
+          {copied ? (
+            <HugeiconsIcon icon={Tick02Icon} size={14} />
+          ) : (
+            <HugeiconsIcon icon={Copy01Icon} size={14} />
+          )}
         </button>
       </div>
       <div className="px-4 py-3 bg-gray-900 border-b border-gray-800 flex items-center gap-2">

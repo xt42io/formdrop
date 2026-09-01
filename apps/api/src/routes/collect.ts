@@ -76,7 +76,7 @@ collectRouter.post("/:slug", async (req, res) => {
       .where(eq(user.id, form.userId))
       .limit(1);
 
-    let submissionData = (req.body || {}) as Record<string, any>;
+    const submissionData = (req.body || {}) as Record<string, any>;
 
     if (!submissionData || Object.keys(submissionData).length === 0) {
       res.status(400).json({ error: "No submission data found" });

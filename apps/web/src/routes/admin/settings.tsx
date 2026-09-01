@@ -26,7 +26,7 @@ function AdminSettings() {
     try {
       const res = await axios.post("/api/admin/settings/clear-old-submissions");
       setMessage(`Successfully deleted ${res.data.deletedCount} submissions.`);
-    } catch (error) {
+    } catch {
       setMessage("Failed to clear old submissions.");
     } finally {
       setIsClearing(false);

@@ -60,7 +60,7 @@ function RouteComponent() {
             setMessage(data.error || "Verification failed");
           }
         }
-      } catch (error) {
+      } catch {
         setStatus("error");
         setMessage("An error occurred during verification");
       }

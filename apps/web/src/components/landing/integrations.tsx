@@ -1,129 +1,106 @@
-import { motion } from "motion/react";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  CheckCircle2,
-  Zap,
-  Table,
-  Hash,
-  MessageSquare,
-  Mail,
-} from "lucide-react";
+  DiscordIcon,
+  Mail01Icon,
+  SlackIcon,
+  TableIcon,
+} from "@hugeicons/core-free-icons";
+
+/**
+ * Reference layout: label and headline on the left with a row of chunky badges
+ * under them, and a divided grid panel on the right. The ground is the hero's
+ * own line field rather than a flat tint, so the two read as one page.
+ */
+const BADGES = [
+  { label: "Google Sheets", icon: TableIcon, tint: "bg-[#cdf0dd]" },
+  { label: "Slack", icon: SlackIcon, tint: "bg-[#e5d9ff]" },
+  { label: "Discord", icon: DiscordIcon, tint: "bg-[#cfe2ff]" },
+  { label: "Email", icon: Mail01Icon, tint: "bg-accent-200" },
+];
+
+// The original checklist, as grid cells.
+const CELLS = [
+  {
+    title: "Unlimited Forms",
+    body: "Spin up a form per campaign, per page, per idea. There's no cap and no per-form pricing.",
+    edges: "border-b md:border-r",
+  },
+  {
+    title: "Unlimited Submissions",
+    body: "Collect as many as your forms attract, on the free plan included.",
+    edges: "border-b",
+  },
+  {
+    title: "Real-time notifications",
+    body: "Email, Slack and Discord fire the moment a submission arrives.",
+    edges: "border-b md:border-r md:border-b-0",
+  },
+  {
+    title: "Auto-sync to Google Sheets",
+    body: "Every submission lands as a row, with headers written for you.",
+    edges: "border-b md:border-b-0",
+  },
+  {
+    title: "Powerful analytics and reporting",
+    body: "Views, submissions and conversion per form, with weekly and monthly reports on Pro.",
+    edges: "md:col-span-2 md:border-t",
+  },
+];
 
 export function Integrations() {
-  const integrations = [
-    {
-      name: "Google Sheets",
-      icon: Table,
-      color: "text-green-600",
-      bg: "bg-green-50",
-    },
-    { name: "Slack", icon: Hash, color: "text-purple-600", bg: "bg-purple-50" },
-    {
-      name: "Discord",
-      icon: MessageSquare,
-      color: "text-indigo-600",
-      bg: "bg-indigo-50",
-    },
-    { name: "Email", icon: Mail, color: "text-blue-600", bg: "bg-blue-50" },
-  ];
-
   return (
-    <div className="py-32 bg-white relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl -z-10"></div>
+    <section className="relative overflow-hidden px-6 py-24">
+      {/* same line field as the hero */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-lines mask-[linear-gradient(to_bottom,transparent,#000_22%,#000_78%,transparent)]" />
+        <div className="absolute inset-0 bg-grain opacity-[0.02] mix-blend-multiply" />
+      </div>
 
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-20 items-center">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              Connect with your favorite tools
-            </h2>
-            <p className="text-gray-600 text-lg mb-8 leading-relaxed">
-              Streamline your workflow by connecting FormDrop to the tools you
-              already use. Automatically sync submissions to Google Sheets or
-              get notified in Slack and Discord.
-            </p>
-            <div className="space-y-4">
-              {[
-                "Unlimited Forms",
-                "Unlimited Submissions",
-                "Real-time notifications via Email, Slack & Discord",
-                "Auto-sync to Google Sheets",
-                "Powerful analytics and reporting",
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="text-green-600" size={14} />
-                  </div>
-                  <span className="text-gray-700">{item}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+      <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p className="text-sm font-medium text-ink-500">Integrations</p>
 
-          <div className="relative">
-            {/* Central Hub Visualization */}
-            <div className="relative w-full aspect-square max-w-md mx-auto">
-              {/* Center Node */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-                <div className="w-24 h-24 bg-white rounded-3xl shadow-xl flex items-center justify-center border border-gray-100 relative">
-                  <div className="absolute inset-0 bg-accent/5 rounded-3xl animate-pulse"></div>
-                  <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center text-white relative z-10">
-                    <Zap size={24} fill="currentColor" />
-                  </div>
-                </div>
+          <h2 className="mt-4 text-[clamp(1.7rem,3vw,2.4rem)] leading-[1.15] font-semibold tracking-[-0.03em] text-ink-950">
+            Connect with your favorite tools
+          </h2>
+
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-ink-600">
+            Streamline your workflow by connecting FormDrop to the tools you
+            already use. Automatically sync submissions to Google Sheets or get
+            notified in Slack and Discord.
+          </p>
+
+          <ul className="mt-8 flex flex-wrap gap-2.5">
+            {BADGES.map((badge) => (
+              <li
+                key={badge.label}
+                className={`flex items-center gap-2 rounded-xl py-1.5 pr-3.5 pl-1.5 text-sm font-semibold text-ink-900 ${badge.tint}`}
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/70">
+                  <HugeiconsIcon icon={badge.icon} size={15} />
+                </span>
+                {badge.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="overflow-hidden rounded-[1.75rem] border border-ink-200 bg-white/80 backdrop-blur-sm">
+          <div className="grid md:grid-cols-2">
+            {CELLS.map((cell) => (
+              <div
+                key={cell.title}
+                className={`border-ink-200 p-6 ${cell.edges}`}
+              >
+                <h3 className="font-semibold text-ink-950">{cell.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink-600">
+                  {cell.body}
+                </p>
               </div>
-
-              {/* Orbiting Nodes */}
-              {integrations.map((item, i) => {
-                const angle = (i * 360) / integrations.length;
-                const radius = 140; // Distance from center
-                const x = Math.cos((angle * Math.PI) / 180) * radius;
-                const y = Math.sin((angle * Math.PI) / 180) * radius;
-
-                return (
-                  <motion.div
-                    key={i}
-                    className="absolute top-1/2 left-1/2"
-                    initial={{ x: 0, y: 0, opacity: 0 }}
-                    whileInView={{ x, y, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      delay: i * 0.1,
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 15,
-                    }}
-                  >
-                    {/* Connecting Line */}
-                    <div
-                      className="absolute top-1/2 left-1/2 h-0.5 bg-linear-to-r from-accent/20 to-transparent origin-left -z-10"
-                      style={{
-                        width: radius,
-                        transform: `translate(-50%, -50%) rotate(${angle}deg) translate(${radius / 2}px, 0)`,
-                      }}
-                    />
-
-                    <div
-                      className={`-translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-white rounded-2xl shadow-lg border border-gray-100 flex items-center justify-center ${item.color} hover:scale-110 transition-transform cursor-pointer`}
-                    >
-                      <item.icon size={24} />
-                    </div>
-                  </motion.div>
-                );
-              })}
-
-              {/* Orbit Rings */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] border border-dashed border-gray-200 rounded-full -z-10 animate-[spin_60s_linear_infinite]"></div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] border border-gray-100 rounded-full -z-20"></div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

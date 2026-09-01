@@ -22,19 +22,20 @@
   --color-accent-900: #342d76;
   --color-accent-950: #201b4c;
 
-  /* Neutrals, biased a few degrees toward the brand hue so greys read as
-     chosen rather than inherited. */
-  --color-ink-50: #f7f6fa;
-  --color-ink-100: #eeecf3;
-  --color-ink-200: #dcd9e5;
-  --color-ink-300: #bdb9cb;
-  --color-ink-400: #928da5;
-  --color-ink-500: #6f6a83;
-  --color-ink-600: #565169;
-  --color-ink-700: #423e53;
-  --color-ink-800: #2b2836;
-  --color-ink-900: #1c1a24;
-  --color-ink-950: #14131a;
+  /* Neutrals carrying a trace of the brand hue so greys read as chosen rather
+     than inherited. Saturation is capped at 6.5%: at 12% the mid steps tinted
+     body copy visibly purple. */
+  --color-ink-50: #f8f8f8;
+  --color-ink-100: #efeef1;
+  --color-ink-200: #dedde1;
+  --color-ink-300: #c0bec6;
+  --color-ink-400: #9592a0;
+  --color-ink-500: #726f7e;
+  --color-ink-600: #595763;
+  --color-ink-700: #46444d;
+  --color-ink-800: #2d2c32;
+  --color-ink-900: #1e1d21;
+  --color-ink-950: #151518;
 
   --color-canvas: #f8f7fc;
 
@@ -90,6 +91,79 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-enter,
   .animate-enter-late {
+    animation: none;
+  }
+}
+
+/* Horizontal marquee bands. Each track holds its content twice, so -50% lands
+   exactly on the seam. The resting position is the base style, so a client that
+   never animates still shows a full row. */
+@keyframes band-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes band-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@utility animate-band-left {
+  animation: band-left var(--band-dur, 42s) linear infinite;
+}
+
+@utility animate-band-right {
+  animation: band-right var(--band-dur, 52s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-band-left,
+  .animate-band-right {
+    animation: none;
+  }
+}
+
+/* Ambient drift for decorative chips, and a slow breath for accent glows.
+   Both animate from the resting style, so nothing depends on a frame ever
+   running to be positioned correctly. */
+@keyframes float {
+  50% {
+    transform: translate3d(var(--float-x, 0), var(--float-y, -10px), 0)
+      rotate(var(--float-rot, 0deg));
+  }
+}
+
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translate(-50%, 0) scale(1);
+  }
+  50% {
+    opacity: 0.42;
+    transform: translate(-50%, 0) scale(1.08);
+  }
+}
+
+@utility animate-float {
+  animation: float var(--float-dur, 9s) ease-in-out infinite;
+}
+
+@utility animate-glow {
+  animation: glow-breathe var(--glow-dur, 7s) ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-glow {
     animation: none;
   }
 }

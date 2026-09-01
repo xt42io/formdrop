@@ -25,6 +25,9 @@ jobs:
 
       # Turbo caches per task, so a PR that only touches apps/web skips the
       # packages it didn't affect.
+      - name: Lint
+        run: npx turbo run lint
+
       - name: Typecheck
         run: npx turbo run typecheck
 

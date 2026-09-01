@@ -7,7 +7,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
+import { SparklesIcon } from "@hugeicons/core-free-icons";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useState } from "react";
 import { UpgradeModal } from "./upgrade-modal";
@@ -103,7 +103,7 @@ export function Sidebar() {
 
             <div className="flex items-center gap-2 mb-2 relative z-10">
               <div className="p-1.5 bg-accent/10 rounded-lg text-accent">
-                <Sparkles size={14} className="fill-accent/20" />
+                <HugeiconsIcon icon={SparklesIcon} size={14} />
               </div>
               <h3 className="font-semibold text-sm text-gray-900">
                 Upgrade to Pro

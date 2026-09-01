@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Check, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { motion } from "motion/react";
@@ -103,9 +104,15 @@ function PricingPage() {
               {freeFeatures.map((feature) => (
                 <li key={feature.label} className="flex items-start gap-3">
                   {feature.included ? (
-                    <Check className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+                    <HugeiconsIcon
+                      icon={Tick02Icon}
+                      className="w-5 h-5 text-green-500 shrink-0 mt-0.5"
+                    />
                   ) : (
-                    <X className="w-5 h-5 text-gray-300 shrink-0 mt-0.5" />
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      className="w-5 h-5 text-gray-300 shrink-0 mt-0.5"
+                    />
                   )}
                   <span
                     className={`text-gray-600 ${!feature.included && "line-through"}`}
@@ -154,7 +161,7 @@ function PricingPage() {
               {proFeatures.map((feature) => (
                 <li key={feature} className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 text-accent" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-3 h-3 text-accent" />
                   </div>
                   <span className="text-gray-200">{feature}</span>
                 </li>

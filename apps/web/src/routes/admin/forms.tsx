@@ -122,7 +122,7 @@ async function handleDeleteForm(formId: string) {
   try {
     await axios.delete(`/api/admin/forms/${formId}`);
     window.location.reload();
-  } catch (error) {
+  } catch {
     alert("Failed to delete form");
   }
 }

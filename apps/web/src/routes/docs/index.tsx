@@ -1,5 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Zap, ShieldCheck, Workflow, Bell } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowRight01Icon,
+  FlashIcon,
+  Notification01Icon,
+  SecurityCheckIcon,
+  WorkflowSquare01Icon,
+} from "@hugeicons/core-free-icons";
 
 export const Route = createFileRoute("/docs/")({
   component: DocsIndex,
@@ -29,7 +36,7 @@ function DocsIndex() {
         <div className="grid sm:grid-cols-2 gap-4 not-prose mb-12">
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 mb-4">
-              <Zap size={20} />
+              <HugeiconsIcon icon={FlashIcon} size={20} />
             </div>
             <h3 className="font-semibold text-lg mb-2">Zero Config</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -39,7 +46,7 @@ function DocsIndex() {
           </div>
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-green-600 mb-4">
-              <ShieldCheck size={20} />
+              <HugeiconsIcon icon={SecurityCheckIcon} size={20} />
             </div>
             <h3 className="font-semibold text-lg mb-2">Spam Protection</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -49,7 +56,7 @@ function DocsIndex() {
           </div>
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-4">
-              <Workflow size={20} />
+              <HugeiconsIcon icon={WorkflowSquare01Icon} size={20} />
             </div>
             <h3 className="font-semibold text-lg mb-2">Integrations</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -58,7 +65,7 @@ function DocsIndex() {
           </div>
           <div className="p-6 rounded-xl border border-gray-200 bg-white hover:border-accent/20 transition-colors">
             <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center text-orange-600 mb-4">
-              <Bell size={20} />
+              <HugeiconsIcon icon={Notification01Icon} size={20} />
             </div>
             <h3 className="font-semibold text-lg mb-2">Email Notifications</h3>
             <p className="text-gray-600 text-sm leading-relaxed">
@@ -73,7 +80,7 @@ function DocsIndex() {
             to="/docs/getting-started"
             className="inline-flex items-center gap-2 text-accent font-medium hover:underline"
           >
-            Get started with your first form <ArrowRight size={16} />
+            Get started with your first form <HugeiconsIcon icon={ArrowRight01Icon} size={16} />
           </Link>
         </div>
       </div>

@@ -25,7 +25,7 @@ export const Route = createFileRoute("/api/api-keys")({
           const userId = session.user.id;
 
           // Get existing keys
-          let userApiKeys = await db
+          const userApiKeys = await db
             .select()
             .from(apiKeys)
             .where(eq(apiKeys.userId, userId))

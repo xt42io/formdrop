@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { capture } from "@formdrop/analytics";
 import { Navbar } from "../components/landing/navbar";
 import { Hero } from "../components/landing/hero";
 import { HeroBackdrop } from "../components/landing/hero-backdrop";
@@ -14,6 +16,10 @@ export const Route = createFileRoute("/")({
 });
 
 function RouteComponent() {
+  useEffect(() => {
+    capture("landing_viewed");
+  }, []);
+
   return (
     <div className="relative isolate min-h-screen bg-white">
       <HeroBackdrop />

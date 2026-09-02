@@ -22,6 +22,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as DocsIntegrationsRouteImport } from './routes/docs/integrations'
 import { Route as DocsGettingStartedRouteImport } from './routes/docs/getting-started'
 import { Route as DocsFormsRouteImport } from './routes/docs/forms'
@@ -137,6 +138,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const IngestSplatRoute = IngestSplatRouteImport.update({
+  id: '/ingest/$',
+  path: '/ingest/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const DocsIntegrationsRoute = DocsIntegrationsRouteImport.update({
   id: '/integrations',
@@ -433,6 +439,7 @@ export interface FileRoutesByFullPath {
   '/docs/forms': typeof DocsFormsRoute
   '/docs/getting-started': typeof DocsGettingStartedRoute
   '/docs/integrations': typeof DocsIntegrationsRoute
+  '/ingest/$': typeof IngestSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/docs/': typeof DocsIndexRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
@@ -496,6 +503,7 @@ export interface FileRoutesByTo {
   '/docs/forms': typeof DocsFormsRoute
   '/docs/getting-started': typeof DocsGettingStartedRoute
   '/docs/integrations': typeof DocsIntegrationsRoute
+  '/ingest/$': typeof IngestSplatRoute
   '/admin': typeof AdminIndexRoute
   '/docs': typeof DocsIndexRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
@@ -562,6 +570,7 @@ export interface FileRoutesById {
   '/docs/forms': typeof DocsFormsRoute
   '/docs/getting-started': typeof DocsGettingStartedRoute
   '/docs/integrations': typeof DocsIntegrationsRoute
+  '/ingest/$': typeof IngestSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/docs/': typeof DocsIndexRoute
   '/admin/users/$userId': typeof AdminUsersUserIdRoute
@@ -629,6 +638,7 @@ export interface FileRouteTypes {
     | '/docs/forms'
     | '/docs/getting-started'
     | '/docs/integrations'
+    | '/ingest/$'
     | '/admin/'
     | '/docs/'
     | '/admin/users/$userId'
@@ -692,6 +702,7 @@ export interface FileRouteTypes {
     | '/docs/forms'
     | '/docs/getting-started'
     | '/docs/integrations'
+    | '/ingest/$'
     | '/admin'
     | '/docs'
     | '/admin/users/$userId'
@@ -757,6 +768,7 @@ export interface FileRouteTypes {
     | '/docs/forms'
     | '/docs/getting-started'
     | '/docs/integrations'
+    | '/ingest/$'
     | '/admin/'
     | '/docs/'
     | '/admin/users/$userId'
@@ -813,6 +825,7 @@ export interface RootRouteChildren {
   ApiFormsRoute: typeof ApiFormsRouteWithChildren
   ApiSubscriptionRoute: typeof ApiSubscriptionRoute
   ApiVerifyRecipientRoute: typeof ApiVerifyRecipientRoute
+  IngestSplatRoute: typeof IngestSplatRoute
   ApiAdminFormsRoute: typeof ApiAdminFormsRoute
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
   ApiAdminSubmissionsRoute: typeof ApiAdminSubmissionsRoute
@@ -923,6 +936,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/ingest/$': {
+      id: '/ingest/$'
+      path: '/ingest/$'
+      fullPath: '/ingest/$'
+      preLoaderRoute: typeof IngestSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/docs/integrations': {
       id: '/docs/integrations'
@@ -1449,6 +1469,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFormsRoute: ApiFormsRouteWithChildren,
   ApiSubscriptionRoute: ApiSubscriptionRoute,
   ApiVerifyRecipientRoute: ApiVerifyRecipientRoute,
+  IngestSplatRoute: IngestSplatRoute,
   ApiAdminFormsRoute: ApiAdminFormsRoute,
   ApiAdminStatsRoute: ApiAdminStatsRoute,
   ApiAdminSubmissionsRoute: ApiAdminSubmissionsRoute,

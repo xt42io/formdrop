@@ -1,121 +1,135 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-
+import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
-import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { motion } from "motion/react";
 import { Navbar } from "@/components/landing/navbar";
-import { Button } from "@/components/button";
+import { Footer } from "@/components/landing/footer";
 
 export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
+const freeFeatures = [
+  { label: "Unlimited Submissions", included: true },
+  { label: "Unlimited Forms", included: true },
+  { label: "Email Notifications", included: true },
+  { label: "Custom Redirects", included: true },
+  { label: "Integrations", included: false },
+  { label: "Basic Analytics", included: true },
+  { label: "Slack & Discord Notifications", included: false },
+  { label: "1,000 Row Exports", included: true },
+];
+
+const proFeatures = [
+  "Unlimited submissions",
+  "Unlimited Forms",
+  "Email, Slack & Discord Notifications",
+  "Integrations",
+  "Custom Redirects",
+  "Advanced Analytics",
+  "Unlimited Row Exports",
+  "Monthly & Weekly Reports",
+  "Priority Support",
+];
+
 function PricingPage() {
   const { data: session } = authClient.useSession();
   const [isAnnual, setIsAnnual] = useState(true);
 
-  const freeFeatures = [
-    { label: "Unlimited Submissions", included: true },
-    { label: "Unlimited Forms", included: true },
-    { label: "Email Notifications", included: true },
-    { label: "Custom Redirects", included: true },
-    { label: "Integrations", included: false },
-    { label: "Basic Analytics", included: true },
-    { label: "Slack & Discord Notifications", included: false },
-    { label: "1,000 Row Exports", included: true },
-  ];
-
-  const proFeatures = [
-    "Unlimited submissions",
-    "Unlimited Forms",
-    "Email, Slack & Discord Notifications",
-    "Integrations",
-    "Custom Redirects",
-    "Advanced Analytics",
-    "Unlimited Row Exports",
-    "Monthly & Weekly Reports",
-    "Priority Support",
-  ];
-
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900">
+    <div className="relative isolate min-h-screen bg-white">
+      {/* the landing page's own backdrop, so the two surfaces match */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[42rem] overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-lines mask-[linear-gradient(to_bottom,#000_0%,#000_55%,transparent_95%)]" />
+        <div className="absolute inset-0 bg-grain opacity-[0.02] mix-blend-multiply" />
+      </div>
+
       <Navbar />
-      <div className="max-w-5xl mx-auto px-6 py-20">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+
+      <main className="px-6 pt-16 pb-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <h1 className="text-[clamp(1.9rem,4vw,2.9rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-ink-950">
             Simple, transparent pricing
           </h1>
-          <p className="text-xl text-gray-600 mb-10">
+          <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-ink-600">
             Start for free, upgrade when you need more power. No hidden fees.
           </p>
 
-          {/* Toggle */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="mt-9 inline-flex items-center gap-3 rounded-2xl border border-ink-200 bg-white p-1.5">
             <span
-              className={`text-sm font-medium ${!isAnnual ? "text-gray-900" : "text-gray-500"}`}
+              className={`px-3 text-sm font-medium transition-colors ${
+                !isAnnual ? "text-ink-950" : "text-ink-400"
+              }`}
             >
               Monthly
             </span>
+
             <button
+              type="button"
               onClick={() => setIsAnnual(!isAnnual)}
-              className="relative w-14 h-8 bg-gray-200 rounded-full p-1 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-accent/20"
               aria-label="Toggle billing cycle"
+              className="relative h-7 w-12 shrink-0 rounded-full bg-ink-200 transition-colors"
             >
-              <motion.div
-                className="w-6 h-6 bg-white rounded-full shadow-sm"
-                animate={{ x: isAnnual ? 24 : 0 }}
-                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              <span
+                className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-white transition-transform duration-300 ${
+                  isAnnual ? "translate-x-5" : ""
+                }`}
               />
             </button>
+
             <span
-              className={`text-sm font-medium ${isAnnual ? "text-gray-900" : "text-gray-500"}`}
+              className={`px-3 text-sm font-medium transition-colors ${
+                isAnnual ? "text-ink-950" : "text-ink-400"
+              }`}
             >
-              Annual <span className="text-accent font-bold">(Save 17%)</span>
+              Annual{" "}
+              <span className="font-semibold text-accent-700">(Save 17%)</span>
             </span>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Free Plan */}
-          <div className="rounded-3xl border border-gray-200 p-8 bg-white hover:border-gray-300 transition-colors relative">
-            <h3 className="text-2xl font-bold mb-2">Free</h3>
-            <p className="text-gray-500 mb-6">Perfect for side projects</p>
-            <div className="mb-8">
-              <span className="text-4xl font-bold">$0</span>
-              <span className="text-gray-500">/month</span>
-            </div>
+        <div className="mx-auto mt-14 grid max-w-4xl gap-4 md:grid-cols-2">
+          {/* Free */}
+          <div className="flex flex-col rounded-panel border border-ink-200 bg-white p-8">
+            <h3 className="text-lg font-semibold text-ink-950">Free</h3>
+            <p className="mt-1 text-sm text-ink-500">
+              Perfect for side projects
+            </p>
+
+            <p className="mt-6 flex items-baseline gap-1.5">
+              <span className="text-4xl font-semibold tracking-[-0.03em] text-ink-950">
+                $0
+              </span>
+              <span className="text-sm text-ink-500">/month</span>
+            </p>
 
             <Link
               to={session ? "/app/forms" : "/signup"}
-              className="block w-full mb-8"
+              className="mt-7 rounded-lg bg-ink-100 px-5 py-2.5 text-center text-sm font-semibold text-ink-900 transition-colors hover:bg-ink-200"
             >
-              <Button
-                variant="secondary"
-                size="lg"
-                className="w-full bg-gray-100! hover:bg-gray-200 text-gray-900 border-0"
-              >
-                Get Started
-              </Button>
+              Get Started
             </Link>
 
-            <ul className="space-y-4">
+            <ul className="mt-8 flex flex-1 flex-col gap-3 border-t border-ink-100 pt-7">
               {freeFeatures.map((feature) => (
-                <li key={feature.label} className="flex items-start gap-3">
-                  {feature.included ? (
-                    <HugeiconsIcon
-                      icon={Tick02Icon}
-                      className="w-5 h-5 text-green-500 shrink-0 mt-0.5"
-                    />
-                  ) : (
-                    <HugeiconsIcon
-                      icon={Cancel01Icon}
-                      className="w-5 h-5 text-gray-300 shrink-0 mt-0.5"
-                    />
-                  )}
+                <li key={feature.label} className="flex items-start gap-2.5">
+                  <HugeiconsIcon
+                    icon={feature.included ? Tick02Icon : Cancel01Icon}
+                    size={17}
+                    className={`mt-0.5 shrink-0 ${
+                      feature.included ? "text-accent-600" : "text-ink-300"
+                    }`}
+                  />
                   <span
-                    className={`text-gray-600 ${!feature.included && "line-through"}`}
+                    className={`text-sm ${
+                      feature.included
+                        ? "text-ink-700"
+                        : "text-ink-400 line-through"
+                    }`}
                   >
                     {feature.label}
                   </span>
@@ -124,65 +138,52 @@ function PricingPage() {
             </ul>
           </div>
 
-          {/* Pro Plan */}
-          <div className="rounded-3xl border-2 border-accent p-8 bg-gray-900 text-white relative shadow-xl shadow-accent/10">
-            <div className="absolute top-0 right-0 bg-accent text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">
+          {/* Pro */}
+          <div className="relative flex flex-col overflow-hidden rounded-panel bg-ink-950 p-8">
+            <span className="absolute top-0 right-0 rounded-bl-xl bg-accent-500 px-3 py-1 text-[11px] font-bold tracking-wide text-white">
               POPULAR
-            </div>
-            <h3 className="text-2xl font-bold mb-2">Pro</h3>
-            <p className="text-gray-400 mb-6">For serious businesses</p>
-            <div className="mb-8">
-              <span className="text-4xl font-bold">
+            </span>
+
+            <h3 className="text-lg font-semibold text-white">Pro</h3>
+            <p className="mt-1 text-sm text-ink-400">For serious businesses</p>
+
+            <p className="mt-6 flex items-baseline gap-1.5">
+              <span className="text-4xl font-semibold tracking-[-0.03em] text-white">
                 ${isAnnual ? "24" : "29"}
               </span>
-              <span className="text-gray-400">/month</span>
-              {isAnnual && (
-                <div className="text-sm text-accent mt-1">
-                  Billed $288 yearly
-                </div>
-              )}
-            </div>
+              <span className="text-sm text-ink-400">/month</span>
+            </p>
+            {isAnnual && (
+              <p className="mt-1.5 text-xs text-accent-300">
+                Billed $288 yearly
+              </p>
+            )}
 
             <Link
               to={session ? "/app/settings" : "/signup"}
               search={session ? { tab: "billing" } : undefined}
-              className="block w-full mb-8"
+              className="mt-7 rounded-lg bg-accent-500 px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-accent-600"
             >
-              <Button
-                variant="primary"
-                size="lg"
-                className="w-full shadow-lg shadow-accent/25"
-              >
-                Upgrade to Pro
-              </Button>
+              Upgrade to Pro
             </Link>
 
-            <ul className="space-y-4">
+            <ul className="mt-8 flex flex-1 flex-col gap-3 border-t border-white/10 pt-7">
               {proFeatures.map((feature) => (
-                <li key={feature} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <HugeiconsIcon icon={Tick02Icon} className="w-3 h-3 text-accent" />
-                  </div>
-                  <span className="text-gray-200">{feature}</span>
+                <li key={feature} className="flex items-start gap-2.5">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    size={17}
+                    className="mt-0.5 shrink-0 text-accent-300"
+                  />
+                  <span className="text-sm text-ink-200">{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
-      </div>
+      </main>
 
-      <footer className="border-t border-gray-100 py-12 bg-white mt-20">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="flex items-center gap-2">
-            <img src="/purple_icon.svg" alt="FormDrop Logo" className="w-10" />
-            <span className="font-bold text-gray-900">FormDrop</span>
-          </div>
-
-          <div className="text-sm text-gray-400">
-            © {new Date().getFullYear()} FormDrop. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

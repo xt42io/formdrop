@@ -3,6 +3,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { AuthError } from "@/components/auth-error";
 import { AuthPanel } from "@/components/auth-panel";
+import { capture } from "@formdrop/analytics";
 
 export const Route = createFileRoute("/signup")({
   component: RouteComponent,
@@ -37,6 +38,7 @@ function RouteComponent() {
       return;
     }
 
+    capture("signup_started");
     setLoading(true);
 
     const { data, error: signUpError } = await authClient.signUp.email({
@@ -54,12 +56,14 @@ function RouteComponent() {
     }
 
     if (data) {
+      capture("signup_completed");
       navigate({ to: "/verify-email", search: { email } });
     }
   };
 
   const handleGoogleSignup = async () => {
     setError("");
+    capture("signup_started");
     setLoading(true);
 
     const { error: socialError } = await authClient.signIn.social({
@@ -77,6 +81,7 @@ function RouteComponent() {
 
   const handleGithubSignup = async () => {
     setError("");
+    capture("signup_started");
     setLoading(true);
 
     const { error: socialError } = await authClient.signIn.social({

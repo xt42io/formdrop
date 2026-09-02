@@ -1,0 +1,14 @@
+# Line endings are normalised here rather than left to whatever core.autocrlf
+# each contributor happens to have, so a checkout on Windows and one on macOS
+# or Linux cannot produce whole-file diffs against each other. Text is stored
+# as LF in the repo and checked out using the local convention.
+* text=auto
+
+# Read literally by a shell, so these stay LF on every platform.
+*.sh text eol=lf
+
+# Never normalised, and never diffed as text.
+*.png binary
+*.jpeg binary
+*.ico binary
+*.pdf binary

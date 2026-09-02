@@ -48,6 +48,38 @@
     0 1px 2px -1px rgb(20 19 26 / 0.06), 0 24px 60px -24px rgb(32 27 76 / 0.28);
 }
 
+/* Scrollbars, so our own scroll surfaces stop falling back to OS chrome.
+   Firefox takes the two-value `scrollbar-color`; Chromium and Safari take the
+   pseudo-elements, where a transparent track lets whatever ground is behind
+   show through and the thumb is inset with a transparent border so it reads as
+   a floating pill. `scrollbar-width` does not inherit, so the universal
+   selector is what reaches nested scroll containers. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink-300) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-ink-300);
+  background-clip: content-box;
+  border: 3px solid transparent;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-ink-400);
+}
+
 /* Technical line field, jargons.run's pitch (48px, 1px lines), kept faint
    enough to read as texture rather than as a grid. */
 @utility bg-lines {
@@ -153,6 +185,27 @@
   }
 }
 
+/* A halo expanding off a live point. Authored opacity is the resting style, so
+   the halo is still a visible ring when nothing animates. transform-box keeps
+   the origin on the shape itself, which SVG elements do not do by default. */
+@keyframes ping-soft {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+@utility animate-ping-soft {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ping-soft var(--ping-dur, 2.6s) cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
 @utility animate-float {
   animation: float var(--float-dur, 9s) ease-in-out infinite;
 }
@@ -163,7 +216,31 @@
 
 @media (prefers-reduced-motion: reduce) {
   .animate-float,
-  .animate-glow {
+  .animate-glow,
+  .animate-ping-soft {
+    animation: none;
+  }
+}
+
+/* A dash travelling along an SVG path, for showing something moving through a
+   connector. Animating stroke-dashoffset needs no coordinate maths, so the
+   dash stays aligned to the path however the viewBox is scaled — and with the
+   base path drawn underneath, the connector still reads when nothing animates. */
+@keyframes trace {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+@utility animate-trace {
+  animation: trace var(--trace-dur, 3s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-trace {
     animation: none;
   }
 }

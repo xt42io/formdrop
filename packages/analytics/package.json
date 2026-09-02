@@ -1,0 +1,21 @@
+{
+  "name": "@formdrop/analytics",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./events": "./src/events.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@formdrop/tsconfig": "*",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "posthog-js": "^1.425.1"
+  }
+}

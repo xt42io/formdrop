@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
+import { capture } from "@formdrop/analytics";
 import { AuthError } from "@/components/auth-error";
 import { z } from "zod";
 import { Button } from "@/components/button";
@@ -49,6 +50,7 @@ function RouteComponent() {
     }
 
     if (data) {
+      capture("email_verified");
       navigate({ to: "/login" });
     }
   };

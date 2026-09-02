@@ -4,6 +4,7 @@ import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 import { SubmissionFlow } from "./submission-flow";
 import { RotatingWord } from "./rotating-word";
+import { capture } from "@formdrop/analytics";
 
 export function Hero() {
   const { data: session } = authClient.useSession();
@@ -41,6 +42,7 @@ export function Hero() {
         <div className="mx-auto mt-9 w-full max-w-sm rounded-3xl border border-ink-200/70 bg-white/60 p-2 backdrop-blur-sm">
           <Link
             to={session ? "/app/forms" : "/signup"}
+            onClick={() => capture("hero_cta_clicked")}
             className="group flex items-center justify-center gap-1.5 rounded-2xl bg-accent-500 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:bg-accent-600"
           >
             {session ? "Go to dashboard" : "Start for free"}

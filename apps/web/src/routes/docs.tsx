@@ -1,4 +1,6 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { capture } from "@formdrop/analytics";
 import { DocsSidebar } from "@/components/docs/docs-sidebar";
 import { Navbar } from "@/components/landing/navbar";
 
@@ -7,6 +9,14 @@ export const Route = createFileRoute("/docs")({
 });
 
 function DocsLayout() {
+  // Captured in the layout rather than in each page, so the five pages need no
+  // instrumentation of their own and neither will the pages that replace them.
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    capture("docs_viewed", { page: pathname });
+  }, [pathname]);
+
   return (
     <div className="min-h-screen bg-gray-50 font-sans text-gray-900 flex flex-col">
       <Navbar />

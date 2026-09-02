@@ -152,7 +152,28 @@ function PrivacyPolicy() {
 
             <section className="mb-10">
               <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
-                7. Contact Us
+                7. Analytics
+              </h2>
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
+                We use PostHog to understand how FormDrop is used: which pages
+                are visited, which calls to action are clicked, and how many
+                people who begin a signup finish it. Autocapture is switched
+                off, so only the events we have explicitly defined are
+                collected.
+              </p>
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
+                The contents of your form submissions, recipient email addresses
+                and IP addresses are never sent as analytics properties.
+                Analytics requests are routed through formdrop.co rather than
+                directly to PostHog. Once you are signed in, events are
+                associated with your account identifier only, not with your name
+                or email address.
+              </p>
+            </section>
+
+            <section className="mb-10">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                8. Contact Us
               </h2>
               <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 If you have any questions about this privacy policy or our

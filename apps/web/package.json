@@ -15,6 +15,7 @@
   "dependencies": {
     "@faker-js/faker": "^10.0.0",
     "@flagswift/react-client": "^1.5.6",
+    "@formdrop/analytics": "^0.0.0",
     "@formdrop/db": "*",
     "@formdrop/ui": "*",
     "@hugeicons/core-free-icons": "^1.2.1",

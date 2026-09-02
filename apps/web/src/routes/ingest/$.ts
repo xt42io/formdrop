@@ -37,11 +37,24 @@ const STRIPPED_RESPONSE_HEADERS = [
   "connection",
 ];
 
+/**
+ * Paths served by the assets host rather than the ingestion host. /static/ is
+ * the library bundle; /array/ carries the per-token remote config that
+ * posthog-js fetches on boot as /array/<token>/config.js. Sending that to the
+ * ingestion host returns an HTML 404, which the browser then refuses to execute
+ * as a script - so the library never gets its config.
+ */
+const ASSET_PREFIXES = ["/static/", "/array/"];
+
+/** Generous for an analytics call, short enough that nothing sits on a hang. */
+const REQUEST_TIMEOUT_MS = 10_000;
+
 function upstreamFor(path: string) {
   const apiHost = process.env.POSTHOG_API_HOST ?? DEFAULT_API_HOST;
   // us.i.posthog.com -> us-assets.i.posthog.com, and the same for eu.
   const assetsHost = apiHost.replace(".i.posthog.com", "-assets.i.posthog.com");
-  return path.startsWith("/static/") ? assetsHost : apiHost;
+  const isAsset = ASSET_PREFIXES.some((prefix) => path.startsWith(prefix));
+  return isAsset ? assetsHost : apiHost;
 }
 
 async function forward(request: Request) {
@@ -66,6 +79,10 @@ async function forward(request: Request) {
       headers,
       body,
       redirect: "manual",
+      // Fail fast rather than holding a connection open. undici waits 300s for
+      // response headers by default, and an upstream that never answers would
+      // otherwise pin a request for the whole of it.
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     const responseHeaders = new Headers(response.headers);

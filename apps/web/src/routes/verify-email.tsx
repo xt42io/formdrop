@@ -3,8 +3,8 @@ import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { capture } from "@formdrop/analytics";
 import { AuthError } from "@/components/auth-error";
+import { AuthPanel } from "@/components/auth-panel";
 import { z } from "zod";
-import { Button } from "@/components/button";
 
 const verifyEmailSearchSchema = z.object({
   email: z.string().email().optional(),
@@ -15,12 +15,17 @@ export const Route = createFileRoute("/verify-email")({
   component: RouteComponent,
 });
 
+// Kept in step with the same pair on /login and /signup.
+const FIELD =
+  "block w-full appearance-none rounded-xl border border-ink-200 bg-ink-50/60 px-4 py-3 text-sm text-ink-900 placeholder-ink-400 transition-colors focus:border-accent-400 focus:bg-white focus:ring-4 focus:ring-accent-500/15 focus:outline-none";
+
 function RouteComponent() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [email, setEmail] = useState(search.email || "");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,6 +37,7 @@ function RouteComponent() {
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     setLoading(true);
 
     const { data, error: verifyError } = await authClient.emailOtp.verifyEmail({
@@ -62,6 +68,7 @@ function RouteComponent() {
     }
 
     setError("");
+    setNotice("");
     setLoading(true);
 
     const { error: resendError } =
@@ -80,76 +87,86 @@ function RouteComponent() {
       return;
     }
 
-    // Show success message (could be a toast, but alert for now as per previous code)
-    alert("A new OTP has been sent to your email!");
+    setNotice("A new OTP has been sent to your email!");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex justify-center">
-          <h2 className="text-3xl font-bold text-gray-900">FormDrop</h2>
-        </Link>
-        <h2 className="mt-6 text-center text-3xl font-semibold text-gray-900">
-          Verify your email
-        </h2>
-      </div>
+    <div className="grid h-screen overflow-hidden lg:grid-cols-2">
+      {/* the page itself never scrolls; only this column does, and only
+          when the form is taller than the viewport */}
+      <div className="relative isolate flex flex-col overflow-y-auto overscroll-contain bg-white px-6 pt-16 pb-16 lg:pt-[16vh]">
+        {/* the marketing pages' backdrop, so verifying doesn't feel like a
+            different product */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[30rem] overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-lines mask-[linear-gradient(to_bottom,#000_0%,#000_45%,transparent_92%)]" />
+          <div className="absolute inset-0 bg-grain opacity-[0.02] mix-blend-multiply" />
+        </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="border rounded-3xl border-gray-200 p-8">
-          <div>
-            <p className="text-sm text-gray-600 mb-6">
-              We've sent a verification code to{" "}
-              <strong>{email || "your email"}</strong>. Please check your inbox
-              for the OTP.
-            </p>
+        <div className="mx-auto w-full max-w-md">
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/purple_icon.svg" alt="" className="w-7" />
+            <span className="text-lg font-semibold tracking-tight text-ink-950">
+              FormDrop
+            </span>
+          </Link>
 
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
+          <h1 className="mt-8 text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+            Verify your email
+          </h1>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            We've sent a verification code to{" "}
+            <strong className="font-semibold text-ink-900">
+              {email || "your email"}
+            </strong>
+            . Please check your inbox for the OTP.
+          </p>
+
+          <div className="mt-8">
+            <form onSubmit={handleVerifyOtp} className="space-y-5">
               {!search.email && (
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-medium text-ink-700"
                   >
                     Email address
                   </label>
-                  <div className="mt-1">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-4xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                      placeholder="you@example.com"
-                    />
-                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`mt-1.5 ${FIELD}`}
+                    placeholder="you@example.com"
+                  />
                 </div>
               )}
 
               <div>
                 <label
                   htmlFor="otp"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-ink-700"
                 >
                   Verification Code
                 </label>
-                <div className="mt-1">
-                  <input
-                    id="otp"
-                    name="otp"
-                    type="text"
-                    required
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    className="appearance-none block w-full px-3 py-3 border border-gray-300 rounded-4xl placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent text-center text-2xl tracking-widest"
-                    placeholder="000000"
-                    maxLength={6}
-                    pattern="[0-9]{6}"
-                  />
-                </div>
+                <input
+                  id="otp"
+                  name="otp"
+                  type="text"
+                  required
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className={`mt-1.5 ${FIELD} text-center font-mono text-xl tracking-[0.4em]`}
+                  placeholder="000000"
+                  maxLength={6}
+                  pattern="[0-9]{6}"
+                />
               </div>
 
               <div>
@@ -160,34 +177,37 @@ function RouteComponent() {
                     className="mb-4"
                   />
                 )}
-                <Button
+                {notice && (
+                  <p className="mb-4 rounded-xl border border-accent-200 bg-accent-50 px-3.5 py-2.5 text-sm text-accent-800">
+                    {notice}
+                  </p>
+                )}
+                <button
                   type="submit"
                   disabled={loading || otp.length !== 6 || !email}
-                  isLoading={loading}
-                  variant="primary"
-                  size="xl"
-                  className="w-full bg-gray-900 hover:bg-gray-800 focus:ring-gray-900"
+                  className="w-full rounded-xl bg-accent-500 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-accent-600 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading ? "Verifying..." : "Verify Email"}
-                </Button>
+                </button>
               </div>
 
-              <div className="text-center">
-                <Button
+              <p className="text-center text-sm text-ink-600">
+                Didn't get it?{" "}
+                <button
                   type="button"
                   onClick={handleResendOtp}
                   disabled={loading || !email}
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-900 hover:underline hover:bg-transparent"
+                  className="font-semibold text-accent-700 transition-colors hover:text-accent-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Resend code
-                </Button>
-              </div>
+                </button>
+              </p>
             </form>
           </div>
         </div>
       </div>
+
+      <AuthPanel />
     </div>
   );
 }

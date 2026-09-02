@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Html5Icon, JavaScriptIcon } from "@hugeicons/core-free-icons";
+import {
+  Copy01Icon,
+  Html5Icon,
+  JavaScriptIcon,
+  Tick02Icon,
+} from "@hugeicons/core-free-icons";
+import { capture } from "@formdrop/analytics";
 
 const SNIPPETS = {
   html: {
@@ -36,8 +42,15 @@ const SNIPPETS = {
 
 type Tab = keyof typeof SNIPPETS;
 
-const STRING = "text-[#86efac]";
-const NAME = "text-[#7dd3fc]";
+/**
+ * A light palette: the code reads almost monochrome, with string values
+ * carrying the only strong colour. Keys and tag names stay in ink so the shape
+ * of the snippet comes from weight rather than from a rainbow of tokens.
+ */
+const STRING = "text-[#ffa08c]";
+const NAME = "text-ink-100";
+const KEYWORD = "text-accent-300";
+const METHOD = "text-ink-400";
 const PUNCT = "text-ink-500";
 
 /**
@@ -49,11 +62,11 @@ const PUNCT = "text-ink-500";
 const GRAMMARS: Record<Tab, { re: RegExp; classes: string[] }> = {
   html: {
     re: /("[^"]*")|(<\/?[a-zA-Z][\w-]*)|([a-zA-Z-]+(?==))|(\/?>)/g,
-    classes: [STRING, "text-accent-300", NAME, PUNCT],
+    classes: [STRING, KEYWORD, NAME, PUNCT],
   },
   fetch: {
     re: /('[^']*'|"[^"]*")|\b(fetch|JSON|console)\b|([a-zA-Z_$][\w$]*)(?=\s*:)|(\.[a-zA-Z_$][\w$]*)|(=>|[{}()[\],;])/g,
-    classes: [STRING, "text-accent-300", NAME, "text-[#fcd34d]", PUNCT],
+    classes: [STRING, KEYWORD, NAME, METHOD, PUNCT],
   },
 };
 
@@ -83,68 +96,78 @@ function tokenize(line: string, tab: Tab): Token[] {
 
 export function CodePreview() {
   const [tab, setTab] = useState<Tab>("html");
+  const [copied, setCopied] = useState(false);
   const active = SNIPPETS[tab];
-  const lines = active.code.split("\n");
+
+  const copy = () => {
+    navigator.clipboard.writeText(active.code);
+    capture("snippet_copied", { language: tab });
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <section className="relative px-6 pb-8">
-      <div className="relative mx-auto max-w-4xl">
-        {/* the slab lifts off the page rather than sitting flat on it */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-10 top-8 bottom-0 -z-10 rounded-[2rem] bg-accent-500/25 blur-[46px]"
-        />
+    <section className="px-6 pb-8">
+      {/* The switcher sits above the frame as its own control, rather than
+          inside the panel chrome. */}
+      <div className="mx-auto flex w-fit gap-1 rounded-full border border-ink-200 bg-ink-50 p-1.5">
+        {(Object.keys(SNIPPETS) as Tab[]).map((key) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-[13px] font-semibold transition-colors ${
+              tab === key
+                ? "border border-ink-200/70 bg-white text-ink-950"
+                : "border border-transparent text-ink-500 hover:text-ink-800"
+            }`}
+          >
+            <HugeiconsIcon icon={SNIPPETS[key].icon} size={15} />
+            {SNIPPETS[key].label}
+          </button>
+        ))}
+      </div>
 
-        <div className="overflow-hidden rounded-[1.4rem] border border-white/10 bg-ink-950 shadow-lift">
-          {/* a light catching the top edge */}
-          <div className="h-px bg-linear-to-r from-transparent via-white/25 to-transparent" />
-
-          <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] px-3 py-2.5">
-            <div className="flex gap-1">
-              {(Object.keys(SNIPPETS) as Tab[]).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setTab(key)}
-                  className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                    tab === key
-                      ? "bg-white/10 text-white"
-                      : "text-ink-400 hover:bg-white/5 hover:text-ink-200"
-                  }`}
-                >
-                  <HugeiconsIcon icon={SNIPPETS[key].icon} size={15} />
-                  {SNIPPETS[key].label}
-                </button>
-              ))}
-            </div>
-
-            <span className="hidden items-center gap-2 rounded-lg border border-white/10 px-2.5 py-1 font-mono text-[11px] text-ink-400 sm:flex">
+      {/* the frame, holding the surface off the page the way the reference does */}
+      <div className="mx-auto mt-8 max-w-4xl rounded-[1.5rem] border border-ink-200 bg-ink-50/70 p-2.5">
+        <div className="overflow-hidden rounded-[1.15rem] border border-white/10 bg-ink-950">
+          <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] px-5 py-3">
+            <span className="flex min-w-0 items-center gap-2 font-mono text-[11.5px] text-ink-400">
               <span className="rounded bg-accent-500/20 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-accent-300">
                 POST
               </span>
-              api.formdrop.co
+              <span className="truncate">api.formdrop.co/f/your-form-slug</span>
             </span>
+
+            <button
+              type="button"
+              onClick={copy}
+              aria-label="Copy snippet"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] font-medium text-ink-400 transition-colors hover:bg-white/5 hover:text-ink-100"
+            >
+              <HugeiconsIcon
+                icon={copied ? Tick02Icon : Copy01Icon}
+                size={14}
+                className={copied ? "text-accent-300" : undefined}
+              />
+              {copied ? "Copied" : "Copy"}
+            </button>
           </div>
 
-          <div className="overflow-x-auto py-5 font-mono text-[12.5px] leading-[1.75]">
-            {lines.map((line, index) => (
-              <div
-                key={index}
-                className="flex gap-4 px-5 whitespace-pre text-ink-200"
-              >
-                <span className="w-4 shrink-0 text-right text-ink-700 select-none">
-                  {index + 1}
-                </span>
-                <span>
+          <pre className="overflow-x-auto px-5 py-4 text-left font-mono text-[12.5px] leading-[1.8] text-ink-300">
+            <code>
+              {active.code.split("\n").map((line, index) => (
+                <span key={index} className="block">
                   {tokenize(line, tab).map((token, position) => (
                     <span key={position} className={token.cls}>
                       {token.text}
                     </span>
                   ))}
+                  {line === "" ? "\n" : ""}
                 </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </code>
+          </pre>
         </div>
       </div>
     </section>

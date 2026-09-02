@@ -1,6 +1,7 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
+import { capture } from "@formdrop/analytics";
 
 export function CodeBlock({
   code,
@@ -13,6 +14,7 @@ export function CodeBlock({
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(code);
+    capture("snippet_copied", { language });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

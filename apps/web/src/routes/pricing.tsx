@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 import { Navbar } from "@/components/landing/navbar";
 import { Footer } from "@/components/landing/footer";
+import { capture } from "@formdrop/analytics";
 
 export const Route = createFileRoute("/pricing")({
   component: PricingPage,
@@ -36,6 +37,10 @@ const proFeatures = [
 function PricingPage() {
   const { data: session } = authClient.useSession();
   const [isAnnual, setIsAnnual] = useState(true);
+
+  useEffect(() => {
+    capture("pricing_viewed");
+  }, []);
 
   return (
     <div className="relative isolate min-h-screen bg-white">

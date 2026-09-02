@@ -8,16 +8,25 @@ export const Route = createFileRoute("/privacy")({
 
 function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="relative isolate flex min-h-screen flex-col bg-white">
+      {/* the landing page's backdrop, so the two surfaces match */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[26rem] overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-lines mask-[linear-gradient(to_bottom,#000_0%,#000_45%,transparent_92%)]" />
+        <div className="absolute inset-0 bg-grain opacity-[0.02] mix-blend-multiply" />
+      </div>
+
       <Navbar />
-      <main className="grow pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl font-bold text-gray-900 mb-8">
+      <main className="grow px-6 pt-16 pb-24">
+        <div className="mx-auto max-w-3xl">
+          <h1 className="mb-8 text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-ink-950">
             Privacy Policy
           </h1>
 
-          <div className="prose prose-lg prose-gray max-w-none">
-            <p className="text-gray-600 mb-8">
+          <div className="max-w-none">
+            <p className="mb-10 text-sm text-ink-500">
               Last updated:{" "}
               {new Date().toLocaleDateString("en-US", {
                 month: "long",
@@ -27,10 +36,10 @@ function PrivacyPolicy() {
             </p>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 1. Introduction
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 Welcome to FormDrop ("we," "our," or "us"). We respect your
                 privacy and are committed to protecting your personal data. This
                 privacy policy will inform you as to how we look after your
@@ -41,14 +50,14 @@ function PrivacyPolicy() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 2. Data We Collect
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 We may collect, use, store and transfer different kinds of
                 personal data about you which we have grouped together follows:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-4">
+              <ul className="mb-4 list-disc space-y-2 pl-6 text-[15px] leading-relaxed text-ink-600">
                 <li>
                   <strong>Identity Data:</strong> includes first name, last
                   name, username or similar identifier.
@@ -76,15 +85,15 @@ function PrivacyPolicy() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 3. How We Use Your Data
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 We will only use your personal data when the law allows us to.
                 Most commonly, we will use your personal data in the following
                 circumstances:
               </p>
-              <ul className="list-disc pl-6 space-y-2 text-gray-600 mb-4">
+              <ul className="mb-4 list-disc space-y-2 pl-6 text-[15px] leading-relaxed text-ink-600">
                 <li>To provide and maintain our service.</li>
                 <li>To notify you about changes to our service.</li>
                 <li>
@@ -102,10 +111,10 @@ function PrivacyPolicy() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 4. Data Security
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 We have put in place appropriate security measures to prevent
                 your personal data from being accidentally lost, used or
                 accessed in an unauthorized way, altered or disclosed. In
@@ -116,10 +125,10 @@ function PrivacyPolicy() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 5. Data Retention
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 We will only retain your personal data for as long as necessary
                 to fulfill the purposes we collected it for, including for the
                 purposes of satisfying any legal, accounting, or reporting
@@ -128,10 +137,10 @@ function PrivacyPolicy() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 6. Your Legal Rights
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 Under certain circumstances, you have rights under data
                 protection laws in relation to your personal data, including the
                 right to request access, correction, erasure, restriction,
@@ -142,14 +151,14 @@ function PrivacyPolicy() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+              <h2 className="mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
                 7. Contact Us
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 If you have any questions about this privacy policy or our
                 privacy practices, please contact us at:
               </p>
-              <p className="text-gray-600 font-medium">support@formdrop.co</p>
+              <p className="font-medium text-ink-800">support@formdrop.co</p>
             </section>
           </div>
         </div>

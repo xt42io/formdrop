@@ -85,11 +85,7 @@ function WelcomeToPro() {
         </div>
       )}
 
-      {/* No entrance animation on the card. animate-enter fades from opacity 0,
-          and a hidden or throttled tab freezes the animation at frame 0 with
-          fill-mode none still applying the from-keyframe — which leaves the
-          whole page blank. The confetti above carries the celebration instead. */}
-      <div className="relative w-full max-w-lg rounded-panel border border-ink-200 bg-white p-8 text-center md:p-10">
+      <div className="animate-enter relative w-full max-w-lg rounded-panel border border-ink-200 bg-white p-8 text-center md:p-10">
         <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
           <HugeiconsIcon icon={StarIcon} size={30} />
         </span>
@@ -102,7 +98,7 @@ function WelcomeToPro() {
           with FormDrop.
         </p>
 
-        <ul className="mt-8 flex flex-col gap-3 rounded-2xl bg-ink-50/70 p-6 text-left">
+        <ul className="animate-enter-late mt-8 flex flex-col gap-3 rounded-2xl bg-ink-50/70 p-6 text-left">
           {FEATURES.map((feature) => (
             <li key={feature} className="flex items-start gap-2.5">
               <HugeiconsIcon

@@ -101,29 +101,43 @@
   background-size: 120px 120px;
 }
 
-/* Entrance animations run in CSS, not JS, and deliberately use the default
-   `animation-fill-mode: none`. The element's resting style is the visible one,
-   so if frames never tick — a throttled background tab, an embedded webview, a
-   crawler — the content still shows instead of being stranded at opacity 0. */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
+/* Entrances move, they never fade. Opacity is deliberately not part of this:
+   any technique that starts an entrance at `opacity: 0` can strand content
+   invisible, and both obvious ones were measured doing exactly that in a hidden
+   tab, where the browser holds an entrance at its first frame indefinitely.
+
+   - A keyframe animation with the default `animation-fill-mode: none` restores
+     the resting style only once the animation has *finished*. While it runs the
+     0% keyframe applies, and a frozen animation sits at currentTime 0 forever.
+   - A transition out of `@starting-style` is no better: the computed style
+     freezes at the starting values, not at the element's declared ones.
+
+   Transitioning `translate` alone is safe by construction — the worst case is
+   content resting 14px below where it was meant to land, which is invisible to
+   anyone who never sees it animate. `translate` rather than `transform` so an
+   element carrying its own transform utility keeps it. */
+@utility animate-enter {
+  translate: 0 0;
+  transition: translate 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @starting-style {
+    translate: 0 14px;
   }
 }
 
-@utility animate-enter {
-  animation: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
 @utility animate-enter-late {
-  animation: fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+  translate: 0 0;
+  transition: translate 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+
+  @starting-style {
+    translate: 0 14px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-enter,
   .animate-enter-late {
-    animation: none;
+    transition: none;
   }
 }
 

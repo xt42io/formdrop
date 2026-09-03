@@ -1,54 +1,60 @@
 import { Link } from "@tanstack/react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  BookOpen01Icon,
-  CodeIcon,
-  RocketIcon,
-  Settings02Icon,
-} from "@hugeicons/core-free-icons";
+import { CodeIcon, RocketIcon, SparklesIcon } from "@hugeicons/core-free-icons";
 
+/**
+ * Icons sit on the section headings rather than on every item, so the item list
+ * reads as a plain outline and the active row is the only thing carrying weight.
+ */
 const sidebarItems = [
   {
-    title: "Overview",
+    title: "Get Started",
+    icon: RocketIcon,
     items: [
-      { label: "Introduction", href: "/docs", icon: BookOpen01Icon, exact: true },
-      { label: "Getting Started", href: "/docs/getting-started", icon: RocketIcon },
+      { label: "Introduction", href: "/docs", exact: true },
+      { label: "Getting Started", href: "/docs/getting-started" },
     ],
   },
   {
-    title: "Features",
+    title: "Core Concepts",
+    icon: SparklesIcon,
     items: [
-      { label: "Forms", href: "/docs/forms", icon: CodeIcon },
-      { label: "Integrations", href: "/docs/integrations", icon: Settings02Icon },
+      { label: "Forms", href: "/docs/forms" },
+      { label: "Integrations", href: "/docs/integrations" },
     ],
   },
   {
     title: "Developers",
-    items: [{ label: "API Reference", href: "/docs/api", icon: CodeIcon }],
+    icon: CodeIcon,
+    items: [{ label: "API Reference", href: "/docs/api" }],
   },
 ];
 
 export function DocsSidebar() {
   return (
-    <aside className="w-64 shrink-0 hidden md:block sticky top-24 self-start">
-      <nav className="space-y-8">
+    <aside className="sticky top-24 hidden w-56 shrink-0 self-start md:block">
+      <nav className="flex flex-col gap-7">
         {sidebarItems.map((section) => (
           <div key={section.title}>
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">
+            <h2 className="mb-2 flex items-center gap-2 px-3 text-[13px] font-semibold text-ink-900">
+              <HugeiconsIcon
+                icon={section.icon}
+                size={15}
+                className="text-ink-400"
+              />
               {section.title}
-            </h3>
-            <ul className="space-y-1">
+            </h2>
+            <ul className="flex flex-col gap-0.5">
               {section.items.map((item) => (
                 <li key={item.href}>
                   <Link
                     to={item.href}
                     activeOptions={{ exact: item.exact }}
                     activeProps={{
-                      className: "bg-accent/15 text-accent font-medium",
+                      className: "bg-accent-100 text-accent-800 font-semibold",
                     }}
-                    className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-200/50 hover:text-gray-900 transition-all"
+                    className="block rounded-lg px-3 py-1.5 text-sm text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-900"
                   >
-                    <HugeiconsIcon icon={item.icon} size={16} />
                     {item.label}
                   </Link>
                 </li>

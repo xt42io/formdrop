@@ -10,16 +10,18 @@ function GettingStarted() {
   return (
     <div className="max-w-3xl pb-20">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight mb-4">
+        <h1 className="mb-4 text-[clamp(1.9rem,4vw,2.6rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-ink-950">
           Getting Started
         </h1>
-        <p className="text-xl text-gray-600">
+        <p className="text-[17px] leading-relaxed text-ink-600">
           Start collecting form submissions in minutes using our API.
         </p>
       </div>
 
-      <div className="prose prose-gray max-w-none">
-        <h2 className="text-2xl font-bold mt-10 mb-4">1. Create a Form</h2>
+      <div className="max-w-none">
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+          1. Create a Form
+        </h2>
         <p>
           Log in to your dashboard and create a new form. You'll get a unique{" "}
           <strong>Form URL</strong> (e.g.,{" "}
@@ -27,7 +29,9 @@ function GettingStarted() {
           to send submissions.
         </p>
 
-        <h2 className="text-2xl font-bold mt-10 mb-4">2. Send a Submission</h2>
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+          2. Send a Submission
+        </h2>
         <p>
           You can submit data using a standard HTML form or send an API request
           to your Form URL.
@@ -105,7 +109,7 @@ var_dump($result);
           ]}
         />
 
-        <h2 className="text-2xl font-bold mt-10 mb-4">
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
           3. Check your Dashboard
         </h2>
         <p>

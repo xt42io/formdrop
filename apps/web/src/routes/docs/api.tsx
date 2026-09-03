@@ -9,25 +9,27 @@ function ApiDocs() {
   return (
     <div className="max-w-4xl pb-20">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight mb-4">
+        <h1 className="mb-4 text-[clamp(1.9rem,4vw,2.6rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-ink-950">
           API Reference
         </h1>
-        <p className="text-xl text-gray-600">
+        <p className="text-[17px] leading-relaxed text-ink-600">
           Programmatic access to FormDrop features.
         </p>
       </div>
 
-      <div className="prose prose-gray max-w-none">
+      <div className="max-w-none">
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-6">Authentication</h2>
+          <h2 className="mb-6 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+            Authentication
+          </h2>
           <p className="mb-4">
             FormDrop uses API keys for authentication to the Management API. You
             can find your API keys in the dashboard settings.
           </p>
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6">
+          <div className="my-6 rounded-xl border border-[#f2d9a6] bg-[#fff8ea] p-4">
             <div className="flex">
               <div className="ml-3">
-                <p className="text-sm text-yellow-700">
+                <p className="text-sm leading-relaxed text-[#8a5a00]">
                   <span className="font-bold">Important:</span> Keep your
                   Private API Key secret. It allows full access to your forms
                   and submissions. Never expose this in client-side code.
@@ -49,26 +51,28 @@ function ApiDocs() {
           {/* Submit Form */}
           <section id="submit-form">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-sm font-bold text-green-700 bg-green-100 rounded-lg">
+              <span className="rounded-lg bg-[#cdf0dd] px-2.5 py-1 font-mono text-xs font-bold text-[#1f6b45]">
                 POST
               </span>
-              <h2 className="text-2xl font-bold">Submit Form</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                Submit Form
+              </h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-[15px] leading-relaxed text-ink-600">
               Send a new form submission. This endpoint is public and should be
               used from your frontend code.
             </p>
 
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
+            <div className="mb-6 rounded-2xl border border-ink-200 bg-ink-50/60 p-6">
               <h3 className="font-semibold mb-4">Endpoint</h3>
               <code className="text-accent">
                 https://api.formdrop.co/f/:formSlug
               </code>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6">
+            <div className="mb-6 rounded-2xl border border-ink-200 bg-ink-50/60 p-6">
               <h3 className="font-semibold mb-4">Request Body</h3>
-              <p className="text-gray-600 mb-4">
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
                 A JSON object containing your form fields.
               </p>
             </div>
@@ -92,12 +96,14 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* List Forms */}
           <section id="list-forms">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-sm font-bold text-blue-700 bg-blue-100 rounded-lg">
+              <span className="rounded-lg bg-[#cfe2ff] px-2.5 py-1 font-mono text-xs font-bold text-[#2b4c9b]">
                 GET
               </span>
-              <h2 className="text-2xl font-bold">List Forms</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                List Forms
+              </h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-[15px] leading-relaxed text-ink-600">
               Retrieve a list of all your forms. Requires a private API key.
             </p>
             <CodeBlock
@@ -110,12 +116,14 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Get Submissions */}
           <section id="get-submissions">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-sm font-bold text-blue-700 bg-blue-100 rounded-lg">
+              <span className="rounded-lg bg-[#cfe2ff] px-2.5 py-1 font-mono text-xs font-bold text-[#2b4c9b]">
                 GET
               </span>
-              <h2 className="text-2xl font-bold">Get Submissions</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                Get Submissions
+              </h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-[15px] leading-relaxed text-ink-600">
               Retrieve submissions for a specific form. Requires a private API
               key.
             </p>
@@ -129,12 +137,14 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Delete Form */}
           <section id="delete-form">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-sm font-bold text-red-700 bg-red-100 rounded-lg">
+              <span className="rounded-lg bg-[#fde3dd] px-2.5 py-1 font-mono text-xs font-bold text-[#b4341f]">
                 DELETE
               </span>
-              <h2 className="text-2xl font-bold">Delete Form</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                Delete Form
+              </h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-[15px] leading-relaxed text-ink-600">
               Soft-delete a form and hide it from the dashboard and API. Use the
               form&apos;s id (not slug). Requires your API key.
             </p>
@@ -148,12 +158,14 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Delete Submission */}
           <section id="delete-submission">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-sm font-bold text-red-700 bg-red-100 rounded-lg">
+              <span className="rounded-lg bg-[#fde3dd] px-2.5 py-1 font-mono text-xs font-bold text-[#b4341f]">
                 DELETE
               </span>
-              <h2 className="text-2xl font-bold">Delete Submission</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                Delete Submission
+              </h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-[15px] leading-relaxed text-ink-600">
               Soft-delete a submission by id. It will no longer appear in list
               endpoints. Requires your API key.
             </p>
@@ -167,12 +179,14 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Bulk delete submissions */}
           <section id="delete-submissions-bulk">
             <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-sm font-bold text-red-700 bg-red-100 rounded-lg">
+              <span className="rounded-lg bg-[#fde3dd] px-2.5 py-1 font-mono text-xs font-bold text-[#b4341f]">
                 DELETE
               </span>
-              <h2 className="text-2xl font-bold">Delete Submissions (bulk)</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
+                Delete Submissions (bulk)
+              </h2>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6 text-[15px] leading-relaxed text-ink-600">
               Soft-delete multiple submissions. Request body must be JSON with{" "}
               <code>submissionIds</code> (array of ids). All ids must belong to
               the form.

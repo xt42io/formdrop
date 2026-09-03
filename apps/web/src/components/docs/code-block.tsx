@@ -19,30 +19,34 @@ export function CodeBlock({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // The root stays a single bordered, rounded, my-6 element because CodeTabs
+  // flattens exactly that when it embeds this.
   return (
-    <div className="relative group rounded-xl bg-gray-900 overflow-hidden my-6 border border-gray-800">
-      <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+    <div className="relative my-6 overflow-hidden rounded-xl border border-white/10 bg-ink-950">
+      {/* a light catching the top edge, as on the landing snippet */}
+      <div className="h-px bg-linear-to-r from-transparent via-white/25 to-transparent" />
+
+      <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] px-4 py-2.5">
+        <span className="font-mono text-[11.5px] text-ink-400">{language}</span>
+
+        {/* Always visible. This used to be opacity-0 until hover, which meant
+            it simply did not exist on touch devices. */}
         <button
           onClick={copyToClipboard}
-          className="p-1.5 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 transition-colors cursor-pointer"
+          aria-label="Copy code"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] font-medium text-ink-400 transition-colors hover:bg-white/5 hover:text-ink-100"
         >
-          {copied ? (
-            <HugeiconsIcon icon={Tick02Icon} size={14} />
-          ) : (
-            <HugeiconsIcon icon={Copy01Icon} size={14} />
-          )}
+          <HugeiconsIcon
+            icon={copied ? Tick02Icon : Copy01Icon}
+            size={13}
+            className={copied ? "text-accent-300" : undefined}
+          />
+          {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      <div className="px-4 py-3 bg-gray-900 border-b border-gray-800 flex items-center gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red-500/20 border border-red-500/50" />
-          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500/20 border border-green-500/50" />
-        </div>
-        <span className="ml-2 text-xs font-mono text-gray-500">{language}</span>
-      </div>
-      <div className="p-4 overflow-x-auto">
-        <pre className="text-sm font-mono text-gray-300 leading-relaxed">
+
+      <div className="overflow-x-auto px-4 py-4">
+        <pre className="font-mono text-[12.5px] leading-[1.8] text-ink-300">
           {code}
         </pre>
       </div>

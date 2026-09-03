@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { capture } from "@formdrop/analytics";
 import { AuthError } from "@/components/auth-error";
-import { AuthPanel } from "@/components/auth-panel";
 import { z } from "zod";
 
 const verifyEmailSearchSchema = z.object({
@@ -91,10 +90,10 @@ function RouteComponent() {
   };
 
   return (
-    <div className="grid h-screen overflow-hidden lg:grid-cols-2">
+    <div className="h-screen overflow-hidden">
       {/* the page itself never scrolls; only this column does, and only
           when the form is taller than the viewport */}
-      <div className="relative isolate flex flex-col overflow-y-auto overscroll-contain bg-white px-6 pt-16 pb-16 lg:pt-[16vh]">
+      <div className="relative isolate flex h-full flex-col overflow-y-auto overscroll-contain bg-white px-6 pt-12 pb-16 lg:pt-28">
         {/* the marketing pages' backdrop, so verifying doesn't feel like a
             different product */}
         <div
@@ -106,17 +105,17 @@ function RouteComponent() {
         </div>
 
         <div className="mx-auto w-full max-w-md">
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center justify-center gap-2">
             <img src="/purple_icon.svg" alt="" className="w-7" />
             <span className="text-lg font-semibold tracking-tight text-ink-950">
               FormDrop
             </span>
           </Link>
 
-          <h1 className="mt-8 text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+          <h1 className="mt-8 text-center text-2xl font-semibold tracking-[-0.02em] text-ink-950">
             Verify your email
           </h1>
-          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+          <p className="mt-2 text-center text-sm leading-relaxed text-ink-600">
             We've sent a verification code to{" "}
             <strong className="font-semibold text-ink-900">
               {email || "your email"}
@@ -206,8 +205,6 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-
-      <AuthPanel />
     </div>
   );
 }

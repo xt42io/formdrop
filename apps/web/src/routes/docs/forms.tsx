@@ -9,20 +9,26 @@ function FormsDocs() {
   return (
     <div className="max-w-3xl pb-20">
       <div className="mb-10">
-        <h1 className="text-4xl font-bold tracking-tight mb-4">Forms</h1>
-        <p className="text-xl text-gray-600">
+        <h1 className="mb-4 text-[clamp(1.9rem,4vw,2.6rem)] leading-[1.1] font-semibold tracking-[-0.03em] text-ink-950">
+          Forms
+        </h1>
+        <p className="text-[17px] leading-relaxed text-ink-600">
           Learn how to create, configure, and secure your forms.
         </p>
       </div>
 
-      <div className="prose prose-gray max-w-none">
-        <h2 className="text-2xl font-bold mt-10 mb-4">Creating a Form</h2>
+      <div className="max-w-none">
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+          Creating a Form
+        </h2>
         <p>
           You can create a form directly from the dashboard by clicking the
           <strong>Create Form</strong> button.
         </p>
 
-        <h2 className="text-2xl font-bold mt-10 mb-4">HTML Configuration</h2>
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+          HTML Configuration
+        </h2>
         <p>
           The simplest way to use FormDrop is with a standard HTML form. Set the
           <code>action</code> attribute to our endpoint URL with your form slug.
@@ -76,21 +82,23 @@ function FormsDocs() {
           ]}
         />
 
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-4 my-6">
-          <p className="text-sm text-blue-700">
+        <div className="my-6 rounded-xl border border-accent-200 bg-accent-50 p-4">
+          <p className="text-sm leading-relaxed text-accent-800">
             <strong>Tip:</strong> Ensure all your input fields have a
             <code>name</code> attribute. This is how we identify the data fields
             in your submission.
           </p>
         </div>
 
-        <h2 className="text-2xl font-bold mt-10 mb-4">Managing Forms</h2>
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+          Managing Forms
+        </h2>
         <p>
           Clicking on a form in the dashboard opens the form details view, where
           you can access several tabs:
         </p>
 
-        <ul className="list-disc pl-5 space-y-2 mt-4 text-gray-600">
+        <ul className="mt-4 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-ink-600">
           <li>
             <strong>Submissions:</strong> View and manage all data collected by
             your form.
@@ -112,9 +120,13 @@ function FormsDocs() {
           </li>
         </ul>
 
-        <h2 className="text-2xl font-bold mt-10 mb-4">Form Settings</h2>
+        <h2 className="mt-14 mb-4 text-xl font-semibold tracking-[-0.02em] text-ink-950">
+          Form Settings
+        </h2>
 
-        <h3 className="text-xl font-semibold mt-6 mb-2">Allowed Domains</h3>
+        <h3 className="mt-8 mb-2 text-base font-semibold text-ink-950">
+          Allowed Domains
+        </h3>
         <p>
           Restrict which websites can submit to your form. You can add multiple
           domains to the allowlist (e.g., <code>example.com</code>,{" "}
@@ -122,7 +134,9 @@ function FormsDocs() {
           prevent spam from unauthorized sources.
         </p>
 
-        <h3 className="text-xl font-semibold mt-6 mb-2">Danger Zone</h3>
+        <h3 className="mt-8 mb-2 text-base font-semibold text-ink-950">
+          Danger Zone
+        </h3>
         <p>
           You can permanently delete a form and all its associated data from the
           settings tab. This action cannot be undone.

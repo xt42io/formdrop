@@ -1,0 +1,19 @@
+{
+  "name": "@formdrop/core",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@formdrop/tsconfig": "*",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.5"
+  }
+}

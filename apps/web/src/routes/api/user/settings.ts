@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { db } from "@formdrop/db";
+import { quotaFor } from "@formdrop/core";
 import { account, subscriptions, forms, submissions } from "@formdrop/db/schema";
 import { eq, and, isNotNull, count } from "drizzle-orm";
 import { auth } from "@/lib/auth";
@@ -44,14 +45,15 @@ export const Route = createFileRoute("/api/user/settings")({
             .where(eq(subscriptions.userId, userId))
             .limit(1);
 
-          const isPro = subscription?.status === "active";
-          const limit = isPro ? 10000 : 100; // Hardcoded limits for now, ideally from config
+          // Plan limits live in packages/core so the dashboard, the API and
+          // any future enforcement all read the same numbers.
+          const quota = quotaFor(subscription?.status, totalSubmissions);
 
           return Response.json({
             hasPassword,
             usage: {
-              used: totalSubmissions,
-              limit,
+              used: quota.used,
+              limit: quota.limit,
             },
             subscription: subscription || null,
           });

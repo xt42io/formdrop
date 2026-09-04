@@ -14,28 +14,11 @@ import {
   sendDiscordNotification,
 } from "../lib/sendWebhookNotification";
 import { syncGoogleSheets } from "../lib/syncGoogleSheets";
-
-// Helper to check if domain is allowed for form
-const isDomainAllowed = (origin: string, allowedDomains: string[]) => {
-  if (!allowedDomains || allowedDomains.length === 0) {
-    return true; // Empty array means allow all
-  }
-
-  try {
-    const originHost = new URL(origin).hostname;
-
-    return allowedDomains.some((domain) => {
-      // Support wildcards like *.example.com
-      if (domain.startsWith("*.")) {
-        const baseDomain = domain.slice(2);
-        return originHost.endsWith(baseDomain);
-      }
-      return originHost === domain || origin.includes(domain);
-    });
-  } catch {
-    return false;
-  }
-};
+import {
+  isDomainAllowed,
+  resolveNotificationTargets,
+  usagePeriod,
+} from "@formdrop/core";
 
 export const collectRouter = Router();
 
@@ -97,38 +80,36 @@ collectRouter.post("/:slug", async (req, res) => {
       })
       .returning();
 
-    const period = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const period = usagePeriod();
+
+    // Only the recipient lookup needs the database; which channels actually
+    // fire is decided by packages/core so the rule is testable without one.
+    const recipients = form.emailNotificationsEnabled
+      ? await db
+          .select()
+          .from(emailNotificationRecipients)
+          .where(
+            and(
+              eq(emailNotificationRecipients.formId, form.id),
+              eq(emailNotificationRecipients.enabled, true),
+              isNotNull(emailNotificationRecipients.verifiedAt),
+            ),
+          )
+      : [];
+
+    const targets = resolveNotificationTargets(form, owner.email, recipients);
 
     // Send email notification
-    if (form.emailNotificationsEnabled) {
-      const recipients = await db
-        .select()
-        .from(emailNotificationRecipients)
-        .where(
-          and(
-            eq(emailNotificationRecipients.formId, form.id),
-            eq(emailNotificationRecipients.enabled, true),
-            isNotNull(emailNotificationRecipients.verifiedAt),
-          ),
-        );
-
-      const allRecipients = [
-        { email: owner.email }, // Owner always receives email if enabled
-        ...recipients,
-      ];
-
-      // Deduplicate emails
-      const uniqueEmails = [...new Set(allRecipients.map((r) => r.email))];
-
+    if (targets.emails.length > 0) {
       console.log("Attempting to send email notification to:", {
-        emails: uniqueEmails,
+        emails: targets.emails,
         formName: form.name,
         userId: form.userId,
       });
 
       // Non-blocking email sending
       Promise.all(
-        uniqueEmails.map(async (email) => {
+        targets.emails.map(async (email) => {
           try {
             await sendEmailNotification({
               recipientEmail: email,
@@ -150,11 +131,11 @@ collectRouter.post("/:slug", async (req, res) => {
     }
 
     // Send Slack notification
-    if (form.slackNotificationsEnabled && form.slackWebhookUrl) {
+    if (targets.slack) {
       Promise.resolve().then(async () => {
         try {
           await sendSlackNotification({
-            webhookUrl: form.slackWebhookUrl!,
+            webhookUrl: targets.slack!.webhookUrl,
             formName: form.name,
             data: submissionData,
             submissionId: submission.id,
@@ -170,11 +151,11 @@ collectRouter.post("/:slug", async (req, res) => {
     }
 
     // Send Discord notification
-    if (form.discordNotificationsEnabled && form.discordWebhookUrl) {
+    if (targets.discord) {
       Promise.resolve().then(async () => {
         try {
           await sendDiscordNotification({
-            webhookUrl: form.discordWebhookUrl!,
+            webhookUrl: targets.discord!.webhookUrl,
             formName: form.name,
             data: submissionData,
             submissionId: submission.id,
@@ -190,17 +171,13 @@ collectRouter.post("/:slug", async (req, res) => {
     }
 
     // Sync to Google Sheets
-    if (
-      form.googleSheetsEnabled &&
-      form.googleSheetsSpreadsheetId &&
-      form.googleSheetsAccessToken
-    ) {
+    if (targets.googleSheets) {
       Promise.resolve().then(async () => {
         try {
           await syncGoogleSheets({
-            spreadsheetId: form.googleSheetsSpreadsheetId!,
+            spreadsheetId: targets.googleSheets!.spreadsheetId,
             sheetId: form.googleSheetsSheetId,
-            accessToken: form.googleSheetsAccessToken!,
+            accessToken: targets.googleSheets!.accessToken,
             refreshToken: form.googleSheetsRefreshToken,
             tokenExpiry: form.googleSheetsTokenExpiry,
             submissionData,

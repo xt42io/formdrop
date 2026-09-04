@@ -9,50 +9,43 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WelcomeToProRouteImport } from './routes/welcome-to-pro'
-import { Route as VerifyRecipientRouteImport } from './routes/verify-recipient'
-import { Route as VerifyEmailRouteImport } from './routes/verify-email'
-import { Route as SignupRouteImport } from './routes/signup'
-import { Route as PrivacyRouteImport } from './routes/privacy'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as LoginRouteImport } from './routes/login'
 import { Route as DocsRouteImport } from './routes/docs'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
-import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
 import { Route as DocsIntegrationsRouteImport } from './routes/docs/integrations'
 import { Route as DocsGettingStartedRouteImport } from './routes/docs/getting-started'
 import { Route as DocsFormsRouteImport } from './routes/docs/forms'
 import { Route as DocsApiRouteImport } from './routes/docs/api'
-import { Route as AppSettingsRouteImport } from './routes/app/settings'
-import { Route as AppApiKeysRouteImport } from './routes/app/api-keys'
-import { Route as AppAnalyticsRouteImport } from './routes/app/analytics'
 import { Route as ApiVerifyRecipientRouteImport } from './routes/api/verify-recipient'
 import { Route as ApiSubscriptionRouteImport } from './routes/api/subscription'
 import { Route as ApiFormsRouteImport } from './routes/api/forms'
 import { Route as ApiApiKeysRouteImport } from './routes/api/api-keys'
 import { Route as ApiAnalyticsRouteImport } from './routes/api/analytics'
-import { Route as AdminSubmissionsRouteImport } from './routes/admin/submissions'
-import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
-import { Route as AdminFormsRouteImport } from './routes/admin/forms'
-import { Route as AppFormsIndexRouteImport } from './routes/app/forms/index'
-import { Route as AdminUsersIndexRouteImport } from './routes/admin/users/index'
-import { Route as AppFormsIdRouteImport } from './routes/app/forms/$id'
+import { Route as marketingWelcomeToProRouteImport } from './routes/(marketing)/welcome-to-pro'
+import { Route as marketingVerifyRecipientRouteImport } from './routes/(marketing)/verify-recipient'
+import { Route as marketingVerifyEmailRouteImport } from './routes/(marketing)/verify-email'
+import { Route as marketingSignupRouteImport } from './routes/(marketing)/signup'
+import { Route as marketingPrivacyRouteImport } from './routes/(marketing)/privacy'
+import { Route as marketingPricingRouteImport } from './routes/(marketing)/pricing'
+import { Route as marketingLoginRouteImport } from './routes/(marketing)/login'
+import { Route as appAppRouteImport } from './routes/(app)/app'
+import { Route as adminAdminRouteImport } from './routes/(admin)/admin'
+import { Route as adminAdminIndexRouteImport } from './routes/(admin)/admin/index'
 import { Route as ApiUserSettingsRouteImport } from './routes/api/user/settings'
 import { Route as ApiFormsFormIdRouteImport } from './routes/api/forms/$formId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminSubmissionsRouteImport } from './routes/api/admin/submissions'
 import { Route as ApiAdminStatsRouteImport } from './routes/api/admin/stats'
 import { Route as ApiAdminFormsRouteImport } from './routes/api/admin/forms'
-import { Route as AdminUsersUserIdRouteImport } from './routes/admin/users/$userId'
-import { Route as AppFormsIdSubmissionsRouteImport } from './routes/app/forms/$id/submissions'
-import { Route as AppFormsIdSettingsRouteImport } from './routes/app/forms/$id/settings'
-import { Route as AppFormsIdNotificationsRouteImport } from './routes/app/forms/$id/notifications'
-import { Route as AppFormsIdIntegrationsRouteImport } from './routes/app/forms/$id/integrations'
-import { Route as AppFormsIdAnalyticsRouteImport } from './routes/app/forms/$id/analytics'
+import { Route as appAppSettingsRouteImport } from './routes/(app)/app/settings'
+import { Route as appAppApiKeysRouteImport } from './routes/(app)/app/api-keys'
+import { Route as appAppAnalyticsRouteImport } from './routes/(app)/app/analytics'
+import { Route as adminAdminSubmissionsRouteImport } from './routes/(admin)/admin/submissions'
+import { Route as adminAdminSettingsRouteImport } from './routes/(admin)/admin/settings'
+import { Route as adminAdminFormsRouteImport } from './routes/(admin)/admin/forms'
+import { Route as appAppFormsIndexRouteImport } from './routes/(app)/app/forms/index'
+import { Route as adminAdminUsersIndexRouteImport } from './routes/(admin)/admin/users/index'
 import { Route as ApiIntegrationsSlackCallbackRouteImport } from './routes/api/integrations/slack/callback'
 import { Route as ApiIntegrationsSlackAuthorizeRouteImport } from './routes/api/integrations/slack/authorize'
 import { Route as ApiIntegrationsGoogleSheetsSpreadsheetsRouteImport } from './routes/api/integrations/google-sheets/spreadsheets'
@@ -70,63 +63,20 @@ import { Route as ApiFormsFormIdDisconnectDiscordRouteImport } from './routes/ap
 import { Route as ApiFormsFormIdAnalyticsRouteImport } from './routes/api/forms/$formId/analytics'
 import { Route as ApiAdminUsersUserIdRouteImport } from './routes/api/admin/users/$userId'
 import { Route as ApiAdminSettingsClearOldSubmissionsRouteImport } from './routes/api/admin/settings/clear-old-submissions'
+import { Route as appAppFormsIdRouteImport } from './routes/(app)/app/forms/$id'
+import { Route as adminAdminUsersUserIdRouteImport } from './routes/(admin)/admin/users/$userId'
 import { Route as ApiFormsFormIdSubmissionsSubmissionIdRouteImport } from './routes/api/forms/$formId/submissions/$submissionId'
 import { Route as ApiFormsFormIdRecipientsRecipientIdRouteImport } from './routes/api/forms/$formId/recipients/$recipientId'
+import { Route as appAppFormsIdSubmissionsRouteImport } from './routes/(app)/app/forms/$id/submissions'
+import { Route as appAppFormsIdSettingsRouteImport } from './routes/(app)/app/forms/$id/settings'
+import { Route as appAppFormsIdNotificationsRouteImport } from './routes/(app)/app/forms/$id/notifications'
+import { Route as appAppFormsIdIntegrationsRouteImport } from './routes/(app)/app/forms/$id/integrations'
+import { Route as appAppFormsIdAnalyticsRouteImport } from './routes/(app)/app/forms/$id/analytics'
 import { Route as ApiFormsFormIdRecipientsRecipientIdResendVerificationRouteImport } from './routes/api/forms/$formId/recipients/$recipientId/resend-verification'
 
-const WelcomeToProRoute = WelcomeToProRouteImport.update({
-  id: '/welcome-to-pro',
-  path: '/welcome-to-pro',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerifyRecipientRoute = VerifyRecipientRouteImport.update({
-  id: '/verify-recipient',
-  path: '/verify-recipient',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VerifyEmailRoute = VerifyEmailRouteImport.update({
-  id: '/verify-email',
-  path: '/verify-email',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyRoute = PrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DocsIndexRoute = DocsIndexRouteImport.update({
@@ -134,10 +84,10 @@ const DocsIndexRoute = DocsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DocsRoute,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
+const marketingIndexRoute = marketingIndexRouteImport.update({
+  id: '/(marketing)/',
   path: '/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const IngestSplatRoute = IngestSplatRouteImport.update({
   id: '/ingest/$',
@@ -164,21 +114,6 @@ const DocsApiRoute = DocsApiRouteImport.update({
   path: '/api',
   getParentRoute: () => DocsRoute,
 } as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppApiKeysRoute = AppApiKeysRouteImport.update({
-  id: '/api-keys',
-  path: '/api-keys',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => AppRoute,
-} as any)
 const ApiVerifyRecipientRoute = ApiVerifyRecipientRouteImport.update({
   id: '/api/verify-recipient',
   path: '/api/verify-recipient',
@@ -204,35 +139,56 @@ const ApiAnalyticsRoute = ApiAnalyticsRouteImport.update({
   path: '/api/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSubmissionsRoute = AdminSubmissionsRouteImport.update({
-  id: '/submissions',
-  path: '/submissions',
-  getParentRoute: () => AdminRoute,
+const marketingWelcomeToProRoute = marketingWelcomeToProRouteImport.update({
+  id: '/(marketing)/welcome-to-pro',
+  path: '/welcome-to-pro',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
+const marketingVerifyRecipientRoute =
+  marketingVerifyRecipientRouteImport.update({
+    id: '/(marketing)/verify-recipient',
+    path: '/verify-recipient',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const marketingVerifyEmailRoute = marketingVerifyEmailRouteImport.update({
+  id: '/(marketing)/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminFormsRoute = AdminFormsRouteImport.update({
-  id: '/forms',
-  path: '/forms',
-  getParentRoute: () => AdminRoute,
+const marketingSignupRoute = marketingSignupRouteImport.update({
+  id: '/(marketing)/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppFormsIndexRoute = AppFormsIndexRouteImport.update({
-  id: '/forms/',
-  path: '/forms/',
-  getParentRoute: () => AppRoute,
+const marketingPrivacyRoute = marketingPrivacyRouteImport.update({
+  id: '/(marketing)/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersIndexRoute = AdminUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => AdminRoute,
+const marketingPricingRoute = marketingPricingRouteImport.update({
+  id: '/(marketing)/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppFormsIdRoute = AppFormsIdRouteImport.update({
-  id: '/forms/$id',
-  path: '/forms/$id',
-  getParentRoute: () => AppRoute,
+const marketingLoginRoute = marketingLoginRouteImport.update({
+  id: '/(marketing)/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appAppRoute = appAppRouteImport.update({
+  id: '/(app)/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const adminAdminRoute = adminAdminRouteImport.update({
+  id: '/(admin)/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const adminAdminIndexRoute = adminAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => adminAdminRoute,
 } as any)
 const ApiUserSettingsRoute = ApiUserSettingsRouteImport.update({
   id: '/api/user/settings',
@@ -264,35 +220,45 @@ const ApiAdminFormsRoute = ApiAdminFormsRouteImport.update({
   path: '/api/admin/forms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminUsersUserIdRoute = AdminUsersUserIdRouteImport.update({
-  id: '/users/$userId',
-  path: '/users/$userId',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AppFormsIdSubmissionsRoute = AppFormsIdSubmissionsRouteImport.update({
-  id: '/submissions',
-  path: '/submissions',
-  getParentRoute: () => AppFormsIdRoute,
-} as any)
-const AppFormsIdSettingsRoute = AppFormsIdSettingsRouteImport.update({
+const appAppSettingsRoute = appAppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => AppFormsIdRoute,
+  getParentRoute: () => appAppRoute,
 } as any)
-const AppFormsIdNotificationsRoute = AppFormsIdNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => AppFormsIdRoute,
+const appAppApiKeysRoute = appAppApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => appAppRoute,
 } as any)
-const AppFormsIdIntegrationsRoute = AppFormsIdIntegrationsRouteImport.update({
-  id: '/integrations',
-  path: '/integrations',
-  getParentRoute: () => AppFormsIdRoute,
-} as any)
-const AppFormsIdAnalyticsRoute = AppFormsIdAnalyticsRouteImport.update({
+const appAppAnalyticsRoute = appAppAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
-  getParentRoute: () => AppFormsIdRoute,
+  getParentRoute: () => appAppRoute,
+} as any)
+const adminAdminSubmissionsRoute = adminAdminSubmissionsRouteImport.update({
+  id: '/submissions',
+  path: '/submissions',
+  getParentRoute: () => adminAdminRoute,
+} as any)
+const adminAdminSettingsRoute = adminAdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => adminAdminRoute,
+} as any)
+const adminAdminFormsRoute = adminAdminFormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => adminAdminRoute,
+} as any)
+const appAppFormsIndexRoute = appAppFormsIndexRouteImport.update({
+  id: '/forms/',
+  path: '/forms/',
+  getParentRoute: () => appAppRoute,
+} as any)
+const adminAdminUsersIndexRoute = adminAdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => adminAdminRoute,
 } as any)
 const ApiIntegrationsSlackCallbackRoute =
   ApiIntegrationsSlackCallbackRouteImport.update({
@@ -393,6 +359,16 @@ const ApiAdminSettingsClearOldSubmissionsRoute =
     path: '/api/admin/settings/clear-old-submissions',
     getParentRoute: () => rootRouteImport,
   } as any)
+const appAppFormsIdRoute = appAppFormsIdRouteImport.update({
+  id: '/forms/$id',
+  path: '/forms/$id',
+  getParentRoute: () => appAppRoute,
+} as any)
+const adminAdminUsersUserIdRoute = adminAdminUsersUserIdRouteImport.update({
+  id: '/users/$userId',
+  path: '/users/$userId',
+  getParentRoute: () => adminAdminRoute,
+} as any)
 const ApiFormsFormIdSubmissionsSubmissionIdRoute =
   ApiFormsFormIdSubmissionsSubmissionIdRouteImport.update({
     id: '/$submissionId',
@@ -405,6 +381,34 @@ const ApiFormsFormIdRecipientsRecipientIdRoute =
     path: '/$recipientId',
     getParentRoute: () => ApiFormsFormIdRecipientsRoute,
   } as any)
+const appAppFormsIdSubmissionsRoute =
+  appAppFormsIdSubmissionsRouteImport.update({
+    id: '/submissions',
+    path: '/submissions',
+    getParentRoute: () => appAppFormsIdRoute,
+  } as any)
+const appAppFormsIdSettingsRoute = appAppFormsIdSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => appAppFormsIdRoute,
+} as any)
+const appAppFormsIdNotificationsRoute =
+  appAppFormsIdNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => appAppFormsIdRoute,
+  } as any)
+const appAppFormsIdIntegrationsRoute =
+  appAppFormsIdIntegrationsRouteImport.update({
+    id: '/integrations',
+    path: '/integrations',
+    getParentRoute: () => appAppFormsIdRoute,
+  } as any)
+const appAppFormsIdAnalyticsRoute = appAppFormsIdAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => appAppFormsIdRoute,
+} as any)
 const ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute =
   ApiFormsFormIdRecipientsRecipientIdResendVerificationRouteImport.update({
     id: '/resend-verification',
@@ -413,45 +417,43 @@ const ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
-  '/login': typeof LoginRoute
-  '/pricing': typeof PricingRoute
-  '/privacy': typeof PrivacyRoute
-  '/signup': typeof SignupRoute
-  '/verify-email': typeof VerifyEmailRoute
-  '/verify-recipient': typeof VerifyRecipientRoute
-  '/welcome-to-pro': typeof WelcomeToProRoute
-  '/admin/forms': typeof AdminFormsRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/submissions': typeof AdminSubmissionsRoute
+  '/admin': typeof adminAdminRouteWithChildren
+  '/app': typeof appAppRouteWithChildren
+  '/login': typeof marketingLoginRoute
+  '/pricing': typeof marketingPricingRoute
+  '/privacy': typeof marketingPrivacyRoute
+  '/signup': typeof marketingSignupRoute
+  '/verify-email': typeof marketingVerifyEmailRoute
+  '/verify-recipient': typeof marketingVerifyRecipientRoute
+  '/welcome-to-pro': typeof marketingWelcomeToProRoute
   '/api/analytics': typeof ApiAnalyticsRoute
   '/api/api-keys': typeof ApiApiKeysRoute
   '/api/forms': typeof ApiFormsRouteWithChildren
   '/api/subscription': typeof ApiSubscriptionRoute
   '/api/verify-recipient': typeof ApiVerifyRecipientRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/api-keys': typeof AppApiKeysRoute
-  '/app/settings': typeof AppSettingsRoute
   '/docs/api': typeof DocsApiRoute
   '/docs/forms': typeof DocsFormsRoute
   '/docs/getting-started': typeof DocsGettingStartedRoute
   '/docs/integrations': typeof DocsIntegrationsRoute
   '/ingest/$': typeof IngestSplatRoute
-  '/admin/': typeof AdminIndexRoute
+  '/': typeof marketingIndexRoute
   '/docs/': typeof DocsIndexRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/admin/forms': typeof adminAdminFormsRoute
+  '/admin/settings': typeof adminAdminSettingsRoute
+  '/admin/submissions': typeof adminAdminSubmissionsRoute
+  '/app/analytics': typeof appAppAnalyticsRoute
+  '/app/api-keys': typeof appAppApiKeysRoute
+  '/app/settings': typeof appAppSettingsRoute
   '/api/admin/forms': typeof ApiAdminFormsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/forms/$formId': typeof ApiFormsFormIdRouteWithChildren
   '/api/user/settings': typeof ApiUserSettingsRoute
-  '/app/forms/$id': typeof AppFormsIdRouteWithChildren
-  '/admin/users': typeof AdminUsersIndexRoute
-  '/app/forms': typeof AppFormsIndexRoute
+  '/admin/': typeof adminAdminIndexRoute
+  '/admin/users/$userId': typeof adminAdminUsersUserIdRoute
+  '/app/forms/$id': typeof appAppFormsIdRouteWithChildren
   '/api/admin/settings/clear-old-submissions': typeof ApiAdminSettingsClearOldSubmissionsRoute
   '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
   '/api/forms/$formId/analytics': typeof ApiFormsFormIdAnalyticsRoute
@@ -469,53 +471,53 @@ export interface FileRoutesByFullPath {
   '/api/integrations/google-sheets/spreadsheets': typeof ApiIntegrationsGoogleSheetsSpreadsheetsRoute
   '/api/integrations/slack/authorize': typeof ApiIntegrationsSlackAuthorizeRoute
   '/api/integrations/slack/callback': typeof ApiIntegrationsSlackCallbackRoute
-  '/app/forms/$id/analytics': typeof AppFormsIdAnalyticsRoute
-  '/app/forms/$id/integrations': typeof AppFormsIdIntegrationsRoute
-  '/app/forms/$id/notifications': typeof AppFormsIdNotificationsRoute
-  '/app/forms/$id/settings': typeof AppFormsIdSettingsRoute
-  '/app/forms/$id/submissions': typeof AppFormsIdSubmissionsRoute
+  '/admin/users': typeof adminAdminUsersIndexRoute
+  '/app/forms': typeof appAppFormsIndexRoute
+  '/app/forms/$id/analytics': typeof appAppFormsIdAnalyticsRoute
+  '/app/forms/$id/integrations': typeof appAppFormsIdIntegrationsRoute
+  '/app/forms/$id/notifications': typeof appAppFormsIdNotificationsRoute
+  '/app/forms/$id/settings': typeof appAppFormsIdSettingsRoute
+  '/app/forms/$id/submissions': typeof appAppFormsIdSubmissionsRoute
   '/api/forms/$formId/recipients/$recipientId': typeof ApiFormsFormIdRecipientsRecipientIdRouteWithChildren
   '/api/forms/$formId/submissions/$submissionId': typeof ApiFormsFormIdSubmissionsSubmissionIdRoute
   '/api/forms/$formId/recipients/$recipientId/resend-verification': typeof ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
-  '/login': typeof LoginRoute
-  '/pricing': typeof PricingRoute
-  '/privacy': typeof PrivacyRoute
-  '/signup': typeof SignupRoute
-  '/verify-email': typeof VerifyEmailRoute
-  '/verify-recipient': typeof VerifyRecipientRoute
-  '/welcome-to-pro': typeof WelcomeToProRoute
-  '/admin/forms': typeof AdminFormsRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/submissions': typeof AdminSubmissionsRoute
+  '/app': typeof appAppRouteWithChildren
+  '/login': typeof marketingLoginRoute
+  '/pricing': typeof marketingPricingRoute
+  '/privacy': typeof marketingPrivacyRoute
+  '/signup': typeof marketingSignupRoute
+  '/verify-email': typeof marketingVerifyEmailRoute
+  '/verify-recipient': typeof marketingVerifyRecipientRoute
+  '/welcome-to-pro': typeof marketingWelcomeToProRoute
   '/api/analytics': typeof ApiAnalyticsRoute
   '/api/api-keys': typeof ApiApiKeysRoute
   '/api/forms': typeof ApiFormsRouteWithChildren
   '/api/subscription': typeof ApiSubscriptionRoute
   '/api/verify-recipient': typeof ApiVerifyRecipientRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/api-keys': typeof AppApiKeysRoute
-  '/app/settings': typeof AppSettingsRoute
   '/docs/api': typeof DocsApiRoute
   '/docs/forms': typeof DocsFormsRoute
   '/docs/getting-started': typeof DocsGettingStartedRoute
   '/docs/integrations': typeof DocsIntegrationsRoute
   '/ingest/$': typeof IngestSplatRoute
-  '/admin': typeof AdminIndexRoute
+  '/': typeof marketingIndexRoute
   '/docs': typeof DocsIndexRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/admin/forms': typeof adminAdminFormsRoute
+  '/admin/settings': typeof adminAdminSettingsRoute
+  '/admin/submissions': typeof adminAdminSubmissionsRoute
+  '/app/analytics': typeof appAppAnalyticsRoute
+  '/app/api-keys': typeof appAppApiKeysRoute
+  '/app/settings': typeof appAppSettingsRoute
   '/api/admin/forms': typeof ApiAdminFormsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/forms/$formId': typeof ApiFormsFormIdRouteWithChildren
   '/api/user/settings': typeof ApiUserSettingsRoute
-  '/app/forms/$id': typeof AppFormsIdRouteWithChildren
-  '/admin/users': typeof AdminUsersIndexRoute
-  '/app/forms': typeof AppFormsIndexRoute
+  '/admin': typeof adminAdminIndexRoute
+  '/admin/users/$userId': typeof adminAdminUsersUserIdRoute
+  '/app/forms/$id': typeof appAppFormsIdRouteWithChildren
   '/api/admin/settings/clear-old-submissions': typeof ApiAdminSettingsClearOldSubmissionsRoute
   '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
   '/api/forms/$formId/analytics': typeof ApiFormsFormIdAnalyticsRoute
@@ -533,56 +535,56 @@ export interface FileRoutesByTo {
   '/api/integrations/google-sheets/spreadsheets': typeof ApiIntegrationsGoogleSheetsSpreadsheetsRoute
   '/api/integrations/slack/authorize': typeof ApiIntegrationsSlackAuthorizeRoute
   '/api/integrations/slack/callback': typeof ApiIntegrationsSlackCallbackRoute
-  '/app/forms/$id/analytics': typeof AppFormsIdAnalyticsRoute
-  '/app/forms/$id/integrations': typeof AppFormsIdIntegrationsRoute
-  '/app/forms/$id/notifications': typeof AppFormsIdNotificationsRoute
-  '/app/forms/$id/settings': typeof AppFormsIdSettingsRoute
-  '/app/forms/$id/submissions': typeof AppFormsIdSubmissionsRoute
+  '/admin/users': typeof adminAdminUsersIndexRoute
+  '/app/forms': typeof appAppFormsIndexRoute
+  '/app/forms/$id/analytics': typeof appAppFormsIdAnalyticsRoute
+  '/app/forms/$id/integrations': typeof appAppFormsIdIntegrationsRoute
+  '/app/forms/$id/notifications': typeof appAppFormsIdNotificationsRoute
+  '/app/forms/$id/settings': typeof appAppFormsIdSettingsRoute
+  '/app/forms/$id/submissions': typeof appAppFormsIdSubmissionsRoute
   '/api/forms/$formId/recipients/$recipientId': typeof ApiFormsFormIdRecipientsRecipientIdRouteWithChildren
   '/api/forms/$formId/submissions/$submissionId': typeof ApiFormsFormIdSubmissionsSubmissionIdRoute
   '/api/forms/$formId/recipients/$recipientId/resend-verification': typeof ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/app': typeof AppRouteWithChildren
   '/docs': typeof DocsRouteWithChildren
-  '/login': typeof LoginRoute
-  '/pricing': typeof PricingRoute
-  '/privacy': typeof PrivacyRoute
-  '/signup': typeof SignupRoute
-  '/verify-email': typeof VerifyEmailRoute
-  '/verify-recipient': typeof VerifyRecipientRoute
-  '/welcome-to-pro': typeof WelcomeToProRoute
-  '/admin/forms': typeof AdminFormsRoute
-  '/admin/settings': typeof AdminSettingsRoute
-  '/admin/submissions': typeof AdminSubmissionsRoute
+  '/(admin)/admin': typeof adminAdminRouteWithChildren
+  '/(app)/app': typeof appAppRouteWithChildren
+  '/(marketing)/login': typeof marketingLoginRoute
+  '/(marketing)/pricing': typeof marketingPricingRoute
+  '/(marketing)/privacy': typeof marketingPrivacyRoute
+  '/(marketing)/signup': typeof marketingSignupRoute
+  '/(marketing)/verify-email': typeof marketingVerifyEmailRoute
+  '/(marketing)/verify-recipient': typeof marketingVerifyRecipientRoute
+  '/(marketing)/welcome-to-pro': typeof marketingWelcomeToProRoute
   '/api/analytics': typeof ApiAnalyticsRoute
   '/api/api-keys': typeof ApiApiKeysRoute
   '/api/forms': typeof ApiFormsRouteWithChildren
   '/api/subscription': typeof ApiSubscriptionRoute
   '/api/verify-recipient': typeof ApiVerifyRecipientRoute
-  '/app/analytics': typeof AppAnalyticsRoute
-  '/app/api-keys': typeof AppApiKeysRoute
-  '/app/settings': typeof AppSettingsRoute
   '/docs/api': typeof DocsApiRoute
   '/docs/forms': typeof DocsFormsRoute
   '/docs/getting-started': typeof DocsGettingStartedRoute
   '/docs/integrations': typeof DocsIntegrationsRoute
   '/ingest/$': typeof IngestSplatRoute
-  '/admin/': typeof AdminIndexRoute
+  '/(marketing)/': typeof marketingIndexRoute
   '/docs/': typeof DocsIndexRoute
-  '/admin/users/$userId': typeof AdminUsersUserIdRoute
+  '/(admin)/admin/forms': typeof adminAdminFormsRoute
+  '/(admin)/admin/settings': typeof adminAdminSettingsRoute
+  '/(admin)/admin/submissions': typeof adminAdminSubmissionsRoute
+  '/(app)/app/analytics': typeof appAppAnalyticsRoute
+  '/(app)/app/api-keys': typeof appAppApiKeysRoute
+  '/(app)/app/settings': typeof appAppSettingsRoute
   '/api/admin/forms': typeof ApiAdminFormsRoute
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/forms/$formId': typeof ApiFormsFormIdRouteWithChildren
   '/api/user/settings': typeof ApiUserSettingsRoute
-  '/app/forms/$id': typeof AppFormsIdRouteWithChildren
-  '/admin/users/': typeof AdminUsersIndexRoute
-  '/app/forms/': typeof AppFormsIndexRoute
+  '/(admin)/admin/': typeof adminAdminIndexRoute
+  '/(admin)/admin/users/$userId': typeof adminAdminUsersUserIdRoute
+  '/(app)/app/forms/$id': typeof appAppFormsIdRouteWithChildren
   '/api/admin/settings/clear-old-submissions': typeof ApiAdminSettingsClearOldSubmissionsRoute
   '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
   '/api/forms/$formId/analytics': typeof ApiFormsFormIdAnalyticsRoute
@@ -600,11 +602,13 @@ export interface FileRoutesById {
   '/api/integrations/google-sheets/spreadsheets': typeof ApiIntegrationsGoogleSheetsSpreadsheetsRoute
   '/api/integrations/slack/authorize': typeof ApiIntegrationsSlackAuthorizeRoute
   '/api/integrations/slack/callback': typeof ApiIntegrationsSlackCallbackRoute
-  '/app/forms/$id/analytics': typeof AppFormsIdAnalyticsRoute
-  '/app/forms/$id/integrations': typeof AppFormsIdIntegrationsRoute
-  '/app/forms/$id/notifications': typeof AppFormsIdNotificationsRoute
-  '/app/forms/$id/settings': typeof AppFormsIdSettingsRoute
-  '/app/forms/$id/submissions': typeof AppFormsIdSubmissionsRoute
+  '/(admin)/admin/users/': typeof adminAdminUsersIndexRoute
+  '/(app)/app/forms/': typeof appAppFormsIndexRoute
+  '/(app)/app/forms/$id/analytics': typeof appAppFormsIdAnalyticsRoute
+  '/(app)/app/forms/$id/integrations': typeof appAppFormsIdIntegrationsRoute
+  '/(app)/app/forms/$id/notifications': typeof appAppFormsIdNotificationsRoute
+  '/(app)/app/forms/$id/settings': typeof appAppFormsIdSettingsRoute
+  '/(app)/app/forms/$id/submissions': typeof appAppFormsIdSubmissionsRoute
   '/api/forms/$formId/recipients/$recipientId': typeof ApiFormsFormIdRecipientsRecipientIdRouteWithChildren
   '/api/forms/$formId/submissions/$submissionId': typeof ApiFormsFormIdSubmissionsSubmissionIdRoute
   '/api/forms/$formId/recipients/$recipientId/resend-verification': typeof ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute
@@ -612,10 +616,9 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
+    | '/docs'
     | '/admin'
     | '/app'
-    | '/docs'
     | '/login'
     | '/pricing'
     | '/privacy'
@@ -623,34 +626,33 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/verify-recipient'
     | '/welcome-to-pro'
-    | '/admin/forms'
-    | '/admin/settings'
-    | '/admin/submissions'
     | '/api/analytics'
     | '/api/api-keys'
     | '/api/forms'
     | '/api/subscription'
     | '/api/verify-recipient'
-    | '/app/analytics'
-    | '/app/api-keys'
-    | '/app/settings'
     | '/docs/api'
     | '/docs/forms'
     | '/docs/getting-started'
     | '/docs/integrations'
     | '/ingest/$'
-    | '/admin/'
+    | '/'
     | '/docs/'
-    | '/admin/users/$userId'
+    | '/admin/forms'
+    | '/admin/settings'
+    | '/admin/submissions'
+    | '/app/analytics'
+    | '/app/api-keys'
+    | '/app/settings'
     | '/api/admin/forms'
     | '/api/admin/stats'
     | '/api/admin/submissions'
     | '/api/auth/$'
     | '/api/forms/$formId'
     | '/api/user/settings'
+    | '/admin/'
+    | '/admin/users/$userId'
     | '/app/forms/$id'
-    | '/admin/users'
-    | '/app/forms'
     | '/api/admin/settings/clear-old-submissions'
     | '/api/admin/users/$userId'
     | '/api/forms/$formId/analytics'
@@ -668,6 +670,8 @@ export interface FileRouteTypes {
     | '/api/integrations/google-sheets/spreadsheets'
     | '/api/integrations/slack/authorize'
     | '/api/integrations/slack/callback'
+    | '/admin/users'
+    | '/app/forms'
     | '/app/forms/$id/analytics'
     | '/app/forms/$id/integrations'
     | '/app/forms/$id/notifications'
@@ -678,7 +682,6 @@ export interface FileRouteTypes {
     | '/api/forms/$formId/recipients/$recipientId/resend-verification'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/app'
     | '/login'
     | '/pricing'
@@ -687,34 +690,33 @@ export interface FileRouteTypes {
     | '/verify-email'
     | '/verify-recipient'
     | '/welcome-to-pro'
-    | '/admin/forms'
-    | '/admin/settings'
-    | '/admin/submissions'
     | '/api/analytics'
     | '/api/api-keys'
     | '/api/forms'
     | '/api/subscription'
     | '/api/verify-recipient'
-    | '/app/analytics'
-    | '/app/api-keys'
-    | '/app/settings'
     | '/docs/api'
     | '/docs/forms'
     | '/docs/getting-started'
     | '/docs/integrations'
     | '/ingest/$'
-    | '/admin'
+    | '/'
     | '/docs'
-    | '/admin/users/$userId'
+    | '/admin/forms'
+    | '/admin/settings'
+    | '/admin/submissions'
+    | '/app/analytics'
+    | '/app/api-keys'
+    | '/app/settings'
     | '/api/admin/forms'
     | '/api/admin/stats'
     | '/api/admin/submissions'
     | '/api/auth/$'
     | '/api/forms/$formId'
     | '/api/user/settings'
+    | '/admin'
+    | '/admin/users/$userId'
     | '/app/forms/$id'
-    | '/admin/users'
-    | '/app/forms'
     | '/api/admin/settings/clear-old-submissions'
     | '/api/admin/users/$userId'
     | '/api/forms/$formId/analytics'
@@ -732,6 +734,8 @@ export interface FileRouteTypes {
     | '/api/integrations/google-sheets/spreadsheets'
     | '/api/integrations/slack/authorize'
     | '/api/integrations/slack/callback'
+    | '/admin/users'
+    | '/app/forms'
     | '/app/forms/$id/analytics'
     | '/app/forms/$id/integrations'
     | '/app/forms/$id/notifications'
@@ -742,45 +746,43 @@ export interface FileRouteTypes {
     | '/api/forms/$formId/recipients/$recipientId/resend-verification'
   id:
     | '__root__'
-    | '/'
-    | '/admin'
-    | '/app'
     | '/docs'
-    | '/login'
-    | '/pricing'
-    | '/privacy'
-    | '/signup'
-    | '/verify-email'
-    | '/verify-recipient'
-    | '/welcome-to-pro'
-    | '/admin/forms'
-    | '/admin/settings'
-    | '/admin/submissions'
+    | '/(admin)/admin'
+    | '/(app)/app'
+    | '/(marketing)/login'
+    | '/(marketing)/pricing'
+    | '/(marketing)/privacy'
+    | '/(marketing)/signup'
+    | '/(marketing)/verify-email'
+    | '/(marketing)/verify-recipient'
+    | '/(marketing)/welcome-to-pro'
     | '/api/analytics'
     | '/api/api-keys'
     | '/api/forms'
     | '/api/subscription'
     | '/api/verify-recipient'
-    | '/app/analytics'
-    | '/app/api-keys'
-    | '/app/settings'
     | '/docs/api'
     | '/docs/forms'
     | '/docs/getting-started'
     | '/docs/integrations'
     | '/ingest/$'
-    | '/admin/'
+    | '/(marketing)/'
     | '/docs/'
-    | '/admin/users/$userId'
+    | '/(admin)/admin/forms'
+    | '/(admin)/admin/settings'
+    | '/(admin)/admin/submissions'
+    | '/(app)/app/analytics'
+    | '/(app)/app/api-keys'
+    | '/(app)/app/settings'
     | '/api/admin/forms'
     | '/api/admin/stats'
     | '/api/admin/submissions'
     | '/api/auth/$'
     | '/api/forms/$formId'
     | '/api/user/settings'
-    | '/app/forms/$id'
-    | '/admin/users/'
-    | '/app/forms/'
+    | '/(admin)/admin/'
+    | '/(admin)/admin/users/$userId'
+    | '/(app)/app/forms/$id'
     | '/api/admin/settings/clear-old-submissions'
     | '/api/admin/users/$userId'
     | '/api/forms/$formId/analytics'
@@ -798,34 +800,36 @@ export interface FileRouteTypes {
     | '/api/integrations/google-sheets/spreadsheets'
     | '/api/integrations/slack/authorize'
     | '/api/integrations/slack/callback'
-    | '/app/forms/$id/analytics'
-    | '/app/forms/$id/integrations'
-    | '/app/forms/$id/notifications'
-    | '/app/forms/$id/settings'
-    | '/app/forms/$id/submissions'
+    | '/(admin)/admin/users/'
+    | '/(app)/app/forms/'
+    | '/(app)/app/forms/$id/analytics'
+    | '/(app)/app/forms/$id/integrations'
+    | '/(app)/app/forms/$id/notifications'
+    | '/(app)/app/forms/$id/settings'
+    | '/(app)/app/forms/$id/submissions'
     | '/api/forms/$formId/recipients/$recipientId'
     | '/api/forms/$formId/submissions/$submissionId'
     | '/api/forms/$formId/recipients/$recipientId/resend-verification'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
-  AppRoute: typeof AppRouteWithChildren
   DocsRoute: typeof DocsRouteWithChildren
-  LoginRoute: typeof LoginRoute
-  PricingRoute: typeof PricingRoute
-  PrivacyRoute: typeof PrivacyRoute
-  SignupRoute: typeof SignupRoute
-  VerifyEmailRoute: typeof VerifyEmailRoute
-  VerifyRecipientRoute: typeof VerifyRecipientRoute
-  WelcomeToProRoute: typeof WelcomeToProRoute
+  adminAdminRoute: typeof adminAdminRouteWithChildren
+  appAppRoute: typeof appAppRouteWithChildren
+  marketingLoginRoute: typeof marketingLoginRoute
+  marketingPricingRoute: typeof marketingPricingRoute
+  marketingPrivacyRoute: typeof marketingPrivacyRoute
+  marketingSignupRoute: typeof marketingSignupRoute
+  marketingVerifyEmailRoute: typeof marketingVerifyEmailRoute
+  marketingVerifyRecipientRoute: typeof marketingVerifyRecipientRoute
+  marketingWelcomeToProRoute: typeof marketingWelcomeToProRoute
   ApiAnalyticsRoute: typeof ApiAnalyticsRoute
   ApiApiKeysRoute: typeof ApiApiKeysRoute
   ApiFormsRoute: typeof ApiFormsRouteWithChildren
   ApiSubscriptionRoute: typeof ApiSubscriptionRoute
   ApiVerifyRecipientRoute: typeof ApiVerifyRecipientRoute
   IngestSplatRoute: typeof IngestSplatRoute
+  marketingIndexRoute: typeof marketingIndexRoute
   ApiAdminFormsRoute: typeof ApiAdminFormsRoute
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
   ApiAdminSubmissionsRoute: typeof ApiAdminSubmissionsRoute
@@ -846,81 +850,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/welcome-to-pro': {
-      id: '/welcome-to-pro'
-      path: '/welcome-to-pro'
-      fullPath: '/welcome-to-pro'
-      preLoaderRoute: typeof WelcomeToProRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/verify-recipient': {
-      id: '/verify-recipient'
-      path: '/verify-recipient'
-      fullPath: '/verify-recipient'
-      preLoaderRoute: typeof VerifyRecipientRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/verify-email': {
-      id: '/verify-email'
-      path: '/verify-email'
-      fullPath: '/verify-email'
-      preLoaderRoute: typeof VerifyEmailRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/docs': {
       id: '/docs'
       path: '/docs'
       fullPath: '/docs'
       preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/': {
@@ -930,12 +864,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsIndexRouteImport
       parentRoute: typeof DocsRoute
     }
-    '/admin/': {
-      id: '/admin/'
+    '/(marketing)/': {
+      id: '/(marketing)/'
       path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
+      fullPath: '/'
+      preLoaderRoute: typeof marketingIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/ingest/$': {
       id: '/ingest/$'
@@ -972,27 +906,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsApiRouteImport
       parentRoute: typeof DocsRoute
     }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/api-keys': {
-      id: '/app/api-keys'
-      path: '/api-keys'
-      fullPath: '/app/api-keys'
-      preLoaderRoute: typeof AppApiKeysRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/analytics': {
-      id: '/app/analytics'
-      path: '/analytics'
-      fullPath: '/app/analytics'
-      preLoaderRoute: typeof AppAnalyticsRouteImport
-      parentRoute: typeof AppRoute
-    }
     '/api/verify-recipient': {
       id: '/api/verify-recipient'
       path: '/api/verify-recipient'
@@ -1028,47 +941,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/submissions': {
-      id: '/admin/submissions'
-      path: '/submissions'
-      fullPath: '/admin/submissions'
-      preLoaderRoute: typeof AdminSubmissionsRouteImport
-      parentRoute: typeof AdminRoute
+    '/(marketing)/welcome-to-pro': {
+      id: '/(marketing)/welcome-to-pro'
+      path: '/welcome-to-pro'
+      fullPath: '/welcome-to-pro'
+      preLoaderRoute: typeof marketingWelcomeToProRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
+    '/(marketing)/verify-recipient': {
+      id: '/(marketing)/verify-recipient'
+      path: '/verify-recipient'
+      fullPath: '/verify-recipient'
+      preLoaderRoute: typeof marketingVerifyRecipientRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/forms': {
-      id: '/admin/forms'
-      path: '/forms'
-      fullPath: '/admin/forms'
-      preLoaderRoute: typeof AdminFormsRouteImport
-      parentRoute: typeof AdminRoute
+    '/(marketing)/verify-email': {
+      id: '/(marketing)/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof marketingVerifyEmailRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/forms/': {
-      id: '/app/forms/'
-      path: '/forms'
-      fullPath: '/app/forms'
-      preLoaderRoute: typeof AppFormsIndexRouteImport
-      parentRoute: typeof AppRoute
+    '/(marketing)/signup': {
+      id: '/(marketing)/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof marketingSignupRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/users/': {
-      id: '/admin/users/'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/(marketing)/privacy': {
+      id: '/(marketing)/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof marketingPrivacyRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/forms/$id': {
-      id: '/app/forms/$id'
-      path: '/forms/$id'
-      fullPath: '/app/forms/$id'
-      preLoaderRoute: typeof AppFormsIdRouteImport
-      parentRoute: typeof AppRoute
+    '/(marketing)/pricing': {
+      id: '/(marketing)/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof marketingPricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(marketing)/login': {
+      id: '/(marketing)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof marketingLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/app': {
+      id: '/(app)/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof appAppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(admin)/admin': {
+      id: '/(admin)/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof adminAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(admin)/admin/': {
+      id: '/(admin)/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof adminAdminIndexRouteImport
+      parentRoute: typeof adminAdminRoute
     }
     '/api/user/settings': {
       id: '/api/user/settings'
@@ -1112,47 +1053,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminFormsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/users/$userId': {
-      id: '/admin/users/$userId'
-      path: '/users/$userId'
-      fullPath: '/admin/users/$userId'
-      preLoaderRoute: typeof AdminUsersUserIdRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/app/forms/$id/submissions': {
-      id: '/app/forms/$id/submissions'
-      path: '/submissions'
-      fullPath: '/app/forms/$id/submissions'
-      preLoaderRoute: typeof AppFormsIdSubmissionsRouteImport
-      parentRoute: typeof AppFormsIdRoute
-    }
-    '/app/forms/$id/settings': {
-      id: '/app/forms/$id/settings'
+    '/(app)/app/settings': {
+      id: '/(app)/app/settings'
       path: '/settings'
-      fullPath: '/app/forms/$id/settings'
-      preLoaderRoute: typeof AppFormsIdSettingsRouteImport
-      parentRoute: typeof AppFormsIdRoute
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof appAppSettingsRouteImport
+      parentRoute: typeof appAppRoute
     }
-    '/app/forms/$id/notifications': {
-      id: '/app/forms/$id/notifications'
-      path: '/notifications'
-      fullPath: '/app/forms/$id/notifications'
-      preLoaderRoute: typeof AppFormsIdNotificationsRouteImport
-      parentRoute: typeof AppFormsIdRoute
+    '/(app)/app/api-keys': {
+      id: '/(app)/app/api-keys'
+      path: '/api-keys'
+      fullPath: '/app/api-keys'
+      preLoaderRoute: typeof appAppApiKeysRouteImport
+      parentRoute: typeof appAppRoute
     }
-    '/app/forms/$id/integrations': {
-      id: '/app/forms/$id/integrations'
-      path: '/integrations'
-      fullPath: '/app/forms/$id/integrations'
-      preLoaderRoute: typeof AppFormsIdIntegrationsRouteImport
-      parentRoute: typeof AppFormsIdRoute
-    }
-    '/app/forms/$id/analytics': {
-      id: '/app/forms/$id/analytics'
+    '/(app)/app/analytics': {
+      id: '/(app)/app/analytics'
       path: '/analytics'
-      fullPath: '/app/forms/$id/analytics'
-      preLoaderRoute: typeof AppFormsIdAnalyticsRouteImport
-      parentRoute: typeof AppFormsIdRoute
+      fullPath: '/app/analytics'
+      preLoaderRoute: typeof appAppAnalyticsRouteImport
+      parentRoute: typeof appAppRoute
+    }
+    '/(admin)/admin/submissions': {
+      id: '/(admin)/admin/submissions'
+      path: '/submissions'
+      fullPath: '/admin/submissions'
+      preLoaderRoute: typeof adminAdminSubmissionsRouteImport
+      parentRoute: typeof adminAdminRoute
+    }
+    '/(admin)/admin/settings': {
+      id: '/(admin)/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof adminAdminSettingsRouteImport
+      parentRoute: typeof adminAdminRoute
+    }
+    '/(admin)/admin/forms': {
+      id: '/(admin)/admin/forms'
+      path: '/forms'
+      fullPath: '/admin/forms'
+      preLoaderRoute: typeof adminAdminFormsRouteImport
+      parentRoute: typeof adminAdminRoute
+    }
+    '/(app)/app/forms/': {
+      id: '/(app)/app/forms/'
+      path: '/forms'
+      fullPath: '/app/forms'
+      preLoaderRoute: typeof appAppFormsIndexRouteImport
+      parentRoute: typeof appAppRoute
+    }
+    '/(admin)/admin/users/': {
+      id: '/(admin)/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof adminAdminUsersIndexRouteImport
+      parentRoute: typeof adminAdminRoute
     }
     '/api/integrations/slack/callback': {
       id: '/api/integrations/slack/callback'
@@ -1273,6 +1228,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsClearOldSubmissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/app/forms/$id': {
+      id: '/(app)/app/forms/$id'
+      path: '/forms/$id'
+      fullPath: '/app/forms/$id'
+      preLoaderRoute: typeof appAppFormsIdRouteImport
+      parentRoute: typeof appAppRoute
+    }
+    '/(admin)/admin/users/$userId': {
+      id: '/(admin)/admin/users/$userId'
+      path: '/users/$userId'
+      fullPath: '/admin/users/$userId'
+      preLoaderRoute: typeof adminAdminUsersUserIdRouteImport
+      parentRoute: typeof adminAdminRoute
+    }
     '/api/forms/$formId/submissions/$submissionId': {
       id: '/api/forms/$formId/submissions/$submissionId'
       path: '/$submissionId'
@@ -1287,6 +1256,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFormsFormIdRecipientsRecipientIdRouteImport
       parentRoute: typeof ApiFormsFormIdRecipientsRoute
     }
+    '/(app)/app/forms/$id/submissions': {
+      id: '/(app)/app/forms/$id/submissions'
+      path: '/submissions'
+      fullPath: '/app/forms/$id/submissions'
+      preLoaderRoute: typeof appAppFormsIdSubmissionsRouteImport
+      parentRoute: typeof appAppFormsIdRoute
+    }
+    '/(app)/app/forms/$id/settings': {
+      id: '/(app)/app/forms/$id/settings'
+      path: '/settings'
+      fullPath: '/app/forms/$id/settings'
+      preLoaderRoute: typeof appAppFormsIdSettingsRouteImport
+      parentRoute: typeof appAppFormsIdRoute
+    }
+    '/(app)/app/forms/$id/notifications': {
+      id: '/(app)/app/forms/$id/notifications'
+      path: '/notifications'
+      fullPath: '/app/forms/$id/notifications'
+      preLoaderRoute: typeof appAppFormsIdNotificationsRouteImport
+      parentRoute: typeof appAppFormsIdRoute
+    }
+    '/(app)/app/forms/$id/integrations': {
+      id: '/(app)/app/forms/$id/integrations'
+      path: '/integrations'
+      fullPath: '/app/forms/$id/integrations'
+      preLoaderRoute: typeof appAppFormsIdIntegrationsRouteImport
+      parentRoute: typeof appAppFormsIdRoute
+    }
+    '/(app)/app/forms/$id/analytics': {
+      id: '/(app)/app/forms/$id/analytics'
+      path: '/analytics'
+      fullPath: '/app/forms/$id/analytics'
+      preLoaderRoute: typeof appAppFormsIdAnalyticsRouteImport
+      parentRoute: typeof appAppFormsIdRoute
+    }
     '/api/forms/$formId/recipients/$recipientId/resend-verification': {
       id: '/api/forms/$formId/recipients/$recipientId/resend-verification'
       path: '/resend-verification'
@@ -1296,64 +1300,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AdminRouteChildren {
-  AdminFormsRoute: typeof AdminFormsRoute
-  AdminSettingsRoute: typeof AdminSettingsRoute
-  AdminSubmissionsRoute: typeof AdminSubmissionsRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-  AdminUsersUserIdRoute: typeof AdminUsersUserIdRoute
-  AdminUsersIndexRoute: typeof AdminUsersIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminFormsRoute: AdminFormsRoute,
-  AdminSettingsRoute: AdminSettingsRoute,
-  AdminSubmissionsRoute: AdminSubmissionsRoute,
-  AdminIndexRoute: AdminIndexRoute,
-  AdminUsersUserIdRoute: AdminUsersUserIdRoute,
-  AdminUsersIndexRoute: AdminUsersIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface AppFormsIdRouteChildren {
-  AppFormsIdAnalyticsRoute: typeof AppFormsIdAnalyticsRoute
-  AppFormsIdIntegrationsRoute: typeof AppFormsIdIntegrationsRoute
-  AppFormsIdNotificationsRoute: typeof AppFormsIdNotificationsRoute
-  AppFormsIdSettingsRoute: typeof AppFormsIdSettingsRoute
-  AppFormsIdSubmissionsRoute: typeof AppFormsIdSubmissionsRoute
-}
-
-const AppFormsIdRouteChildren: AppFormsIdRouteChildren = {
-  AppFormsIdAnalyticsRoute: AppFormsIdAnalyticsRoute,
-  AppFormsIdIntegrationsRoute: AppFormsIdIntegrationsRoute,
-  AppFormsIdNotificationsRoute: AppFormsIdNotificationsRoute,
-  AppFormsIdSettingsRoute: AppFormsIdSettingsRoute,
-  AppFormsIdSubmissionsRoute: AppFormsIdSubmissionsRoute,
-}
-
-const AppFormsIdRouteWithChildren = AppFormsIdRoute._addFileChildren(
-  AppFormsIdRouteChildren,
-)
-
-interface AppRouteChildren {
-  AppAnalyticsRoute: typeof AppAnalyticsRoute
-  AppApiKeysRoute: typeof AppApiKeysRoute
-  AppSettingsRoute: typeof AppSettingsRoute
-  AppFormsIdRoute: typeof AppFormsIdRouteWithChildren
-  AppFormsIndexRoute: typeof AppFormsIndexRoute
-}
-
-const AppRouteChildren: AppRouteChildren = {
-  AppAnalyticsRoute: AppAnalyticsRoute,
-  AppApiKeysRoute: AppApiKeysRoute,
-  AppSettingsRoute: AppSettingsRoute,
-  AppFormsIdRoute: AppFormsIdRouteWithChildren,
-  AppFormsIndexRoute: AppFormsIndexRoute,
-}
-
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 interface DocsRouteChildren {
   DocsApiRoute: typeof DocsApiRoute
@@ -1372,6 +1318,67 @@ const DocsRouteChildren: DocsRouteChildren = {
 }
 
 const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
+
+interface adminAdminRouteChildren {
+  adminAdminFormsRoute: typeof adminAdminFormsRoute
+  adminAdminSettingsRoute: typeof adminAdminSettingsRoute
+  adminAdminSubmissionsRoute: typeof adminAdminSubmissionsRoute
+  adminAdminIndexRoute: typeof adminAdminIndexRoute
+  adminAdminUsersUserIdRoute: typeof adminAdminUsersUserIdRoute
+  adminAdminUsersIndexRoute: typeof adminAdminUsersIndexRoute
+}
+
+const adminAdminRouteChildren: adminAdminRouteChildren = {
+  adminAdminFormsRoute: adminAdminFormsRoute,
+  adminAdminSettingsRoute: adminAdminSettingsRoute,
+  adminAdminSubmissionsRoute: adminAdminSubmissionsRoute,
+  adminAdminIndexRoute: adminAdminIndexRoute,
+  adminAdminUsersUserIdRoute: adminAdminUsersUserIdRoute,
+  adminAdminUsersIndexRoute: adminAdminUsersIndexRoute,
+}
+
+const adminAdminRouteWithChildren = adminAdminRoute._addFileChildren(
+  adminAdminRouteChildren,
+)
+
+interface appAppFormsIdRouteChildren {
+  appAppFormsIdAnalyticsRoute: typeof appAppFormsIdAnalyticsRoute
+  appAppFormsIdIntegrationsRoute: typeof appAppFormsIdIntegrationsRoute
+  appAppFormsIdNotificationsRoute: typeof appAppFormsIdNotificationsRoute
+  appAppFormsIdSettingsRoute: typeof appAppFormsIdSettingsRoute
+  appAppFormsIdSubmissionsRoute: typeof appAppFormsIdSubmissionsRoute
+}
+
+const appAppFormsIdRouteChildren: appAppFormsIdRouteChildren = {
+  appAppFormsIdAnalyticsRoute: appAppFormsIdAnalyticsRoute,
+  appAppFormsIdIntegrationsRoute: appAppFormsIdIntegrationsRoute,
+  appAppFormsIdNotificationsRoute: appAppFormsIdNotificationsRoute,
+  appAppFormsIdSettingsRoute: appAppFormsIdSettingsRoute,
+  appAppFormsIdSubmissionsRoute: appAppFormsIdSubmissionsRoute,
+}
+
+const appAppFormsIdRouteWithChildren = appAppFormsIdRoute._addFileChildren(
+  appAppFormsIdRouteChildren,
+)
+
+interface appAppRouteChildren {
+  appAppAnalyticsRoute: typeof appAppAnalyticsRoute
+  appAppApiKeysRoute: typeof appAppApiKeysRoute
+  appAppSettingsRoute: typeof appAppSettingsRoute
+  appAppFormsIdRoute: typeof appAppFormsIdRouteWithChildren
+  appAppFormsIndexRoute: typeof appAppFormsIndexRoute
+}
+
+const appAppRouteChildren: appAppRouteChildren = {
+  appAppAnalyticsRoute: appAppAnalyticsRoute,
+  appAppApiKeysRoute: appAppApiKeysRoute,
+  appAppSettingsRoute: appAppSettingsRoute,
+  appAppFormsIdRoute: appAppFormsIdRouteWithChildren,
+  appAppFormsIndexRoute: appAppFormsIndexRoute,
+}
+
+const appAppRouteWithChildren =
+  appAppRoute._addFileChildren(appAppRouteChildren)
 
 interface ApiFormsFormIdRecipientsRecipientIdRouteChildren {
   ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute: typeof ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute
@@ -1453,23 +1460,23 @@ const ApiFormsRouteWithChildren = ApiFormsRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
-  AppRoute: AppRouteWithChildren,
   DocsRoute: DocsRouteWithChildren,
-  LoginRoute: LoginRoute,
-  PricingRoute: PricingRoute,
-  PrivacyRoute: PrivacyRoute,
-  SignupRoute: SignupRoute,
-  VerifyEmailRoute: VerifyEmailRoute,
-  VerifyRecipientRoute: VerifyRecipientRoute,
-  WelcomeToProRoute: WelcomeToProRoute,
+  adminAdminRoute: adminAdminRouteWithChildren,
+  appAppRoute: appAppRouteWithChildren,
+  marketingLoginRoute: marketingLoginRoute,
+  marketingPricingRoute: marketingPricingRoute,
+  marketingPrivacyRoute: marketingPrivacyRoute,
+  marketingSignupRoute: marketingSignupRoute,
+  marketingVerifyEmailRoute: marketingVerifyEmailRoute,
+  marketingVerifyRecipientRoute: marketingVerifyRecipientRoute,
+  marketingWelcomeToProRoute: marketingWelcomeToProRoute,
   ApiAnalyticsRoute: ApiAnalyticsRoute,
   ApiApiKeysRoute: ApiApiKeysRoute,
   ApiFormsRoute: ApiFormsRouteWithChildren,
   ApiSubscriptionRoute: ApiSubscriptionRoute,
   ApiVerifyRecipientRoute: ApiVerifyRecipientRoute,
   IngestSplatRoute: IngestSplatRoute,
+  marketingIndexRoute: marketingIndexRoute,
   ApiAdminFormsRoute: ApiAdminFormsRoute,
   ApiAdminStatsRoute: ApiAdminStatsRoute,
   ApiAdminSubmissionsRoute: ApiAdminSubmissionsRoute,

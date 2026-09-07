@@ -8,14 +8,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { RecipientItem } from "./recipient-item";
 
 import { Button } from "@/components/button";
-
-interface Recipient {
-  id: string;
-  email: string;
-  enabled: boolean;
-  verifiedAt: Date | null;
-  verificationTokenExpiresAt: Date | null;
-}
+// The third copy of this type; derived from the query now, like the other two.
+import type { Recipient } from "@/lib/app-client";
 
 interface RecipientActionsProps {
   recipient: Recipient;

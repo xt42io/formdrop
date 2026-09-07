@@ -25,6 +25,8 @@ interface ConfirmModalProps {
   confirmDisabled?: boolean;
   confirmIcon?: React.ReactNode;
   children?: React.ReactNode;
+  /** Forwarded to Modal so a caller keeps its original overlay. */
+  scrim?: string;
 }
 
 export function ConfirmModal({
@@ -40,9 +42,10 @@ export function ConfirmModal({
   confirmDisabled = false,
   confirmIcon,
   children,
+  scrim,
 }: ConfirmModalProps) {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} label={title}>
+    <Modal isOpen={isOpen} onClose={onClose} label={title} scrim={scrim}>
       <div className="p-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="h-10 w-10 shrink-0 rounded-full bg-red-100 flex items-center justify-center text-red-600">

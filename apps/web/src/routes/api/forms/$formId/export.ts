@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { submissions, forms } from "@formdrop/db/schema";
-import { eq, and, desc, isNull } from "drizzle-orm";
+import { findOwnedForm, listSubmissionsForForm } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 import { isUserPro } from "@/lib/subscription-check";
 
@@ -24,17 +22,7 @@ export const Route = createFileRoute("/api/forms/$formId/export")({
         const includeMetadata =
           url.searchParams.get("includeMetadata") === "true";
 
-        const [form] = await db
-          .select()
-          .from(forms)
-          .where(
-            and(
-              eq(forms.id, formId),
-              eq(forms.userId, userId),
-              isNull(forms.deletedAt),
-            ),
-          )
-          .limit(1);
+        const form = await findOwnedForm(formId, userId);
 
         if (!form) {
           return new Response("Form not found", { status: 404 });
@@ -70,18 +58,10 @@ export const Route = createFileRoute("/api/forms/$formId/export")({
               const currentLimit = Math.min(limit, exportLimit - totalExported);
               if (currentLimit <= 0) break;
 
-              const chunk = await db
-                .select()
-                .from(submissions)
-                .where(
-                  and(
-                    eq(submissions.formId, formId),
-                    isNull(submissions.deletedAt),
-                  ),
-                )
-                .orderBy(desc(submissions.createdAt))
-                .limit(currentLimit)
-                .offset(offset);
+              const chunk = await listSubmissionsForForm(formId, {
+                limit: currentLimit,
+                offset,
+              });
 
               if (chunk.length === 0) {
                 break;

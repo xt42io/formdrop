@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { submissions, forms } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import {
+  findOwnedForm,
+  findSubmissionInForm,
+  softDeleteSubmission,
+} from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute(
@@ -25,36 +27,16 @@ export const Route = createFileRoute(
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
           const { formId, submissionId } = params;
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
-          const [submission] = await db
-            .select()
-            .from(submissions)
-            .where(
-              and(
-                eq(submissions.id, submissionId),
-                eq(submissions.formId, formId),
-              ),
-            )
-            .limit(1);
+          const submission = await findSubmissionInForm(formId, submissionId);
 
           if (!submission) {
             return Response.json(
@@ -91,36 +73,17 @@ export const Route = createFileRoute(
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
           const { formId, submissionId } = params;
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
           // Soft delete submission
-          await db
-            .update(submissions)
-            .set({ deletedAt: new Date() })
-            .where(
-              and(
-                eq(submissions.id, submissionId),
-                eq(submissions.formId, formId),
-              ),
-            );
+          await softDeleteSubmission(formId, submissionId);
 
           return Response.json({ success: true });
         } catch (error: any) {

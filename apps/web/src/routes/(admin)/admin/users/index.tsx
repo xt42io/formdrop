@@ -12,7 +12,7 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import { Button } from "@/components/button";
+import { Button } from "@formdrop/ui";
 import {
   UserBlock01Icon,
   Login03Icon,

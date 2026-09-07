@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq } from "drizzle-orm";
+import { findFormById, updateFormById } from "@formdrop/core/data";
 
 export const Route = createFileRoute(
   "/api/integrations/google-sheets/callback",
@@ -72,11 +70,7 @@ export const Route = createFileRoute(
           }
 
           // Get form info to create spreadsheet name
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(eq(forms.id, formId))
-            .limit(1);
+          const form = await findFormById(formId);
 
           if (!form) {
             return Response.redirect(
@@ -118,17 +112,14 @@ export const Route = createFileRoute(
           const spreadsheetName = spreadsheetData.properties.title;
 
           // Update form with Google Sheets tokens and spreadsheet info
-          await db
-            .update(forms)
-            .set({
-              googleSheetsAccessToken: accessToken,
-              googleSheetsRefreshToken: refreshToken,
-              googleSheetsTokenExpiry: tokenExpiry,
-              googleSheetsSpreadsheetId: spreadsheetId,
-              googleSheetsSpreadsheetName: spreadsheetName,
-              googleSheetsEnabled: true, // Enable immediately
-            })
-            .where(eq(forms.id, formId));
+          await updateFormById(formId, {
+            googleSheetsAccessToken: accessToken,
+            googleSheetsRefreshToken: refreshToken,
+            googleSheetsTokenExpiry: tokenExpiry,
+            googleSheetsSpreadsheetId: spreadsheetId,
+            googleSheetsSpreadsheetName: spreadsheetName,
+            googleSheetsEnabled: true, // Enable immediately
+          });
 
           // Redirect back to integrations page with success
           return Response.redirect(

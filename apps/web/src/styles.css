@@ -5,6 +5,11 @@
    the marketing pages and the docs site all read from one set. */
 @import "@formdrop/ui/tokens.css";
 
+/* Tailwind's automatic source detection starts at this app and never leaves
+   it, so the classes written inside @formdrop/ui components would generate no
+   CSS at all. Point it at the package's source as well. */
+@source "../../../packages/ui/src";
+
 body {
   @apply m-0;
   font-family: "Inter", sans-serif;

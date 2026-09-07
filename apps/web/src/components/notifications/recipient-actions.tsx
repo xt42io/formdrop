@@ -7,7 +7,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { RecipientItem } from "./recipient-item";
 
-import { Button } from "@/components/button";
+import { Button } from "@formdrop/ui";
 // The third copy of this type; derived from the query now, like the other two.
 import type { Recipient } from "@/lib/app-client";
 

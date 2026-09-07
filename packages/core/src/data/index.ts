@@ -11,6 +11,7 @@ export {
   createForm,
   disconnectDiscord,
   disconnectSlack,
+  findFormById,
   findFormDetailForUser,
   findLiveFormByName,
   findOwnedForm,
@@ -23,6 +24,21 @@ export {
   findSubscription,
   hasPasswordCredential,
 } from "./account.ts";
+export { createApiKey, deleteApiKey, listApiKeysForUser } from "./api-keys.ts";
+export {
+  countAllForms,
+  countAllSubmissions,
+  countAllUsers,
+  deleteSubmissionsOlderThan,
+  findUserDetail,
+  listAllFormsWithOwners,
+  listFormsForUserWithCounts,
+  listRecentSubmissionsAcrossAllForms,
+  listRecentSubmissionsForUser,
+  submissionsCreatedSince,
+  topFormsAcrossAllUsers,
+  usersCreatedSince,
+} from "./admin.ts";
 export {
   createRecipient,
   deleteRecipient,

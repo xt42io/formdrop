@@ -25,7 +25,7 @@ const NODES = [
   {
     name: "Google Sheets",
     icon: TableIcon,
-    tint: "bg-[#cdf0dd] text-[#1f6b45]",
+    tint: "bg-tint-green text-tint-green-ink",
     x: 12,
     path: "M 50 26 C 50 52 12 54 12 72",
     delay: "0s",
@@ -33,7 +33,7 @@ const NODES = [
   {
     name: "Slack",
     icon: SlackIcon,
-    tint: "bg-[#e5d9ff] text-[#5b3ba8]",
+    tint: "bg-tint-violet text-tint-violet-ink",
     x: 37.3,
     path: "M 50 26 C 50 52 37.3 54 37.3 72",
     delay: "0.75s",
@@ -41,7 +41,7 @@ const NODES = [
   {
     name: "Discord",
     icon: DiscordIcon,
-    tint: "bg-[#cfe2ff] text-[#2b4c9b]",
+    tint: "bg-tint-blue text-tint-blue-ink",
     x: 62.7,
     path: "M 50 26 C 50 52 62.7 54 62.7 72",
     delay: "1.5s",

@@ -87,6 +87,25 @@ export async function findOwnedForm(formId: string, userId: string) {
 }
 
 /**
+ * A form by id alone — NOT scoped to an owner, and it does not exclude
+ * soft-deleted rows.
+ *
+ * Only for the OAuth callbacks, where there is no session to check against:
+ * the form id arrives in the provider's state parameter. Any caller that has a
+ * session should use findOwnedForm instead, which is why this is named
+ * differently rather than being a default with optional scoping.
+ */
+export async function findFormById(formId: string) {
+  const [form] = await db
+    .select()
+    .from(forms)
+    .where(eq(forms.id, formId))
+    .limit(1);
+
+  return form ?? null;
+}
+
+/**
  * Used to reject a duplicate name before creating. Soft-deleted forms are
  * excluded, so a name is reusable once its form is deleted.
  */

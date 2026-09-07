@@ -4,9 +4,8 @@ import {
   ReloadIcon,
   Delete02Icon,
 } from "@hugeicons/core-free-icons";
-import { Tooltip } from "@/components/tooltip";
 
-import { Button } from "@/components/button";
+import { Button, Toggle, Tooltip } from "@formdrop/ui";
 
 /**
  * A view model rather than a database row, so it is declared rather than
@@ -127,19 +126,15 @@ export function RecipientItem({
         </div>
       </div>
       <div className="flex items-center gap-3">
-        <button
-          onClick={onToggle}
+        {/* An unverified recipient reads as off even when the row says
+            enabled, so `checked` is narrowed here rather than in Toggle. */}
+        <Toggle
+          size="sm"
+          checked={enabled && !isToggleDisabled}
+          onChange={onToggle}
           disabled={isToggleDisabled}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${
-            enabled && !isToggleDisabled ? "bg-accent" : "bg-gray-200"
-          } ${isToggleDisabled ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          <span
-            className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-              enabled && !isToggleDisabled ? "translate-x-5" : "translate-x-1"
-            }`}
-          />
-        </button>
+          label={`Email notifications for ${email}`}
+        />
         <Button
           onClick={onDelete}
           variant="ghost"

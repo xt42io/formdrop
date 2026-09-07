@@ -4,9 +4,25 @@
   "private": true,
   "type": "module",
   "exports": {
+    ".": "./src/index.ts",
     "./tokens.css": "./src/tokens.css"
   },
   "scripts": {
-    "typecheck": "echo \"no TypeScript in @formdrop/ui yet\""
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "peerDependencies": {
+    "motion": "^12.23.24",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@formdrop/tsconfig": "*",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "motion": "^12.23.24",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.7.2"
   }
 }

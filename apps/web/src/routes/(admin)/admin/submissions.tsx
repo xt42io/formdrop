@@ -1,5 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+// Derived from the query the handler calls. The local copy this replaces
+// typed payload as `any` and createdAt as a Date.
+import type { AdminSubmission } from "@/lib/app-client";
 import axios from "axios";
 import {
   createColumnHelper,
@@ -30,15 +33,7 @@ export const Route = createFileRoute("/(admin)/admin/submissions")({
   },
 });
 
-type Submission = {
-  id: string;
-  formId: string;
-  formName: string;
-  createdAt: Date;
-  payload: any;
-};
-
-const columnHelper = createColumnHelper<Submission>();
+const columnHelper = createColumnHelper<AdminSubmission>();
 
 const createColumns = () => [
   columnHelper.accessor("formName", {
@@ -96,7 +91,7 @@ function AdminSubmissions() {
     queryKey: ["admin", "submissions"],
     queryFn: async () => {
       const res = await axios.get("/api/admin/submissions");
-      return res.data.submissions as Submission[];
+      return res.data.submissions as AdminSubmission[];
     },
   });
 

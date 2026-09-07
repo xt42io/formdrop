@@ -16,12 +16,12 @@ const FRAMEWORKS = [
  */
 export function FrontendFrameworks() {
   return (
-    <section className="overflow-hidden px-6 py-20">
+    <section className="overflow-hidden px-6 py-24">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="text-[clamp(1.55rem,2.6vw,1.95rem)] leading-[1.25] font-semibold tracking-[-0.025em] text-ink-950">
+        <h2 className="section-heading text-balance text-ink-950">
           Bring Your Own Frontend
         </h2>
-        <p className="mt-4 text-[15px] leading-relaxed text-ink-600">
+        <p className="section-lede mt-4 text-ink-600">
           FormDrop is framework agnostic. Whether you're building a static site,
           a single page app, or a server-rendered application, we've got you
           covered.

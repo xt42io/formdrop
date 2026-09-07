@@ -1,18 +1,19 @@
-import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
 /**
  * The dialog shell. Thirteen copies of this markup were spread across nine
  * files, each re-declaring the same overlay, the same panel and the same
- * entrance -- and each with its own scrim opacity, its own corner radius and
- * its own spring, because nothing kept them in step.
+ * entrance.
  *
- * One shell means one answer to each of those, so the scrim is a single
- * `bg-black/40` everywhere. Sites that used /20 get slightly darker and sites
- * that used /50 slightly lighter; both move to the middle.
+ * W3 is a refactor, not a restyle -- the redesign of these screens is W4 --
+ * so this deliberately changes nothing a user can see. The copies had drifted
+ * to three different scrim opacities, so rather than unify them here and
+ * restyle twelve dialogs as a side effect of moving code, `scrim` carries each
+ * caller's original value. W4 is where they should converge.
  *
- * Centralising also buys what none of the copies had: Escape closes the
- * dialog, and the panel is announced as one.
+ * The panel is announced with role="dialog", which none of the copies did.
+ * That is invisible, changes no behaviour, and is what lets the smoke path the
+ * PRD asks for address the dialog at all.
  *
  * Padding stays with the caller. The shapes of the bodies vary too much --
  * confirmations, forms, a pricing table -- for a shared padding to fit them.
@@ -24,10 +25,15 @@ const widths = {
   "3xl": "max-w-3xl",
 };
 
+/** What every copy but one used. */
+const DEFAULT_SCRIM = "bg-black/20 backdrop-blur-sm";
+
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   size?: keyof typeof widths;
+  /** Overlay classes. Preserves each call site's original scrim; see above. */
+  scrim?: string;
   /** Names the dialog for assistive tech when the body has no heading. */
   label?: string;
   className?: string;
@@ -38,21 +44,11 @@ export function Modal({
   isOpen,
   onClose,
   size = "md",
+  scrim = DEFAULT_SCRIM,
   label,
   className = "",
   children,
 }: ModalProps) {
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [isOpen, onClose]);
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -62,7 +58,7 @@ export function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            className={`absolute inset-0 ${scrim}`}
           />
           <motion.div
             role="dialog"

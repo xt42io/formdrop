@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import { configDefaults } from "vitest/config";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
@@ -22,6 +23,12 @@ const config = defineConfig({
   ],
   server: {
     allowedHosts: true,
+  },
+  test: {
+    // Playwright specs live in e2e/ and match vitest's default *.spec.ts
+    // glob, so without this `vitest run` collects them, imports the
+    // Playwright runner it cannot drive, and fails the whole test task.
+    exclude: [...configDefaults.exclude, "e2e/**"],
   },
 });
 

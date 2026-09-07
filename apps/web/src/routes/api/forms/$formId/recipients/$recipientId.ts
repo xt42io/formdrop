@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms, emailNotificationRecipients } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import {
+  deleteRecipient,
+  findOwnedForm,
+  setRecipientEnabled,
+} from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute(
@@ -25,34 +27,16 @@ export const Route = createFileRoute(
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
           const { formId, recipientId } = params;
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
-          await db
-            .delete(emailNotificationRecipients)
-            .where(
-              and(
-                eq(emailNotificationRecipients.id, recipientId),
-                eq(emailNotificationRecipients.formId, formId),
-              ),
-            );
+          await deleteRecipient(formId, recipientId);
 
           return Response.json({ success: true });
         } catch (error: any) {
@@ -82,37 +66,21 @@ export const Route = createFileRoute(
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
           const { formId, recipientId } = params;
           const { enabled } = await request.json();
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
-          const [recipient] = await db
-            .update(emailNotificationRecipients)
-            .set({ enabled })
-            .where(
-              and(
-                eq(emailNotificationRecipients.id, recipientId),
-                eq(emailNotificationRecipients.formId, formId),
-              ),
-            )
-            .returning();
+          const recipient = await setRecipientEnabled(
+            formId,
+            recipientId,
+            enabled,
+          );
 
           return Response.json({ recipient });
         } catch (error: any) {

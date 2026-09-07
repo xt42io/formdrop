@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { appClient } from "@/lib/app-client";
+import { appClient, type ApiKey } from "@/lib/app-client";
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -21,13 +21,8 @@ export const Route = createFileRoute("/(app)/app/api-keys")({
   component: ApiKeysPage,
 });
 
-interface ApiKey {
-  id: string;
-  key: string;
-  name: string | null;
-  createdAt: string;
-  lastUsedAt: string | null;
-}
+// Derived in app-client from the query that produces it. This local copy was
+// the only one of the four duplicates that had its timestamps right.
 
 function ApiKeysPage() {
   const queryClient = useQueryClient();

@@ -39,7 +39,13 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" label="Upgrade to Pro">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="lg"
+      label="Upgrade to Pro"
+      scrim="bg-black/40 backdrop-blur-sm"
+    >
       <div className="absolute top-4 right-4 z-10">
         <button
           onClick={onClose}

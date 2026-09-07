@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms, emailNotificationRecipients } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import {
+  createRecipient,
+  findOwnedForm,
+  listRecipientRowsForForm,
+  listRecipientsForForm,
+} from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 import { RecipientVerificationEmail } from "@/emails/RecipientVerificationEmail";
 import crypto from "crypto";
@@ -27,40 +30,16 @@ export const Route = createFileRoute("/api/forms/$formId/recipients")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
           const { formId } = params;
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
-          const recipients = await db
-            .select({
-              id: emailNotificationRecipients.id,
-              formId: emailNotificationRecipients.formId,
-              email: emailNotificationRecipients.email,
-              enabled: emailNotificationRecipients.enabled,
-              verifiedAt: emailNotificationRecipients.verifiedAt,
-              verificationTokenExpiresAt:
-                emailNotificationRecipients.verificationTokenExpiresAt,
-              createdAt: emailNotificationRecipients.createdAt,
-              updatedAt: emailNotificationRecipients.updatedAt,
-            })
-            .from(emailNotificationRecipients)
-            .where(eq(emailNotificationRecipients.formId, formId));
+          const recipients = await listRecipientsForForm(formId);
 
           return Response.json({ recipients });
         } catch (error: any) {
@@ -102,17 +81,7 @@ export const Route = createFileRoute("/api/forms/$formId/recipients")({
           }
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, userId);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
@@ -122,10 +91,7 @@ export const Route = createFileRoute("/api/forms/$formId/recipients")({
           const isPro = await isUserPro(userId);
 
           // Check recipient limit
-          const existingRecipients = await db
-            .select()
-            .from(emailNotificationRecipients)
-            .where(eq(emailNotificationRecipients.formId, formId));
+          const existingRecipients = await listRecipientRowsForForm(formId);
 
           const limit = isPro ? 10 : 2;
           if (existingRecipients.length >= limit) {
@@ -156,15 +122,12 @@ export const Route = createFileRoute("/api/forms/$formId/recipients")({
           ); // 24 hours
 
           // Create recipient
-          const [recipient] = await db
-            .insert(emailNotificationRecipients)
-            .values({
-              formId,
-              email,
-              verificationToken,
-              verificationTokenExpiresAt,
-            })
-            .returning();
+          const recipient = await createRecipient({
+            formId,
+            email,
+            verificationToken,
+            verificationTokenExpiresAt,
+          });
 
           // Send verification email
           const verificationLink = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;

@@ -5,7 +5,7 @@ import {
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
-import { appClient } from "@/lib/app-client";
+import { appClient, type Submission } from "@/lib/app-client";
 import moment from "moment";
 import {
   ArrowLeft01Icon,
@@ -42,14 +42,9 @@ export const Route = createFileRoute("/(app)/app/forms/$id/submissions")({
 type ViewMode = "card" | "table";
 type ExportFormat = "csv" | "json" | "xlsx";
 
-interface Submission {
-  id: string;
-  formId: string;
-  payload: Record<string, any>;
-  ip: string | null;
-  userAgent: string | null;
-  createdAt: Date;
-}
+// Submission is derived from the query that produces it, in app-client. The
+// local copy this replaces declared createdAt as a Date, which it never was
+// once the handler had put it through Response.json().
 
 function RouteComponent() {
   const { id } = Route.useParams();

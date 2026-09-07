@@ -226,7 +226,7 @@ function AnalyticsVisual() {
         cy={lastY}
         r="4.5"
         fill="var(--color-accent-500)"
-        stroke="#fff"
+        stroke="white"
         strokeWidth="2.5"
       />
     </svg>
@@ -278,9 +278,9 @@ function IntegrationsVisual() {
 
       <div className="flex gap-2">
         {[
-          { image: "/google-sheet.svg", tint: "bg-[#e2f4ea]" },
-          { image: "/airtable.svg", tint: "bg-[#ffeac0]" },
-          { icon: SlackIcon, tint: "bg-[#f3ebff] text-[#5b3ba8]" },
+          { image: "/google-sheet.svg", tint: "bg-tint-mint" },
+          { image: "/airtable.svg", tint: "bg-tint-amber" },
+          { icon: SlackIcon, tint: "bg-tint-lavender text-tint-violet-ink" },
           { icon: TableIcon, tint: "bg-ink-100 text-ink-700" },
         ].map((node, i) => (
           <Float key={i} className="p-2.5">

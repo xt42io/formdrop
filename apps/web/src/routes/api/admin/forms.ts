@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms, user } from "@formdrop/db/schema";
-import { sql, eq } from "drizzle-orm";
+import { listAllFormsWithOwners } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute("/api/admin/forms")({
@@ -21,23 +19,7 @@ export const Route = createFileRoute("/api/admin/forms")({
           }
 
           // Get all forms with submission counts
-          const allForms = await db
-            .select({
-              id: forms.id,
-              name: forms.name,
-              userId: forms.userId,
-              userName: user.name,
-              createdAt: forms.createdAt,
-              submissionCount: sql<number>`(
-                SELECT COUNT(*)::int 
-                FROM submissions 
-                WHERE submissions.form_id = forms.id
-                AND submissions.deleted_at IS NULL
-              )`.as("submissionCount"),
-            })
-            .from(forms)
-            .innerJoin(user, eq(forms.userId, user.id))
-            .orderBy(sql`${forms.createdAt} DESC`);
+          const allForms = await listAllFormsWithOwners();
 
           return new Response(JSON.stringify({ forms: allForms }), {
             status: 200,

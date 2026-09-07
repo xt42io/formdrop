@@ -22,11 +22,11 @@ import {
  * backend for developers" to anything consuming text rather than pixels.
  */
 const WORDS = [
-  { label: "contact", icon: Mail01Icon, fill: "bg-[#d8d0fb]" },
-  { label: "waitlist", icon: UserGroupIcon, fill: "bg-[#cfe2ff]" },
-  { label: "feedback", icon: Message01Icon, fill: "bg-[#cdf0dd]" },
-  { label: "survey", icon: TableIcon, fill: "bg-[#ffeac0]" },
-  { label: "signup", icon: Login03Icon, fill: "bg-[#ffd6e3]" },
+  { label: "contact", icon: Mail01Icon, fill: "bg-tint-lilac" },
+  { label: "waitlist", icon: UserGroupIcon, fill: "bg-tint-blue" },
+  { label: "feedback", icon: Message01Icon, fill: "bg-tint-green" },
+  { label: "survey", icon: TableIcon, fill: "bg-tint-amber" },
+  { label: "signup", icon: Login03Icon, fill: "bg-tint-pink" },
 ];
 
 const HOLD_MS = 2600;

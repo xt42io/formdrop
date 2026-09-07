@@ -47,7 +47,7 @@ type Tab = keyof typeof SNIPPETS;
  * carrying the only strong colour. Keys and tag names stay in ink so the shape
  * of the snippet comes from weight rather than from a rainbow of tokens.
  */
-const STRING = "text-[#ffa08c]";
+const STRING = "text-code-string";
 const NAME = "text-ink-100";
 const KEYWORD = "text-accent-300";
 const METHOD = "text-ink-400";

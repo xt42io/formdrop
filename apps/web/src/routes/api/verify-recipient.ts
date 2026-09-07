@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { emailNotificationRecipients } from "@formdrop/db/schema";
-import { eq, and, gt } from "drizzle-orm";
+import {
+  findRecipientByValidToken,
+  markRecipientVerified,
+} from "@formdrop/core/data";
 
 export const Route = createFileRoute("/api/verify-recipient")({
   server: {
@@ -19,19 +20,7 @@ export const Route = createFileRoute("/api/verify-recipient")({
           }
 
           // Find recipient with this token
-          const [recipient] = await db
-            .select()
-            .from(emailNotificationRecipients)
-            .where(
-              and(
-                eq(emailNotificationRecipients.verificationToken, token),
-                gt(
-                  emailNotificationRecipients.verificationTokenExpiresAt,
-                  new Date(),
-                ),
-              ),
-            )
-            .limit(1);
+          const recipient = await findRecipientByValidToken(token);
 
           if (!recipient) {
             return Response.json(
@@ -41,14 +30,7 @@ export const Route = createFileRoute("/api/verify-recipient")({
           }
 
           // Mark as verified
-          await db
-            .update(emailNotificationRecipients)
-            .set({
-              verifiedAt: new Date(),
-              verificationToken: null,
-              verificationTokenExpiresAt: null,
-            })
-            .where(eq(emailNotificationRecipients.id, recipient.id));
+          await markRecipientVerified(recipient.id);
 
           return Response.json({
             success: true,

@@ -1,0 +1,4 @@
+{
+  "extends": "@formdrop/tsconfig/react.json",
+  "include": ["src"]
+}

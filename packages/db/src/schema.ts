@@ -193,13 +193,29 @@ export const apiKeys = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    // Plaintext, and deliberately still here. W2 replaces it with the hash
+    // below, but the risk register's mitigation is a hash-on-next-use
+    // dual-read window: an existing key keeps working until it is presented
+    // once and hashed. Dropping this column is a later migration, after the
+    // forced rotation that W2 pairs with an in-app and email notice.
     key: text("key").notNull().unique(),
+
+    // SHA-256 of the key. Nullable because every row that exists today has no
+    // hash yet -- it is filled in the first time that key authenticates.
+    keyHash: text("key_hash").unique(),
+
+    // The leading `fd_live_…` characters, kept so the dashboard can identify a
+    // key in a list. Once the plaintext is gone this is the only human-
+    // readable handle a key has.
+    keyPrefix: text("key_prefix"),
+
     name: text("name"),
     lastUsedAt: timestamp("last_used_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => [
     index("api_keys_key_idx").on(table.key),
+    index("api_keys_key_hash_idx").on(table.keyHash),
     index("api_keys_user_id_idx").on(table.userId),
   ],
 );
@@ -303,5 +319,83 @@ export const subscriptions = pgTable("subscriptions", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
+
+/**
+ * Where a submission's deliveries are queued and their outcomes recorded.
+ *
+ * D8: a Postgres job table, not queue infrastructure. `POST /f/:slug` writes
+ * the submission, the usage counter and one row per channel in a single
+ * transaction, then returns -- so a delivery cannot be lost by a process
+ * dying between storing the submission and fanning it out, which is what
+ * happens today.
+ *
+ * A worker drains it with retry and exponential backoff. Rows that exhaust
+ * their attempts are left as `failed` rather than deleted: W2's acceptance is
+ * that a provider outage delays delivery but never loses a submission, and a
+ * row that disappears on its last retry is indistinguishable from one that
+ * was never queued.
+ */
+export const outboxChannelEnum = pgEnum("outbox_channel", [
+  "email",
+  "slack",
+  "discord",
+  "google_sheets",
+  "webhook",
+]);
+
+export const outboxStatusEnum = pgEnum("outbox_status", [
+  "pending",
+  "delivered",
+  "failed",
+]);
+
+export const notificationOutbox = pgTable(
+  "notification_outbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+
+    submissionId: uuid("submission_id")
+      .notNull()
+      .references(() => submissions.id, { onDelete: "cascade" }),
+
+    formId: uuid("form_id")
+      .notNull()
+      .references(() => forms.id, { onDelete: "cascade" }),
+
+    channel: outboxChannelEnum("channel").notNull(),
+
+    /** The email address, webhook URL or spreadsheet id this row delivers to. */
+    target: text("target").notNull(),
+
+    status: outboxStatusEnum("status").default("pending").notNull(),
+
+    attempts: integer("attempts").default(0).notNull(),
+
+    /** The last failure, kept so a stuck row can be diagnosed without logs. */
+    lastError: text("last_error"),
+
+    /**
+     * When the worker may next pick this row up. Backoff is expressed by
+     * pushing this forward rather than by sleeping, so a restart does not
+     * reset a row's schedule.
+     */
+    nextAttemptAt: timestamp("next_attempt_at").defaultNow().notNull(),
+
+    deliveredAt: timestamp("delivered_at"),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    // The worker's only query: due, pending, oldest first.
+    index("notification_outbox_due_idx").on(table.status, table.nextAttemptAt),
+
+    index("notification_outbox_submission_idx").on(table.submissionId),
+    index("notification_outbox_form_idx").on(table.formId),
+  ],
+);
 
 export { account, session, user, verification };

@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms, usage } from "@formdrop/db/schema";
-import { eq, and, sql, gte, isNull, desc } from "drizzle-orm";
+import {
+  countFormsForUser,
+  dailyUsageForUser,
+  sumUsageForUser,
+  topFormsForUser,
+} from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 import moment from "moment";
 
@@ -20,56 +23,20 @@ export const Route = createFileRoute("/api/analytics")({
 
           const userId = session.user.id;
 
-          // Get total forms
-          const [formsResult] = await db
-            .select({ count: sql<number>`count(*)` })
-            .from(forms)
-            .where(and(eq(forms.userId, userId), isNull(forms.deletedAt)));
-
-          // Get total submissions across all user forms
-          const [submissionsResult] = await db
-            .select({ count: sql<number>`sum(${usage.count})` })
-            .from(usage)
-            .innerJoin(forms, eq(usage.formId, forms.id))
-            .where(and(eq(forms.userId, userId), isNull(forms.deletedAt)));
-
-          // Get submissions for this month
           const startOfMonthStr = moment()
             .startOf("month")
             .format("YYYY-MM-DD");
-          const [thisMonthResult] = await db
-            .select({ count: sql<number>`sum(${usage.count})` })
-            .from(usage)
-            .innerJoin(forms, eq(usage.formId, forms.id))
-            .where(
-              and(
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-                gte(usage.period, startOfMonthStr),
-              ),
-            );
-
-          // Get submissions for the last 30 days for chart
           const thirtyDaysAgoStr = moment()
             .subtract(29, "days")
             .format("YYYY-MM-DD");
 
-          const dailyStats = await db
-            .select({
-              date: usage.period,
-              count: sql<number>`sum(${usage.count})`,
-            })
-            .from(usage)
-            .innerJoin(forms, eq(usage.formId, forms.id))
-            .where(
-              and(
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-                gte(usage.period, thirtyDaysAgoStr),
-              ),
-            )
-            .groupBy(usage.period)
-            .orderBy(usage.period);
+          const totalForms = await countFormsForUser(userId);
+          const totalSubmissions = await sumUsageForUser(userId);
+          const submissionsThisMonth = await sumUsageForUser(userId, {
+            from: startOfMonthStr,
+          });
+          const dailyStats = await dailyUsageForUser(userId, thirtyDaysAgoStr);
+          const topForms = await topFormsForUser(userId, 5);
 
           // Fill in missing days
           const chartData = Array.from({ length: 30 }, (_, i) => {
@@ -82,31 +49,14 @@ export const Route = createFileRoute("/api/analytics")({
             };
           });
 
-          // Get top performing forms
-          const topForms = await db
-            .select({
-              id: forms.id,
-              name: forms.name,
-              submissionCount: sql<number>`sum(${usage.count})`,
-            })
-            .from(forms)
-            .leftJoin(usage, eq(forms.id, usage.formId))
-            .where(and(eq(forms.userId, userId), isNull(forms.deletedAt)))
-            .groupBy(forms.id, forms.name)
-            .orderBy(desc(sql`sum(${usage.count})`))
-            .limit(5);
-
           return Response.json({
             stats: {
-              totalForms: Number(formsResult?.count || 0),
-              totalSubmissions: Number(submissionsResult?.count || 0),
-              submissionsThisMonth: Number(thisMonthResult?.count || 0),
+              totalForms,
+              totalSubmissions,
+              submissionsThisMonth,
             },
             chartData,
-            topForms: topForms.map((f) => ({
-              ...f,
-              submissionCount: Number(f.submissionCount),
-            })),
+            topForms,
           });
         } catch (error: any) {
           return Response.json(

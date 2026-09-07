@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq } from "drizzle-orm";
+import { updateFormById } from "@formdrop/core/data";
 
 export const Route = createFileRoute("/api/integrations/discord/callback")({
   server: {
@@ -110,16 +108,13 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
           }
 
           // Update form with Discord information
-          await db
-            .update(forms)
-            .set({
-              discordWebhookUrl: webhookUrl,
-              discordChannelId: channelId,
-              discordChannelName: channelName,
-              discordGuildName: guildName,
-              discordNotificationsEnabled: true,
-            })
-            .where(eq(forms.id, formId));
+          await updateFormById(formId, {
+            discordWebhookUrl: webhookUrl,
+            discordChannelId: channelId,
+            discordChannelName: channelName,
+            discordGuildName: guildName,
+            discordNotificationsEnabled: true,
+          });
 
           // Redirect back to notifications page
           return Response.redirect(

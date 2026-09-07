@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { submissions } from "@formdrop/db/schema";
-import { lt } from "drizzle-orm";
+import { deleteSubmissionsOlderThan } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute(
@@ -26,12 +24,9 @@ export const Route = createFileRoute(
           const ninetyDaysAgo = new Date();
           ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
-          const result = await db
-            .delete(submissions)
-            .where(lt(submissions.createdAt, ninetyDaysAgo))
-            .returning({ id: submissions.id });
+          const deletedCount = await deleteSubmissionsOlderThan(ninetyDaysAgo);
 
-          return new Response(JSON.stringify({ deletedCount: result.length }), {
+          return new Response(JSON.stringify({ deletedCount }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
           });

@@ -27,6 +27,13 @@ export const errorHandling = new Elysia({ name: "error-handling" }).onError(
       return status(400, { error: "Invalid request" });
     }
 
+    // A body the client sent malformed. express.json() answered 400 for this;
+    // without the case it would fall through to the 500 below, which would be
+    // a parity break on the one endpoint W2 says must never break.
+    if (code === "PARSE") {
+      return status(400, { error: "Invalid request body" });
+    }
+
     console.error(
       JSON.stringify({
         level: "error",

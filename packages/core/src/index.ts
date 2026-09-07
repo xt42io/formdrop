@@ -10,7 +10,7 @@
  * The split is deliberate: the import path says whether a caller can run
  * without `DATABASE_URL`.
  */
-export { isDomainAllowed } from "./domain.ts";
+export { isDomainAllowed, isRequestOriginAllowed } from "./domain.ts";
 export {
   planFor,
   quotaFor,

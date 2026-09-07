@@ -5,7 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { Modal } from "@formdrop/ui";
 export const Route = createFileRoute("/(app)/app/forms/")({
   head: () => ({
     meta: [{ title: "Forms | FormDrop" }],
@@ -18,6 +18,12 @@ function RouteComponent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newFormName, setNewFormName] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
+
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setCreateError(null);
+    setNewFormName("");
+  };
 
   const createMutation = useMutation({
     mutationFn: async (name: string) => {
@@ -172,74 +178,55 @@ function RouteComponent() {
         </div>
       )}
 
-      {/* Create Form Modal */}
-      <AnimatePresence>
-        {isCreateModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsCreateModalOpen(false)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden"
-            >
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Create New Form
-                </h3>
-                <form onSubmit={handleCreate}>
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Form Name
-                    </label>
-                    <input
-                      type="text"
-                      value={newFormName}
-                      onChange={(e) => setNewFormName(e.target.value)}
-                      placeholder="e.g. Contact Us"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
-                      autoFocus
-                    />
-                  </div>
+      <Modal
+        isOpen={isCreateModalOpen}
+        onClose={closeCreateModal}
+        label="Create New Form"
+      >
+        <div className="p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">
+            Create New Form
+          </h3>
+          <form onSubmit={handleCreate}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Form Name
+              </label>
+              <input
+                type="text"
+                value={newFormName}
+                onChange={(e) => setNewFormName(e.target.value)}
+                placeholder="e.g. Contact Us"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                autoFocus
+              />
+            </div>
 
-                  {createError && (
-                    <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl">
-                      {createError}
-                    </div>
-                  )}
-
-                  <div className="flex justify-end gap-3 mt-6">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsCreateModalOpen(false);
-                        setCreateError(null);
-                        setNewFormName("");
-                      }}
-                      className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={createMutation.isPending || !newFormName.trim()}
-                      className="px-4 py-2 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                      {createMutation.isPending ? "Creating..." : "Create Form"}
-                    </button>
-                  </div>
-                </form>
+            {createError && (
+              <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl">
+                {createError}
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={closeCreateModal}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={createMutation.isPending || !newFormName.trim()}
+                className="px-4 py-2 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {createMutation.isPending ? "Creating..." : "Create Form"}
+              </button>
+            </div>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 }

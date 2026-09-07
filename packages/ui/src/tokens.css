@@ -39,6 +39,34 @@
 
   --color-canvas: #f8f7fc;
 
+  /* Decorative tint palette: a pastel ground paired with an ink dark enough to
+     read on it. Used by the landing integration cards, the feature tiles, the
+     rotating word and the recipient-verification notices.
+
+     Named by hue rather than by meaning, because the same green marks "Google
+     Sheets" in one place and "verified" in another -- a semantic name would be
+     wrong in half the call sites. W4 asks for zero raw hex outside this file;
+     these are the values that were inlined as `bg-[#cdf0dd]` and friends. */
+  --color-tint-green: #cdf0dd;
+  --color-tint-green-ink: #1f6b45;
+  --color-tint-mint: #e2f4ea;
+  --color-tint-violet: #e5d9ff;
+  --color-tint-violet-ink: #5b3ba8;
+  --color-tint-lavender: #f3ebff;
+  --color-tint-lilac: #d8d0fb;
+  --color-tint-blue: #cfe2ff;
+  --color-tint-blue-ink: #2b4c9b;
+  --color-tint-amber: #ffeac0;
+  --color-tint-amber-ink: #8a5a00;
+  --color-tint-rose: #fde3dd;
+  --color-tint-rose-ink: #b4341f;
+  --color-tint-pink: #ffd6e3;
+
+  /* String literals in the landing code preview. The other four token classes
+     it uses already come from the ink and accent ramps; this coral does not
+     belong to either. */
+  --color-code-string: #ffa08c;
+
   --radius-card: 1.25rem;
   --radius-panel: 1.75rem;
 

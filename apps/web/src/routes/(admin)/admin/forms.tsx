@@ -1,5 +1,8 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+// Derived from the query the handler calls. The local copy this replaces
+// declared createdAt as a Date, which JSON never delivers.
+import type { AdminForm } from "@/lib/app-client";
 import axios from "axios";
 import {
   createColumnHelper,
@@ -35,16 +38,7 @@ export const Route = createFileRoute("/(admin)/admin/forms")({
   },
 });
 
-type Form = {
-  id: string;
-  name: string;
-  userId: string;
-  userName: string;
-  createdAt: Date;
-  submissionCount: number;
-};
-
-const columnHelper = createColumnHelper<Form>();
+const columnHelper = createColumnHelper<AdminForm>();
 
 const createColumns = () => [
   columnHelper.accessor("name", {
@@ -140,7 +134,7 @@ function AdminForms() {
     queryKey: ["admin", "forms"],
     queryFn: async () => {
       const res = await axios.get("/api/admin/forms");
-      return res.data.forms as Form[];
+      return res.data.forms as AdminForm[];
     },
   });
 

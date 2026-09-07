@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Button } from "@/components/button";
+import { Button } from "@formdrop/ui";
 import {
   ArrowLeft01Icon,
   UserIcon,

@@ -129,6 +129,29 @@
   background-size: 120px 120px;
 }
 
+/* Section rhythm.
+   The landing page had grown three different section-heading scales --
+   1.55-1.95rem at one leading, 1.7-2.4rem at another, 1.6-2.25rem at a third --
+   so a heading changed size as you scrolled without any of them meaning
+   anything different. One scale, defined once, and it cannot drift again
+   because there is nowhere to retype it.
+
+   The hero keeps its own, much larger scale on purpose: W4 calls it the anchor
+   the rest of the page has to live up to, so it is not a section heading. */
+@utility section-heading {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+/* The sentence under a section heading. 15px is the size every one of them
+   already used; only the leading disagreed. */
+@utility section-lede {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
 /* Entrances move, they never fade. Opacity is deliberately not part of this:
    any technique that starts an entrance at `opacity: 0` can strand content
    invisible, and both obvious ones were measured doing exactly that in a hidden

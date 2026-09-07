@@ -1,5 +1,16 @@
 import axios from "axios";
 
+// Type-only imports, so nothing from packages/core/data (and therefore nothing
+// from pg) reaches the browser bundle. These are erased at compile time.
+import type {
+  findFormDetailForUser,
+  findSubscription,
+  listApiKeysForUser,
+  listFormsForUser,
+  listRecipientsForForm,
+  listSubmissionsForForm,
+} from "@formdrop/core/data";
+
 const apiClient = axios.create({
   baseURL: typeof window !== "undefined" ? window.location.origin : "",
   headers: {
@@ -7,74 +18,47 @@ const apiClient = axios.create({
   },
 });
 
-interface Subscription {
-  id: string;
-  userId: string;
-  plan: string;
-  status: "active" | "canceled" | "past_due" | "unpaid" | "trialing" | "paused";
-  currentPeriodStart: Date;
-  currentPeriodEnd: Date;
-  cancelAtPeriodEnd: boolean | null;
-}
+/**
+ * What a value looks like after Response.json() and back.
+ *
+ * This matters: the handlers serialise Drizzle rows to JSON, so every Date
+ * arrives as an ISO string. The previous hand-written types in this file
+ * declared them as `Date`, which was never true at runtime — the values were
+ * always strings, and any caller that trusted the annotation and called a Date
+ * method on one would have failed.
+ */
+type Serialized<T> = T extends Date
+  ? string
+  : T extends (infer U)[]
+    ? Serialized<U>[]
+    : T extends object
+      ? { [K in keyof T]: Serialized<T[K]> }
+      : T;
 
-interface Form {
-  id: string;
-  userId: string;
-  name: string;
-  description: string | null;
-  emailNotificationsEnabled: boolean;
-  slackChannelName: string | null;
-  slackTeamName: string | null;
-  slackNotificationsEnabled: boolean;
-  slackConnected: boolean;
-  discordChannelName: string | null;
-  discordGuildName: string | null;
-  discordNotificationsEnabled: boolean;
-  discordConnected: boolean;
-  googleSheetsSpreadsheetId: string | null;
-  googleSheetsSpreadsheetName: string | null;
-  googleSheetsEnabled: boolean;
-  googleSheetsConnected: boolean;
-  airtableBaseName: string | null;
-  airtableTableName: string | null;
-  airtableEnabled: boolean;
-  airtableConnected: boolean;
-  allowedDomains: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  submissionCount?: number;
-  slug: string;
-}
+/** The awaited row type of a packages/core data function, as JSON. */
+type Rows<T extends (...args: never[]) => unknown> = Serialized<
+  Awaited<ReturnType<T>>
+>;
+type Row<T extends (...args: never[]) => unknown> = NonNullable<Rows<T>>;
 
-interface Recipient {
-  id: string;
-  formId: string;
-  email: string;
-  enabled: boolean;
-  verifiedAt: Date | null;
-  verificationTokenExpiresAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+/**
+ * Entity shapes, derived rather than declared. Each one follows the query that
+ * produces it, so adding a column to packages/core surfaces here instead of
+ * silently drifting — which is what W3 asks for: no component re-declaring a
+ * type that packages/db or packages/core already knows.
+ */
+export type Form = Rows<typeof listFormsForUser>[number];
+export type FormDetail = Row<typeof findFormDetailForUser>;
+export type Recipient = Rows<typeof listRecipientsForForm>[number];
+export type Submission = Rows<typeof listSubmissionsForForm>[number];
+export type ApiKey = Rows<typeof listApiKeysForUser>[number];
+export type Subscription = Row<typeof findSubscription>;
 
-interface Submission {
-  id: string;
-  formId: string;
-  payload: Record<string, any>;
-  ip: string | null;
-  userAgent: string | null;
-  createdAt: Date;
-}
-
-interface ApiKey {
-  id: string;
-  userId: string;
-  key: string;
-  name: string | null;
-  lastUsedAt: Date | null;
-  createdAt: Date;
-}
-
+/**
+ * Request bodies stay declared here. They describe what a caller may send, not
+ * what the database holds, and the handlers accept a subset of the columns —
+ * so deriving them from a row type would offer fields the API ignores.
+ */
 interface CreateFormParams {
   name: string;
   description?: string;
@@ -136,13 +120,13 @@ export const appClient = {
     list: async () => apiCall<{ forms: Form[] }>("get", "/api/forms"),
 
     create: async (params: CreateFormParams) =>
-      apiCall<{ form: Form }>("post", "/api/forms", { data: params }),
+      apiCall<{ form: FormDetail }>("post", "/api/forms", { data: params }),
 
     get: async (formId: string) =>
-      apiCall<{ form: Form }>("get", `/api/forms/${formId}`),
+      apiCall<{ form: FormDetail }>("get", `/api/forms/${formId}`),
 
     update: async (formId: string, params: UpdateFormParams) =>
-      apiCall<{ form: Form }>("patch", `/api/forms/${formId}`, {
+      apiCall<{ form: FormDetail }>("patch", `/api/forms/${formId}`, {
         data: params,
       }),
 
@@ -229,6 +213,9 @@ export const appClient = {
         { data: { submissionIds } },
       ),
 
+    // Chart series are assembled by the handler rather than returned by a
+    // query, so these shapes are the handler's and have nothing in
+    // packages/core to derive from.
     analytics: async (formId: string) =>
       apiCall<{
         stats: { total: number; thisMonth: number; today: number };

@@ -1,10 +1,14 @@
 /**
  * FormDrop domain logic.
  *
- * Pure functions only — no database, no network, no environment. That is what
- * lets the whole package be unit tested without a connection string, and what
- * keeps the same rules identical across `apps/web` and `apps/api` instead of
- * being reimplemented in each.
+ * This entry point is pure functions only — no database, no network, no
+ * environment. That is what lets it be unit tested without a connection string,
+ * and what keeps the same rules identical across `apps/web` and `apps/api`
+ * instead of being reimplemented in each.
+ *
+ * Data access lives behind `@formdrop/core/data`, which does need a database.
+ * The split is deliberate: the import path says whether a caller can run
+ * without `DATABASE_URL`.
  */
 export { isDomainAllowed } from "./domain.ts";
 export {
@@ -16,6 +20,7 @@ export {
   type Quota,
 } from "./quota.ts";
 export { usagePeriod } from "./period.ts";
+export { generateFormSlug, SLUG_LENGTH } from "./slug.ts";
 export {
   resolveNotificationTargets,
   type NotificationForm,

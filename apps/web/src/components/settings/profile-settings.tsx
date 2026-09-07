@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@/components/button";
+import { Button } from "@formdrop/ui";
 
 interface ProfileSettingsProps {
   session: any;

@@ -10,7 +10,8 @@
                     "test":  "vitest run --passWithNoTests",
                     "db:seed":  "tsx scripts/seed.ts",
                     "db:clear":  "tsx scripts/clear-db.ts",
-                    "lint":  "eslint ."
+                    "lint":  "eslint .",
+                    "e2e":  "playwright test"
                 },
     "dependencies":  {
                          "@faker-js/faker":  "^10.0.0",
@@ -57,16 +58,19 @@
                      },
     "devDependencies":  {
                             "@formdrop/tsconfig":  "*",
+                            "@playwright/test":  "^1.50.0",
                             "@tanstack/devtools-vite":  "^0.3.11",
                             "@testing-library/dom":  "^10.4.0",
                             "@testing-library/react":  "^16.2.0",
                             "@types/bcryptjs":  "^2.4.6",
                             "@types/node":  "^22.10.2",
+                            "@types/pg":  "^8.11.10",
                             "@types/react":  "^19.2.0",
                             "@types/react-dom":  "^19.2.0",
                             "@vitejs/plugin-react":  "^5.0.4",
                             "dotenv":  "^16.0.0",
                             "jsdom":  "^27.0.0",
+                            "pg":  "^8.13.1",
                             "tsx":  "^4.0.0",
                             "typescript":  "^5.7.2",
                             "vite":  "^7.1.7",

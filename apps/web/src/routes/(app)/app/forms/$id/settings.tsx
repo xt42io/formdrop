@@ -11,8 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Button } from "@/components/button";
+import { Button, ConfirmModal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/forms/$id/settings")({
   head: () => ({
@@ -275,77 +274,35 @@ function RouteComponent() {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowDeleteConfirm(false)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex items-center gap-x-3 mb-4 text-red-600">
-                  <div className="p-2 bg-red-100 rounded-xl">
-                    <HugeiconsIcon icon={AlertCircleIcon} size={24} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Delete Form?
-                  </h3>
-                </div>
-                <p className="text-gray-600 mb-6">
-                  This action cannot be undone. This will permanently delete the
-                  form <strong>{form.name}</strong> and all of its submissions.
-                </p>
-
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Type <strong>{form.name}</strong> to confirm
-                  </label>
-                  <input
-                    type="text"
-                    value={deleteConfirmationText}
-                    onChange={(e) => setDeleteConfirmationText(e.target.value)}
-                    className="w-full px-3 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
-                  />
-                </div>
-
-                <div className="flex gap-x-3 justify-end">
-                  <Button
-                    onClick={() => setShowDeleteConfirm(false)}
-                    variant="secondary"
-                    size="md"
-                    className="rounded-3xl bg-transparent border-transparent hover:bg-gray-100"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleDelete}
-                    disabled={
-                      deleteConfirmationText !== form.name ||
-                      deleteMutation.isPending
-                    }
-                    isLoading={deleteMutation.isPending}
-                    variant="danger"
-                    size="md"
-                    className="rounded-3xl"
-                  >
-                    {deleteMutation.isPending ? "Deleting..." : "Delete Form"}
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={handleDelete}
+        title="Delete Form?"
+        description={
+          <>
+            This action cannot be undone. This will permanently delete the form{" "}
+            <strong>{form.name}</strong> and all of its submissions.
+          </>
+        }
+        icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} />}
+        confirmLabel="Delete Form"
+        pendingLabel="Deleting..."
+        isPending={deleteMutation.isPending}
+        confirmDisabled={deleteConfirmationText !== form.name}
+      >
+        <div className="mt-6">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Type <strong>{form.name}</strong> to confirm
+          </label>
+          <input
+            type="text"
+            value={deleteConfirmationText}
+            onChange={(e) => setDeleteConfirmationText(e.target.value)}
+            className="w-full px-3 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+          />
+        </div>
+      </ConfirmModal>
     </div>
   );
 }

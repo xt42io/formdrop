@@ -74,4 +74,5 @@ export {
   softDeleteSubmission,
   softDeleteSubmissions,
   pageSubmissionsForForm,
+  listAllSubmissionsForForm,
 } from "./submissions.ts";

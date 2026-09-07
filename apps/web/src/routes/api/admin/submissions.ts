@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms, submissions } from "@formdrop/db/schema";
-import { eq, desc, isNull } from "drizzle-orm";
+import { listRecentSubmissionsAcrossAllForms } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute("/api/admin/submissions")({
@@ -21,19 +19,7 @@ export const Route = createFileRoute("/api/admin/submissions")({
           }
 
           // Get recent submissions with form names
-          const allSubmissions = await db
-            .select({
-              id: submissions.id,
-              formId: submissions.formId,
-              formName: forms.name,
-              createdAt: submissions.createdAt,
-              payload: submissions.payload,
-            })
-            .from(submissions)
-            .innerJoin(forms, eq(submissions.formId, forms.id))
-            .where(isNull(submissions.deletedAt))
-            .orderBy(desc(submissions.createdAt))
-            .limit(100);
+          const allSubmissions = await listRecentSubmissionsAcrossAllForms(100);
 
           return new Response(JSON.stringify({ submissions: allSubmissions }), {
             status: 200,

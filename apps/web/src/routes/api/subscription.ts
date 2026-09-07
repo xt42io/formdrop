@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { subscriptions } from "@formdrop/db/schema";
-import { eq } from "drizzle-orm";
+import { findSubscription } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute("/api/subscription")({
@@ -17,15 +15,9 @@ export const Route = createFileRoute("/api/subscription")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
+          const subscription = await findSubscription(session.user.id);
 
-          const [subscription] = await db
-            .select()
-            .from(subscriptions)
-            .where(eq(subscriptions.userId, userId))
-            .limit(1);
-
-          return Response.json({ subscription: subscription || null });
+          return Response.json({ subscription });
         } catch (error: any) {
           return Response.json(
             {

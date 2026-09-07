@@ -10,7 +10,7 @@ import {
   useResendVerification,
 } from "@/hooks/use-recipient-mutations";
 
-import { Button } from "@/components/button";
+import { Button } from "@formdrop/ui";
 // Derived from the query that produces it. The local copy this replaces
 // declared the two timestamps as Date, which they are not after JSON.
 import type { Recipient } from "@/lib/app-client";

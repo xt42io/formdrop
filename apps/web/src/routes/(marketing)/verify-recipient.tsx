@@ -39,17 +39,17 @@ const STATES: Record<
   },
   success: {
     icon: Tick02Icon,
-    tint: "bg-[#cdf0dd] text-[#1f6b45]",
+    tint: "bg-tint-green text-tint-green-ink",
     title: "Email Verified!",
   },
   error: {
     icon: AlertCircleIcon,
-    tint: "bg-[#fde3dd] text-[#b4341f]",
+    tint: "bg-tint-rose text-tint-rose-ink",
     title: "Verification Failed",
   },
   expired: {
     icon: AlertCircleIcon,
-    tint: "bg-[#ffeac0] text-[#8a5a00]",
+    tint: "bg-tint-amber text-tint-amber-ink",
     title: "Link Expired",
   },
 };

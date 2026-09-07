@@ -5,6 +5,7 @@ import { errorHandling } from "./errors";
 import { health } from "./routes/health";
 import { formsV1 } from "./routes/forms";
 import { submissionsV1 } from "./routes/submissions";
+import { legacyRoutes } from "./routes/legacy";
 
 /**
  * The Elysia app, built separately from the server that listens on a port, so
@@ -36,7 +37,8 @@ export function createApp() {
     )
     .use(health)
     .use(formsV1)
-    .use(submissionsV1);
+    .use(submissionsV1)
+    .use(legacyRoutes);
 }
 
 export type App = ReturnType<typeof createApp>;

@@ -94,6 +94,7 @@ export function GoogleSheetsConfigModal({
       onClose={onClose}
       size="2xl"
       label="Select Google Spreadsheet"
+      scrim="bg-black/50 backdrop-blur-sm"
       className="max-h-[80vh] overflow-y-auto"
     >
       <div className="p-8">

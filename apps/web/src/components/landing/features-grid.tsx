@@ -46,19 +46,19 @@ const CELLS = [
 
 export function FeaturesGrid() {
   return (
-    <section className="px-6 py-20">
+    <section className="px-6 py-24">
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-[clamp(1.55rem,2.6vw,1.95rem)] leading-[1.25] font-semibold tracking-[-0.025em] text-ink-950">
+          <h2 className="section-heading text-balance text-ink-950">
             Everything you need to handle forms
           </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-ink-600">
+          <p className="section-lede mt-4 text-ink-600">
             Stop worrying about servers, spam, and database maintenance. We
             handle the messy part so you can focus on building.
           </p>
         </div>
 
-        <div className="mt-12 overflow-hidden rounded-[1.75rem] border border-ink-200 bg-ink-50/70">
+        <div className="mt-12 overflow-hidden rounded-panel border border-ink-200 bg-ink-50/70">
           <div className="grid md:grid-cols-2">
             {CELLS.map((cell) => (
               <div

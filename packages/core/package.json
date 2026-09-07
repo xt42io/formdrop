@@ -4,12 +4,17 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./data": "./src/data/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "eslint ."
+  },
+  "dependencies": {
+    "@formdrop/db": "*",
+    "drizzle-orm": "^0.39.0"
   },
   "devDependencies": {
     "@formdrop/tsconfig": "*",

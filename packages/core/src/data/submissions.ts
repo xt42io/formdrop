@@ -1,6 +1,6 @@
 import { db } from "@formdrop/db";
 import { submissions } from "@formdrop/db/schema";
-import { and, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, lt, or, sql } from "drizzle-orm";
 import { count } from "drizzle-orm";
 
 /**
@@ -93,4 +93,46 @@ export async function softDeleteSubmission(
     .where(
       and(eq(submissions.id, submissionId), eq(submissions.formId, formId)),
     );
+}
+
+/**
+ * Cursor-paginated, for the public API.
+ *
+ * Separate from listSubmissionsForForm rather than replacing it: the dashboard
+ * pages by offset because it shows numbered pages, while the API pages by
+ * cursor because submissions arrive continuously and an offset would skip rows
+ * that landed between requests.
+ *
+ * The sort is (createdAt, id) descending. The id tiebreak is what makes the
+ * page boundary unambiguous when two submissions share a millisecond -- with
+ * createdAt alone, a row could be returned twice or skipped entirely.
+ *
+ * One extra row is fetched beyond the requested limit, which is how the caller
+ * learns whether another page exists without a second count query.
+ */
+export function pageSubmissionsForForm(
+  formId: string,
+  options: { limit: number; after?: { createdAt: Date; id: string } },
+) {
+  const after = options.after;
+
+  return db
+    .select()
+    .from(submissions)
+    .where(
+      after
+        ? and(
+            live(formId),
+            or(
+              lt(submissions.createdAt, after.createdAt),
+              and(
+                eq(submissions.createdAt, after.createdAt),
+                sql`${submissions.id} < ${after.id}`,
+              ),
+            ),
+          )
+        : live(formId),
+    )
+    .orderBy(desc(submissions.createdAt), desc(submissions.id))
+    .limit(options.limit + 1);
 }

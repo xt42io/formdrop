@@ -91,7 +91,7 @@ export const forms = pgTable(
       .notNull(),
     deletedAt: timestamp("deleted_at"),
   },
-  (table: any) => [
+  (table) => [
     uniqueIndex("user_form_unique_active_idx")
       .on(table.userId, table.name)
       .where(isNull(table.deletedAt)),
@@ -116,7 +116,7 @@ export const submissions = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     deletedAt: timestamp("deleted_at"),
   },
-  (table: any) => [
+  (table) => [
     index("submissions_form_created_idx").on(table.formId, table.createdAt),
 
     index("submissions_form_id_idx").on(table.formId),
@@ -139,7 +139,7 @@ export const notifications = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table: any) => [index("notifications_form_id_idx").on(table.formId)],
+  (table) => [index("notifications_form_id_idx").on(table.formId)],
 );
 
 export const emailNotificationRecipients = pgTable(
@@ -160,7 +160,7 @@ export const emailNotificationRecipients = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table: any) => [
+  (table) => [
     index("email_notification_recipients_form_id_idx").on(table.formId),
   ],
 );
@@ -179,7 +179,7 @@ export const events = pgTable(
     details: jsonb("details"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table: any) => [
+  (table) => [
     index("events_user_created_idx").on(table.userId, table.createdAt),
 
     index("events_form_created_idx").on(table.formId, table.createdAt),
@@ -198,7 +198,7 @@ export const apiKeys = pgTable(
     lastUsedAt: timestamp("last_used_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table: any) => [
+  (table) => [
     index("api_keys_key_idx").on(table.key),
     index("api_keys_user_id_idx").on(table.userId),
   ],
@@ -228,7 +228,7 @@ export const usage = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table: any) => [
+  (table) => [
     // prevent duplicate rows per period
     uniqueIndex("usage_unique_idx").on(
       table.userId,
@@ -265,7 +265,7 @@ export const notificationUsage = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table: any) => [
+  (table) => [
     // prevent duplicate rows per period
     uniqueIndex("notification_usage_unique_idx").on(
       table.userId,

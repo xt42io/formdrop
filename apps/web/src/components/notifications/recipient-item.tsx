@@ -8,10 +8,16 @@ import { Tooltip } from "@/components/tooltip";
 
 import { Button } from "@/components/button";
 
+/**
+ * A view model rather than a database row, so it is declared rather than
+ * derived. The timestamps are ISO strings because that is what survives
+ * Response.json() — they were typed as Date here, which only ever worked
+ * because `new Date(string)` also parses.
+ */
 interface RecipientStatus {
   type: "pending" | "expired" | "verified";
-  verifiedAt?: Date | null;
-  verificationTokenExpiresAt?: Date | null;
+  verifiedAt?: string | null;
+  verificationTokenExpiresAt?: string | null;
 }
 
 interface RecipientItemProps {
@@ -26,7 +32,7 @@ interface RecipientItemProps {
   isResending: boolean;
 }
 
-function formatDate(date: Date) {
+function formatDate(date: string) {
   return new Date(date).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

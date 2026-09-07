@@ -136,3 +136,23 @@ export function pageSubmissionsForForm(
     .orderBy(desc(submissions.createdAt), desc(submissions.id))
     .limit(options.limit + 1);
 }
+
+/**
+ * Every live submission for a form, unbounded.
+ *
+ * This exists only to keep the legacy `GET /:slug/submissions` alias
+ * byte-compatible: it returned the entire history with no limit, and D6 keeps
+ * that alias indefinitely. W2 replaces it for new callers with
+ * pageSubmissionsForForm, which is what /v1 uses.
+ *
+ * Deliberately not used anywhere else. An unbounded read of a table that grows
+ * with every submission is a footgun, and the only reason to accept it here is
+ * that changing the response would break callers already in the wild.
+ */
+export function listAllSubmissionsForForm(formId: string) {
+  return db
+    .select()
+    .from(submissions)
+    .where(live(formId))
+    .orderBy(desc(submissions.createdAt));
+}

@@ -71,6 +71,7 @@ export function IntegrationExamplesModal({
       onClose={onClose}
       size="2xl"
       label="Integration Examples"
+      scrim="bg-black/40 backdrop-blur-sm"
     >
       <div className="flex items-center justify-between p-6 border-b border-gray-100">
         <h2 className="text-xl font-semibold">Integration Examples</h2>

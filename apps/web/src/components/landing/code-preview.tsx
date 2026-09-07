@@ -129,8 +129,8 @@ export function CodePreview() {
       </div>
 
       {/* the frame, holding the surface off the page the way the reference does */}
-      <div className="mx-auto mt-8 max-w-4xl rounded-[1.5rem] border border-ink-200 bg-ink-50/70 p-2.5">
-        <div className="overflow-hidden rounded-[1.15rem] border border-white/10 bg-ink-950">
+      <div className="mx-auto mt-8 max-w-4xl rounded-panel border border-ink-200 bg-ink-50/70 p-2.5">
+        <div className="overflow-hidden rounded-card border border-white/10 bg-ink-950">
           <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] px-5 py-3">
             <span className="flex min-w-0 items-center gap-2 font-mono text-[11.5px] text-ink-400">
               <span className="rounded bg-accent-500/20 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-accent-300">

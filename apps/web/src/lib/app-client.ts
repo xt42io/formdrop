@@ -5,8 +5,10 @@ import axios from "axios";
 import type {
   findFormDetailForUser,
   findSubscription,
+  listAllFormsWithOwners,
   listApiKeysForUser,
   listFormsForUser,
+  listRecentSubmissionsAcrossAllForms,
   listRecipientsForForm,
   listSubmissionsForForm,
 } from "@formdrop/core/data";
@@ -53,6 +55,19 @@ export type Recipient = Rows<typeof listRecipientsForForm>[number];
 export type Submission = Rows<typeof listSubmissionsForForm>[number];
 export type ApiKey = Rows<typeof listApiKeysForUser>[number];
 export type Subscription = Row<typeof findSubscription>;
+
+/**
+ * The admin tables read joined projections rather than plain rows -- a form
+ * with its owner's name and submission count, a submission with its form's
+ * name -- so they get their own derivations from the same queries.
+ *
+ * Both were declared by hand in the route files, and both declared createdAt
+ * as a Date, which it is not once the handler has serialised it.
+ */
+export type AdminForm = Rows<typeof listAllFormsWithOwners>[number];
+export type AdminSubmission = Rows<
+  typeof listRecentSubmissionsAcrossAllForms
+>[number];
 
 /**
  * Request bodies stay declared here. They describe what a caller may send, not

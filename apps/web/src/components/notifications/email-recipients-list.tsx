@@ -11,14 +11,9 @@ import {
 } from "@/hooks/use-recipient-mutations";
 
 import { Button } from "@/components/button";
-
-interface Recipient {
-  id: string;
-  email: string;
-  enabled: boolean;
-  verifiedAt: Date | null;
-  verificationTokenExpiresAt: Date | null;
-}
+// Derived from the query that produces it. The local copy this replaces
+// declared the two timestamps as Date, which they are not after JSON.
+import type { Recipient } from "@/lib/app-client";
 
 interface EmailRecipientsListProps {
   formId: string;

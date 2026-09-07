@@ -18,13 +18,21 @@ export {
   listFormsForUser,
   softDeleteForm,
   updateFormById,
+  listFormsForApiKey,
+  findFormBySlugForApiKey,
 } from "./forms.ts";
 export {
   countSubmissionsForUser,
   findSubscription,
   hasPasswordCredential,
 } from "./account.ts";
-export { createApiKey, deleteApiKey, listApiKeysForUser } from "./api-keys.ts";
+export {
+  createApiKey,
+  deleteApiKey,
+  findApiKeyByValue,
+  listApiKeysForUser,
+  touchApiKeyLastUsed,
+} from "./api-keys.ts";
 export {
   countAllForms,
   countAllSubmissions,
@@ -65,4 +73,5 @@ export {
   listSubmissionsForForm,
   softDeleteSubmission,
   softDeleteSubmissions,
+  pageSubmissionsForForm,
 } from "./submissions.ts";

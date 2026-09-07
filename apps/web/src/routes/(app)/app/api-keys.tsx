@@ -11,8 +11,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import moment from "moment";
 import { CopyButton } from "@/components/copy-button";
-import { motion, AnimatePresence } from "motion/react";
-import { Button } from "@/components/button";
+import { motion } from "motion/react";
+import { Button, ConfirmModal, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/api-keys")({
   head: () => ({
@@ -192,121 +192,59 @@ function ApiKeysPage() {
         </div>
       </div>
 
-      {/* Create Key Modal */}
-      <AnimatePresence>
-        {isCreating && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+      <Modal
+        isOpen={isCreating}
+        onClose={() => setIsCreating(false)}
+        label="Create New API Key"
+      >
+        <form onSubmit={handleCreate} className="p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-4">
+            Create New API Key
+          </h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Key Name
+              </label>
+              <input
+                type="text"
+                value={newKeyName}
+                onChange={(e) => setNewKeyName(e.target.value)}
+                placeholder="e.g. Production Server"
+                className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/5"
+                autoFocus
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button
+              type="button"
+              variant="ghost"
               onClick={() => setIsCreating(false)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden"
             >
-              <form onSubmit={handleCreate} className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Create New API Key
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Key Name
-                    </label>
-                    <input
-                      type="text"
-                      value={newKeyName}
-                      onChange={(e) => setNewKeyName(e.target.value)}
-                      placeholder="e.g. Production Server"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/5"
-                      autoFocus
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-3 mt-6">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setIsCreating(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={!newKeyName.trim() || createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create Key"}
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!newKeyName.trim() || createMutation.isPending}
+            >
+              {createMutation.isPending ? "Creating..." : "Create Key"}
+            </Button>
           </div>
-        )}
-      </AnimatePresence>
+        </form>
+      </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <AnimatePresence>
-        {deletingKeyId && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setDeletingKeyId(null)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 bg-red-100 rounded-full">
-                    <HugeiconsIcon
-                      icon={AlertCircleIcon}
-                      className="text-red-600"
-                      size={24}
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Revoke API Key?
-                  </h3>
-                </div>
-                <p className="text-gray-600 mb-6">
-                  Are you sure you want to revoke this API key? Any applications
-                  using it will immediately lose access. This action cannot be
-                  undone.
-                </p>
-                <div className="flex justify-end gap-3">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setDeletingKeyId(null)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => deleteMutation.mutate(deletingKeyId)}
-                    disabled={deleteMutation.isPending}
-                  >
-                    {deleteMutation.isPending
-                      ? "Revoking..."
-                      : "Yes, Revoke Key"}
-                  </Button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <ConfirmModal
+        isOpen={deletingKeyId !== null}
+        onClose={() => setDeletingKeyId(null)}
+        onConfirm={() => deletingKeyId && deleteMutation.mutate(deletingKeyId)}
+        title="Revoke API Key?"
+        description="Are you sure you want to revoke this API key? Any applications using it will immediately lose access. This action cannot be undone."
+        icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} />}
+        confirmLabel="Yes, Revoke Key"
+        pendingLabel="Revoking..."
+        isPending={deleteMutation.isPending}
+      />
     </div>
   );
 }

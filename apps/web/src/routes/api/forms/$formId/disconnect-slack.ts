@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { disconnectSlack, findOwnedForm } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute("/api/forms/$formId/disconnect-slack")({
@@ -23,37 +21,17 @@ export const Route = createFileRoute("/api/forms/$formId/disconnect-slack")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userId = session.user.id;
           const { formId } = params;
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, userId),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
           // Clear Slack integration
-          await db
-            .update(forms)
-            .set({
-              slackWebhookUrl: null,
-              slackChannelId: null,
-              slackChannelName: null,
-              slackTeamName: null,
-              slackNotificationsEnabled: false,
-            })
-            .where(eq(forms.id, formId));
+          await disconnectSlack(formId);
 
           return Response.json({ success: true });
         } catch (error: any) {

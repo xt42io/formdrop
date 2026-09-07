@@ -36,3 +36,61 @@ jobs:
 
       - name: Test
         run: npx turbo run test
+
+  # Kept a separate job because the smoke path needs a database and a browser,
+  # which the fast checks above do not. `turbo run test` never triggers it --
+  # the script in apps/web is called `e2e`, not `test`, on purpose.
+  e2e:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: formdrop_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # A throwaway service container, torn down with the job. The suite
+      # refuses to start if this is ever the same as DATABASE_URL.
+      E2E_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/formdrop_e2e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Apply migrations to the throwaway database
+        run: npm run db:migrate --workspace @formdrop/db
+        env:
+          DATABASE_URL: ${{ env.E2E_DATABASE_URL }}
+
+      - name: Build
+        run: npx turbo run build
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke path
+        run: npm run e2e --workspace @formdrop/web
+
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7

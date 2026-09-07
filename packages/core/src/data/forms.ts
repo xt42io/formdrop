@@ -194,3 +194,51 @@ export async function disconnectDiscord(formId: string) {
     })
     .where(eq(forms.id, formId));
 }
+
+/**
+ * What the public API returns for a form.
+ *
+ * Deliberately much narrower than FORM_DETAIL_COLUMNS. That set is the
+ * dashboard's contract and includes integration state; an API-key consumer
+ * has no business knowing which Slack workspace a form posts to, and the
+ * legacy `GET /forms` never told them.
+ */
+const API_FORM_COLUMNS = {
+  id: forms.id,
+  name: forms.name,
+  slug: forms.slug,
+  description: forms.description,
+  createdAt: forms.createdAt,
+};
+
+/** Every live form for the key's owner, newest first. */
+export function listFormsForApiKey(userId: string) {
+  return db
+    .select(API_FORM_COLUMNS)
+    .from(forms)
+    .where(and(eq(forms.userId, userId), isNull(forms.deletedAt)))
+    .orderBy(desc(forms.createdAt));
+}
+
+/**
+ * A live form addressed by slug and scoped to its owner.
+ *
+ * W2 moves the API from addressing forms by id to addressing them by slug,
+ * since the slug is what a caller already holds -- it is in the endpoint URL
+ * they post to.
+ */
+export async function findFormBySlugForApiKey(userId: string, slug: string) {
+  const [form] = await db
+    .select(API_FORM_COLUMNS)
+    .from(forms)
+    .where(
+      and(
+        eq(forms.slug, slug),
+        eq(forms.userId, userId),
+        isNull(forms.deletedAt),
+      ),
+    )
+    .limit(1);
+
+  return form ?? null;
+}

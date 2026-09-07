@@ -14,3 +14,8 @@ todos.json
 
 # turborepo
 .turbo
+
+# Test output
+coverage/
+playwright-report/
+test-results/

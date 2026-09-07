@@ -27,7 +27,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CopyButton } from "@/components/copy-button";
-import { Button } from "@/components/button";
+import { Button, ConfirmModal, Modal } from "@formdrop/ui";
 
 import { useIsPro } from "@/hooks/use-is-pro";
 import * as XLSX from "xlsx";
@@ -694,309 +694,231 @@ function RouteComponent() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showDeleteConfirm && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-            onClick={() => setShowDeleteConfirm(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
-                    <HugeiconsIcon icon={AlertCircleIcon} size={20} />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Delete Submissions
-                  </h3>
-                </div>
-                <p className="text-gray-600 text-sm">
-                  Are you sure you want to delete {selectedSubmissionIds.length}{" "}
-                  selected submission
-                  {selectedSubmissionIds.length > 1 ? "s" : ""}? This action
-                  cannot be undone.
-                </p>
-              </div>
-              <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
-                <Button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  variant="secondary"
-                  size="md"
-                  className="rounded-lg bg-transparent border-transparent hover:bg-gray-100"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={confirmDelete}
-                  disabled={deleteMutation.isPending}
-                  isLoading={deleteMutation.isPending}
-                  variant="danger"
-                  size="md"
-                  className="rounded-lg"
-                  icon={
-                    !deleteMutation.isPending && (
-                      <HugeiconsIcon icon={Delete02Icon} size={16} />
-                    )
-                  }
-                >
-                  {deleteMutation.isPending ? "Deleting..." : "Delete"}
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Submissions"
+        description={
+          <>
+            Are you sure you want to delete {selectedSubmissionIds.length}{" "}
+            selected submission
+            {selectedSubmissionIds.length > 1 ? "s" : ""}? This action cannot be
+            undone.
+          </>
+        }
+        icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} />}
+        confirmLabel="Delete"
+        pendingLabel="Deleting..."
+        isPending={deleteMutation.isPending}
+        confirmIcon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
+      />
 
-      {/* Export Modal */}
-      <AnimatePresence>
-        {showExportModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+      <Modal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        label="Export Submissions"
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900">
+              Export Submissions
+            </h3>
+            <Button
               onClick={() => setShowExportModal(false)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              variant="ghost"
+              size="sm"
+              className="p-2 hover:bg-gray-100 rounded-lg h-auto"
+              icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Export Submissions
-                  </h3>
-                  <Button
-                    onClick={() => setShowExportModal(false)}
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 hover:bg-gray-100 rounded-lg h-auto"
-                    icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
-                  />
+          </div>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Format
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                {(["csv", "json", "xlsx"] as const).map((format) => (
+                  <button
+                    key={format}
+                    onClick={() => setExportFormat(format)}
+                    className={`px-4 py-3 rounded-xl text-sm font-medium border transition-all ${
+                      exportFormat === format
+                        ? "bg-black text-white border-black"
+                        : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    {format.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filename
+              </label>
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  value={exportFilename}
+                  onChange={(e) => setExportFilename(e.target.value)}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-black/5 border-r-0"
+                />
+                <div className="px-3 py-2 bg-gray-50 border border-gray-300 border-l-0 rounded-r-xl text-gray-500 text-sm">
+                  .{exportFormat}
                 </div>
+              </div>
+            </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Format
-                    </label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {(["csv", "json", "xlsx"] as const).map((format) => (
-                        <button
-                          key={format}
-                          onClick={() => setExportFormat(format)}
-                          className={`px-4 py-3 rounded-xl text-sm font-medium border transition-all ${
-                            exportFormat === format
-                              ? "bg-black text-white border-black"
-                              : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
-                          }`}
-                        >
-                          {format.toUpperCase()}
-                        </button>
-                      ))}
-                    </div>
+            <div>
+              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={includeMetadata}
+                  onChange={(e) => setIncludeMetadata(e.target.checked)}
+                  className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
+                />
+                <div className="text-sm">
+                  <span className="font-medium text-gray-900">
+                    Include technical details
+                  </span>
+                  <p className="text-gray-500 text-xs mt-0.5">
+                    Adds IP address, User Agent, and raw JSON payload to the
+                    export
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {!isPro && (
+              <div className="bg-gray-900 rounded-xl p-4 relative overflow-hidden">
+                <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+
+                <div className="relative flex gap-3">
+                  <div className="p-2 bg-white/10 rounded-lg h-fit shrink-0">
+                    <HugeiconsIcon
+                      icon={StarIcon}
+                      size={20}
+                      className="text-yellow-400"
+                    />
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Filename
-                    </label>
-                    <div className="flex items-center">
-                      <input
-                        type="text"
-                        value={exportFilename}
-                        onChange={(e) => setExportFilename(e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-black/5 border-r-0"
-                      />
-                      <div className="px-3 py-2 bg-gray-50 border border-gray-300 border-l-0 rounded-r-xl text-gray-500 text-sm">
-                        .{exportFormat}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                      <input
-                        type="checkbox"
-                        checked={includeMetadata}
-                        onChange={(e) => setIncludeMetadata(e.target.checked)}
-                        className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
-                      />
-                      <div className="text-sm">
-                        <span className="font-medium text-gray-900">
-                          Include technical details
-                        </span>
-                        <p className="text-gray-500 text-xs mt-0.5">
-                          Adds IP address, User Agent, and raw JSON payload to
-                          the export
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-
-                  {!isPro && (
-                    <div className="bg-gray-900 rounded-xl p-4 relative overflow-hidden">
-                      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
-
-                      <div className="relative flex gap-3">
-                        <div className="p-2 bg-white/10 rounded-lg h-fit shrink-0">
-                          <HugeiconsIcon
-                            icon={StarIcon}
-                            size={20}
-                            className="text-yellow-400"
-                          />
-                        </div>
-                        <div className="text-sm">
-                          <p className="font-semibold text-white">
-                            Unlock Unlimited Exports
-                          </p>
-                          <p className="mt-1 text-gray-300 leading-relaxed">
-                            Free plans are limited to the most recent 1,000
-                            submissions. Upgrade to Pro to export everything.
-                          </p>
-                          <Link
-                            to="/app/settings"
-                            search={{ tab: "billing" }}
-                            className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-white hover:text-gray-200 transition-colors"
-                          >
-                            Upgrade to Pro
-                            <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="flex justify-end gap-3 pt-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setShowExportModal(false)}
+                  <div className="text-sm">
+                    <p className="font-semibold text-white">
+                      Unlock Unlimited Exports
+                    </p>
+                    <p className="mt-1 text-gray-300 leading-relaxed">
+                      Free plans are limited to the most recent 1,000
+                      submissions. Upgrade to Pro to export everything.
+                    </p>
+                    <Link
+                      to="/app/settings"
+                      search={{ tab: "billing" }}
+                      className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-white hover:text-gray-200 transition-colors"
                     >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleExport}
-                      disabled={isExporting}
-                      isLoading={isExporting}
-                    >
-                      {isExporting
-                        ? "Exporting..."
-                        : `Export ${!isPro && totalSubmissions > 1000 ? "1,000" : totalSubmissions.toLocaleString()} Rows`}
-                    </Button>
+                      Upgrade to Pro
+                      <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+                    </Link>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            )}
 
-      {/* Integration Modal */}
-      <AnimatePresence>
-        {showIntegrationModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <div className="flex justify-end gap-3 pt-2">
+              <Button variant="ghost" onClick={() => setShowExportModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleExport}
+                disabled={isExporting}
+                isLoading={isExporting}
+              >
+                {isExporting
+                  ? "Exporting..."
+                  : `Export ${!isPro && totalSubmissions > 1000 ? "1,000" : totalSubmissions.toLocaleString()} Rows`}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showIntegrationModal}
+        onClose={() => setShowIntegrationModal(false)}
+        size="3xl"
+        label={`Integrate ${formName}`}
+      >
+        <div className="p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900">
+              Integrate {formName}
+            </h3>
+            <Button
               onClick={() => setShowIntegrationModal(false)}
-              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+              variant="ghost"
+              size="sm"
+              className="p-2 hover:bg-gray-100 rounded-lg h-auto"
+              icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
             />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative bg-white rounded-3xl shadow-xl w-full max-w-3xl overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Integrate {formName}
-                  </h3>
-                  <Button
-                    onClick={() => setShowIntegrationModal(false)}
-                    variant="ghost"
-                    size="sm"
-                    className="p-2 hover:bg-gray-100 rounded-lg h-auto"
-                    icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
-                  />
-                </div>
-
-                <div className="border rounded-3xl border-gray-200 p-4">
-                  <div className="flex items-center gap-x-4 relative">
-                    <div
-                      className={`absolute h-10 w-10 rounded-lg transition-all duration-300 ease-out ${
-                        selectedTab === "html"
-                          ? "bg-orange-100 ring-2 ring-orange-600 translate-x-0"
-                          : "bg-yellow-100 ring-2 ring-yellow-500 translate-x-14"
-                      }`}
-                    />
-
-                    <Button
-                      onClick={() => setSelectedTab("html")}
-                      variant="ghost"
-                      size="sm"
-                      className="p-2 rounded-lg relative z-10 hover:bg-black/5 h-auto"
-                      icon={
-                        <HugeiconsIcon
-                          icon={Html5Icon}
-                          className="text-orange-600"
-                          size={24}
-                        />
-                      }
-                    />
-                    <Button
-                      onClick={() => setSelectedTab("fetch")}
-                      variant="ghost"
-                      size="sm"
-                      className="p-2 rounded-lg relative z-10 hover:bg-black/5 h-auto"
-                      icon={
-                        <HugeiconsIcon
-                          icon={JavaScriptIcon}
-                          className="text-yellow-500"
-                          size={24}
-                        />
-                      }
-                    />
-                  </div>
-                  <div className="border rounded-3xl border-gray-200 p-4 mt-5 relative bg-gray-50/50">
-                    <CopyButton
-                      text={
-                        selectedTab === "html"
-                          ? htmlCodeExample
-                          : fetchCodeExample
-                      }
-                    />
-                    {selectedTab === "html" ? (
-                      <pre className="overflow-x-auto text-sm">
-                        <code>{htmlCodeExample}</code>
-                      </pre>
-                    ) : (
-                      <pre className="overflow-x-auto text-sm">
-                        <code>{fetchCodeExample}</code>
-                      </pre>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+
+          <div className="border rounded-3xl border-gray-200 p-4">
+            <div className="flex items-center gap-x-4 relative">
+              <div
+                className={`absolute h-10 w-10 rounded-lg transition-all duration-300 ease-out ${
+                  selectedTab === "html"
+                    ? "bg-orange-100 ring-2 ring-orange-600 translate-x-0"
+                    : "bg-yellow-100 ring-2 ring-yellow-500 translate-x-14"
+                }`}
+              />
+
+              <Button
+                onClick={() => setSelectedTab("html")}
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-lg relative z-10 hover:bg-black/5 h-auto"
+                icon={
+                  <HugeiconsIcon
+                    icon={Html5Icon}
+                    className="text-orange-600"
+                    size={24}
+                  />
+                }
+              />
+              <Button
+                onClick={() => setSelectedTab("fetch")}
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-lg relative z-10 hover:bg-black/5 h-auto"
+                icon={
+                  <HugeiconsIcon
+                    icon={JavaScriptIcon}
+                    className="text-yellow-500"
+                    size={24}
+                  />
+                }
+              />
+            </div>
+            <div className="border rounded-3xl border-gray-200 p-4 mt-5 relative bg-gray-50/50">
+              <CopyButton
+                text={
+                  selectedTab === "html" ? htmlCodeExample : fetchCodeExample
+                }
+              />
+              {selectedTab === "html" ? (
+                <pre className="overflow-x-auto text-sm">
+                  <code>{htmlCodeExample}</code>
+                </pre>
+              ) : (
+                <pre className="overflow-x-auto text-sm">
+                  <code>{fetchCodeExample}</code>
+                </pre>
+              )}
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

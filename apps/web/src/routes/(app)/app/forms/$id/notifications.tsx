@@ -119,51 +119,52 @@ function RouteComponent() {
         isOpen={Boolean(showSuccessModal && modalContent)}
         onClose={handleCloseModal}
         label={modalContent?.title}
+        scrim="bg-black/50 backdrop-blur-sm"
       >
         {/* The old shell rendered nothing until modalContent existed, which
             narrowed it for the whole body. The shell is always mounted now, so
             the guard moves inside. */}
         {modalContent && (
           <div className="p-10">
-          <div className="flex flex-col items-center text-center">
-            {/* Icon with gradient background */}
-            <div
-              className={`w-24 h-24 ${modalContent.bgColor} rounded-3xl flex items-center justify-center mb-6 shadow-lg`}
-            >
-              {modalContent.icon}
+            <div className="flex flex-col items-center text-center">
+              {/* Icon with gradient background */}
+              <div
+                className={`w-24 h-24 ${modalContent.bgColor} rounded-3xl flex items-center justify-center mb-6 shadow-lg`}
+              >
+                {modalContent.icon}
+              </div>
+
+              {/* Success checkmark badge */}
+              <div
+                className={`w-12 h-12 ${modalContent.checkBgColor} rounded-full flex items-center justify-center mb-5 shadow-sm`}
+              >
+                <HugeiconsIcon
+                  icon={Tick02Icon}
+                  size={24}
+                  className={modalContent.checkIconColor}
+                />
+              </div>
+
+              {/* Title */}
+              <h3 className="text-3xl font-bold mb-3 bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                {modalContent.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-gray-600 mb-8 text-base leading-relaxed">
+                {modalContent.description}
+              </p>
+
+              {/* Button */}
+              <Button
+                onClick={handleCloseModal}
+                variant="primary"
+                size="lg"
+                className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]`}
+              >
+                Got it!
+              </Button>
             </div>
-
-            {/* Success checkmark badge */}
-            <div
-              className={`w-12 h-12 ${modalContent.checkBgColor} rounded-full flex items-center justify-center mb-5 shadow-sm`}
-            >
-              <HugeiconsIcon
-                icon={Tick02Icon}
-                size={24}
-                className={modalContent.checkIconColor}
-              />
-            </div>
-
-            {/* Title */}
-            <h3 className="text-3xl font-bold mb-3 bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-              {modalContent.title}
-            </h3>
-
-            {/* Description */}
-            <p className="text-gray-600 mb-8 text-base leading-relaxed">
-              {modalContent.description}
-            </p>
-
-            {/* Button */}
-            <Button
-              onClick={handleCloseModal}
-              variant="primary"
-              size="lg"
-              className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]`}
-            >
-              Got it!
-            </Button>
-          </div>
           </div>
         )}
       </Modal>

@@ -3,6 +3,7 @@ import { openapi } from "@elysiajs/openapi";
 import { scopedCors } from "./cors";
 import { errorHandling } from "./errors";
 import { health } from "./routes/health";
+import { collect } from "./routes/collect";
 import { formsV1 } from "./routes/forms";
 import { submissionsV1 } from "./routes/submissions";
 import { legacyRoutes } from "./routes/legacy";
@@ -36,6 +37,7 @@ export function createApp() {
       }),
     )
     .use(health)
+    .use(collect)
     .use(formsV1)
     .use(submissionsV1)
     .use(legacyRoutes);

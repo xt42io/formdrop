@@ -4,9 +4,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { GoogleSheetsSection } from "@/components/integrations/google-sheets-section";
-import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/button";
+import { Button, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/forms/$id/integrations")({
   head: () => ({
@@ -92,61 +91,53 @@ function RouteComponent() {
 
   return (
     <>
-      <AnimatePresence>
-        {showSuccessModal && modalContent && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={handleCloseModal}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: "spring", duration: 0.3 }}
-              className="bg-white rounded-3xl p-10 max-w-md w-full shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
+      <Modal
+        isOpen={Boolean(showSuccessModal && modalContent)}
+        onClose={handleCloseModal}
+        label={modalContent?.title}
+      >
+        {/* The old shell rendered nothing until modalContent existed, which
+            narrowed it for the whole body. The shell is always mounted now, so
+            the guard moves inside. */}
+        {modalContent && (
+          <div className="p-10">
+          <div className="flex flex-col items-center text-center">
+            <div
+              className={`w-24 h-24 ${modalContent.bgColor} rounded-3xl flex items-center justify-center mb-6 shadow-lg`}
             >
-              <div className="flex flex-col items-center text-center">
-                <div
-                  className={`w-24 h-24 ${modalContent.bgColor} rounded-3xl flex items-center justify-center mb-6 shadow-lg`}
-                >
-                  {modalContent.icon}
-                </div>
+              {modalContent.icon}
+            </div>
 
-                <div
-                  className={`w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-5 shadow-sm`}
-                >
-                  <HugeiconsIcon
-                    icon={Tick02Icon}
-                    size={24}
-                    className="text-green-600"
-                  />
-                </div>
+            <div
+              className={`w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-5 shadow-sm`}
+            >
+              <HugeiconsIcon
+                icon={Tick02Icon}
+                size={24}
+                className="text-green-600"
+              />
+            </div>
 
-                <h3 className="text-3xl font-bold mb-3 bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                  {modalContent.title}
-                </h3>
+            <h3 className="text-3xl font-bold mb-3 bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              {modalContent.title}
+            </h3>
 
-                <p className="text-gray-600 mb-8 text-base leading-relaxed">
-                  {modalContent.description}
-                </p>
+            <p className="text-gray-600 mb-8 text-base leading-relaxed">
+              {modalContent.description}
+            </p>
 
-                <Button
-                  onClick={handleCloseModal}
-                  variant="primary"
-                  size="lg"
-                  className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]`}
-                >
-                  Got it!
-                </Button>
-              </div>
-            </motion.div>
-          </motion.div>
+            <Button
+              onClick={handleCloseModal}
+              variant="primary"
+              size="lg"
+              className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]`}
+            >
+              Got it!
+            </Button>
+          </div>
+          </div>
         )}
-      </AnimatePresence>
+      </Modal>
 
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-x-3 py-2 mb-6">

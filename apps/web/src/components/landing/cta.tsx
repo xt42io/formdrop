@@ -13,8 +13,11 @@ export function CTA() {
 
   return (
     <section className="px-6 py-24">
-      <div className="relative mx-auto max-w-2xl overflow-hidden rounded-[1.75rem] border border-ink-200 bg-white px-8 py-16 text-center sm:px-14">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+      <div className="relative mx-auto max-w-2xl overflow-hidden rounded-panel border border-ink-200 bg-white px-8 py-16 text-center sm:px-14">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+        >
           <div className="absolute inset-0 bg-lines" />
           <div className="absolute inset-0 bg-grain opacity-[0.02] mix-blend-multiply" />
           {/* keeps the type off the ruling, as on the hero */}
@@ -22,10 +25,10 @@ export function CTA() {
         </div>
 
         <div className="relative">
-          <h2 className="mx-auto max-w-md text-[clamp(1.6rem,3vw,2.25rem)] leading-[1.15] font-semibold tracking-[-0.025em] text-ink-950">
+          <h2 className="section-heading mx-auto max-w-md text-balance text-ink-950">
             Ready to get started?
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-[15px] leading-relaxed text-ink-600">
+          <p className="section-lede mx-auto mt-4 max-w-md text-ink-600">
             Join developers who are saving time with FormDrop. Start collecting
             submissions in minutes.
           </p>

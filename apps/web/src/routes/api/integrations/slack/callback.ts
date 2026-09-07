@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq } from "drizzle-orm";
+import { updateFormById } from "@formdrop/core/data";
 
 export const Route = createFileRoute("/api/integrations/slack/callback")({
   server: {
@@ -70,16 +68,13 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
           }
 
           // Update form with Slack information
-          await db
-            .update(forms)
-            .set({
-              slackWebhookUrl: webhookUrl,
-              slackChannelId: channelId,
-              slackChannelName: channelName,
-              slackTeamName: teamName,
-              slackNotificationsEnabled: true,
-            })
-            .where(eq(forms.id, formId));
+          await updateFormById(formId, {
+            slackWebhookUrl: webhookUrl,
+            slackChannelId: channelId,
+            slackChannelName: channelName,
+            slackTeamName: teamName,
+            slackNotificationsEnabled: true,
+          });
 
           // Redirect back to notifications page
           return Response.redirect(

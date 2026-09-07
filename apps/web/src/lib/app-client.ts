@@ -1,4 +1,5 @@
 import axios from "axios";
+import { installMockData } from "./mock-data";
 
 // Type-only imports, so nothing from packages/core/data (and therefore nothing
 // from pg) reaches the browser bundle. These are erased at compile time.
@@ -19,6 +20,10 @@ const apiClient = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// TEMPORARY, and the only two lines outside mock-data.ts that know about it.
+// No-ops unless VITE_MOCK_DATA=1. Delete these and that file to remove it.
+installMockData(apiClient);
 
 /**
  * What a value looks like after Response.json() and back.

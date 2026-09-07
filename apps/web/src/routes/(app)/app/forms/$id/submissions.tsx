@@ -712,6 +712,7 @@ function RouteComponent() {
         pendingLabel="Deleting..."
         isPending={deleteMutation.isPending}
         confirmIcon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
+        scrim="bg-black/50"
       />
 
       <Modal

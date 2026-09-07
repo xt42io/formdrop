@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { findOwnedForm, updateFormById } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute(
@@ -33,17 +31,7 @@ export const Route = createFileRoute(
           }
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, session.user.id),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
@@ -57,14 +45,11 @@ export const Route = createFileRoute(
           }
 
           // Update form with spreadsheet info and enable integration
-          await db
-            .update(forms)
-            .set({
-              googleSheetsSpreadsheetId: spreadsheetId,
-              googleSheetsSpreadsheetName: spreadsheetName,
-              googleSheetsEnabled: true,
-            })
-            .where(eq(forms.id, formId));
+          await updateFormById(formId, {
+            googleSheetsSpreadsheetId: spreadsheetId,
+            googleSheetsSpreadsheetName: spreadsheetName,
+            googleSheetsEnabled: true,
+          });
 
           return Response.json({ success: true });
         } catch (error: any) {

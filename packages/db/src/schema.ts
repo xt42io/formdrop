@@ -107,7 +107,10 @@ export const submissions = pgTable(
     formId: uuid("form_id")
       .notNull()
       .references(() => forms.id, { onDelete: "cascade" }),
-    payload: jsonb("payload").notNull(),
+    // A submitted form's fields. Typed rather than left as jsonb's default
+    // `unknown`, so callers can read it without a cast — and so a component
+    // has no reason to re-declare the shape locally.
+    payload: jsonb("payload").notNull().$type<Record<string, unknown>>(),
     ip: text("ip"),
     userAgent: text("user_agent"),
     createdAt: timestamp("created_at").defaultNow().notNull(),

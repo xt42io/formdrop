@@ -8,7 +8,7 @@ import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
-import { Button } from "@/components/button";
+import { Button } from "@formdrop/ui";
 import { IntegrationExamplesModal } from "@/components/integration-examples-modal";
 import { CodeIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";

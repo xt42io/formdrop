@@ -12,7 +12,7 @@ import {
 import { useIntegrationsStore } from "@/stores/integrations-store";
 import { motion, AnimatePresence } from "motion/react";
 import { useFlag } from "@flagswift/react-client";
-import { Button } from "@/components/button";
+import { Button, Toggle } from "@formdrop/ui";
 
 interface GoogleSheetsSectionProps {
   formId: string;
@@ -91,19 +91,12 @@ export function GoogleSheetsSection({
                     transition={{ duration: 0.2 }}
                     className="flex items-center gap-3"
                   >
-                    <button
-                      onClick={handleToggle}
+                    <Toggle
+                      checked={Boolean(isEnabled)}
+                      onChange={handleToggle}
                       disabled={updateFormMutation.isPending}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 ${
-                        isEnabled ? "bg-accent" : "bg-gray-200"
-                      } ${updateFormMutation.isPending ? "opacity-50 cursor-not-allowed" : ""}`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          isEnabled ? "translate-x-6" : "translate-x-1"
-                        }`}
-                      />
-                    </button>
+                      label="Google Sheets sync"
+                    />
 
                     {spreadsheetId && (
                       <a

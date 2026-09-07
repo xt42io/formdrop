@@ -76,3 +76,9 @@ export {
   pageSubmissionsForForm,
   listAllSubmissionsForForm,
 } from "./submissions.ts";
+export {
+  findFormBySlug,
+  findFormOwnerEmail,
+  listDeliverableRecipients,
+  recordSubmission,
+} from "./collect.ts";

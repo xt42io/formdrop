@@ -67,7 +67,7 @@ export function Integrations() {
 
       <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
         <div>
-          <h2 className="text-[clamp(1.7rem,3vw,2.4rem)] leading-[1.15] font-semibold tracking-[-0.03em] text-balance text-ink-950">
+          <h2 className="section-heading text-balance text-ink-950">
             Connect FormDrop with all your favorite tools
           </h2>
 
@@ -104,7 +104,7 @@ export function Integrations() {
  */
 function FanOut() {
   return (
-    <div className="rounded-[1.75rem] border border-ink-200 bg-white/80 p-6 backdrop-blur-sm">
+    <div className="rounded-panel border border-ink-200 bg-white/80 p-6 backdrop-blur-sm">
       <div className="relative h-[19rem]">
         <svg
           aria-hidden="true"

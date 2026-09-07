@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { findOwnedForm, updateFormById } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute(
@@ -30,35 +28,22 @@ export const Route = createFileRoute(
           }
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, session.user.id),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
           // Clear Google Sheets integration data
-          await db
-            .update(forms)
-            .set({
-              googleSheetsAccessToken: null,
-              googleSheetsRefreshToken: null,
-              googleSheetsTokenExpiry: null,
-              googleSheetsSpreadsheetId: null,
-              googleSheetsSpreadsheetName: null,
-              googleSheetsSheetId: null,
-              googleSheetsEnabled: false,
-            })
-            .where(eq(forms.id, formId));
+          await updateFormById(formId, {
+            googleSheetsAccessToken: null,
+            googleSheetsRefreshToken: null,
+            googleSheetsTokenExpiry: null,
+            googleSheetsSpreadsheetId: null,
+            googleSheetsSpreadsheetName: null,
+            googleSheetsSheetId: null,
+            googleSheetsEnabled: false,
+          });
 
           return Response.json({ success: true });
         } catch (error: any) {

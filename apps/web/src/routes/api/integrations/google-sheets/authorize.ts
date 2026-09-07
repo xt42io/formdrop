@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { db } from "@formdrop/db";
-import { forms } from "@formdrop/db/schema";
-import { eq, and, isNull } from "drizzle-orm";
+import { findOwnedForm } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
 import { isUserPro } from "@/lib/subscription-check";
 
@@ -38,17 +36,7 @@ export const Route = createFileRoute(
           }
 
           // Verify form belongs to user
-          const [form] = await db
-            .select()
-            .from(forms)
-            .where(
-              and(
-                eq(forms.id, formId),
-                eq(forms.userId, session.user.id),
-                isNull(forms.deletedAt),
-              ),
-            )
-            .limit(1);
+          const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });

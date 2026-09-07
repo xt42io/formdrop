@@ -12,6 +12,14 @@
 
 body {
   @apply m-0;
+  /* The designed page ground. --color-canvas existed in the token file from
+     the start and was applied to nothing, so every page fell through to the
+     browser's default white -- which is not the same colour, and means the
+     white cards and the navbar pill had nothing to sit against.
+
+     It also left the background genuinely unpainted rather than merely white,
+     so the page borrowed whatever was behind it. */
+  background-color: var(--color-canvas);
   font-family: "Inter", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

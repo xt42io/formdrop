@@ -28,6 +28,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CopyButton } from "@/components/copy-button";
 import { Button, Modal } from "@formdrop/ui";
+import { SubmissionsTable } from "@/components/submissions-table";
 
 import { useIsPro } from "@/hooks/use-is-pro";
 import * as XLSX from "xlsx";
@@ -243,11 +244,6 @@ function RouteComponent() {
     }
   };
 
-  const truncateText = (text: string, maxLength: number = 50) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
-  };
-
   const PayloadField = ({
     fieldKey,
     value,
@@ -260,15 +256,13 @@ function RouteComponent() {
     if (Array.isArray(value)) {
       const displayItems = expanded ? value : value.slice(0, 3);
       return (
-        <div className="py-3 border-b border-gray-200 last:border-0">
-          <label className="text-sm font-medium text-gray-700">
-            {fieldKey}
-          </label>
+        <div className="py-3 border-b border-ink-200 last:border-0">
+          <label className="text-sm font-medium text-ink-700">{fieldKey}</label>
           <div className="mt-2 space-y-2">
             {displayItems.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 px-3 py-2 rounded-lg text-sm text-gray-900"
+                className="bg-ink-50 px-3 py-2 rounded-lg text-sm text-ink-950"
               >
                 {typeof item === "object" ? JSON.stringify(item) : String(item)}
               </div>
@@ -278,7 +272,7 @@ function RouteComponent() {
                 onClick={() => setExpanded(true)}
                 variant="ghost"
                 size="sm"
-                className="text-accent hover:text-accent/80 font-medium p-0 h-auto hover:bg-transparent"
+                className="text-accent hover:text-accent-600 font-medium p-0 h-auto hover:bg-transparent"
                 icon={<HugeiconsIcon icon={ArrowDown01Icon} size={14} />}
               >
                 Show {value.length - 3} more
@@ -289,7 +283,7 @@ function RouteComponent() {
                 onClick={() => setExpanded(false)}
                 variant="ghost"
                 size="sm"
-                className="text-accent hover:text-accent/80 font-medium p-0 h-auto hover:bg-transparent"
+                className="text-accent hover:text-accent-600 font-medium p-0 h-auto hover:bg-transparent"
               >
                 Show less
               </Button>
@@ -301,12 +295,10 @@ function RouteComponent() {
 
     if (typeof value === "object" && value !== null) {
       return (
-        <div className="py-3 border-b border-gray-200 last:border-0">
-          <label className="text-sm font-medium text-gray-700">
-            {fieldKey}
-          </label>
-          <div className="mt-2 bg-gray-50 px-3 py-2 rounded-lg">
-            <pre className="text-sm text-gray-900 whitespace-pre-wrap wrap-break-word">
+        <div className="py-3 border-b border-ink-200 last:border-0">
+          <label className="text-sm font-medium text-ink-700">{fieldKey}</label>
+          <div className="mt-2 bg-ink-50 px-3 py-2 rounded-lg">
+            <pre className="text-sm text-ink-950 whitespace-pre-wrap wrap-break-word">
               {JSON.stringify(value, null, 2)}
             </pre>
           </div>
@@ -315,9 +307,9 @@ function RouteComponent() {
     }
 
     return (
-      <div className="py-3 border-b border-gray-200 last:border-0">
-        <label className="text-sm font-medium text-gray-700">{fieldKey}</label>
-        <p className="text-sm text-gray-900 mt-1">{String(value)}</p>
+      <div className="py-3 border-b border-ink-200 last:border-0">
+        <label className="text-sm font-medium text-ink-700">{fieldKey}</label>
+        <p className="text-sm text-ink-950 mt-1">{String(value)}</p>
       </div>
     );
   };
@@ -329,21 +321,29 @@ function RouteComponent() {
           <div className="flex items-center gap-x-3">
             <Link
               to="/app/forms"
-              className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
+              className="hover:bg-ink-100 p-2 rounded-lg transition-colors"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
             </Link>
             <h2 className="text-lg font-semibold">Submissions</h2>
           </div>
         </div>
-        <div className="mt-4 space-y-4">
-          {[1, 2, 3].map((i) => (
+        {/* Shaped like the table it precedes, not like the cards that are no
+            longer the default view -- a skeleton that resolves into a
+            different layout is worse than showing none at all. */}
+        <div className="mt-3 overflow-hidden rounded-panel border border-ink-200 bg-white">
+          <div className="border-b border-ink-200 bg-ink-50/60 px-4 py-3">
+            <div className="h-3 w-24 animate-pulse rounded bg-ink-200" />
+          </div>
+          {[0, 1, 2, 3, 4].map((row) => (
             <div
-              key={i}
-              className="p-5 border border-gray-200 rounded-3xl animate-pulse"
+              key={row}
+              className="flex items-center gap-6 border-b border-ink-100 px-4 py-4 last:border-b-0"
             >
-              <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="h-3.5 w-3.5 shrink-0 animate-pulse rounded-full bg-ink-200" />
+              <div className="h-3 w-28 animate-pulse rounded bg-ink-100" />
+              <div className="h-3 w-32 animate-pulse rounded bg-ink-100" />
+              <div className="h-3 flex-1 animate-pulse rounded bg-ink-100" />
             </div>
           ))}
         </div>
@@ -358,15 +358,15 @@ function RouteComponent() {
           <div className="flex items-center gap-x-3">
             <Link
               to="/app/forms"
-              className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
+              className="hover:bg-ink-100 p-2 rounded-lg transition-colors"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
             </Link>
             <h2 className="text-lg font-semibold">Submissions</h2>
           </div>
         </div>
-        <div className="mt-4 p-5 border border-red-200 rounded-3xl bg-red-50">
-          <p className="text-red-600 text-sm">
+        <div className="mt-4 p-5 border border-tint-rose rounded-3xl bg-tint-rose">
+          <p className="text-tint-rose-ink text-sm">
             Failed to load submissions: {error.message}
           </p>
         </div>
@@ -374,27 +374,20 @@ function RouteComponent() {
     );
   }
 
-  const allKeys =
-    submissions.length > 0
-      ? Array.from(
-          new Set(submissions.flatMap((sub) => Object.keys(sub.payload))),
-        )
-      : [];
-
   return (
     <div>
       <div className="sticky top-[69px] z-10 bg-white flex items-center justify-between py-2">
         <div className="flex items-center gap-x-3">
           <Link
             to="/app/forms"
-            className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
+            className="hover:bg-ink-100 p-2 rounded-lg transition-colors"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
           </Link>
           <h2 className="text-lg font-semibold">
             Submissions
             {!isLoading && submissions.length > 0 && (
-              <span className="ml-2 text-sm font-normal text-gray-500">
+              <span className="ml-2 text-sm font-normal text-ink-500">
                 (Showing {submissions.length.toLocaleString()} of{" "}
                 {totalSubmissions.toLocaleString()})
               </span>
@@ -408,7 +401,6 @@ function RouteComponent() {
               disabled={deleteMutation.isPending}
               variant="danger"
               size="sm"
-              className="bg-red-50 text-red-600 hover:bg-red-100 border-transparent"
               icon={<HugeiconsIcon icon={Delete02Icon} size={18} />}
             >
               Delete ({selectedSubmissionIds.length})
@@ -418,32 +410,32 @@ function RouteComponent() {
             onClick={() => setShowExportModal(true)}
             variant="secondary"
             size="sm"
-            className="text-gray-600 hover:bg-gray-100 border-gray-200"
+            className="text-ink-600 hover:bg-ink-100 border-ink-200"
             icon={<HugeiconsIcon icon={Download01Icon} size={18} />}
           >
             Export
           </Button>
-          <div className="w-px h-6 bg-gray-200 mx-1"></div>
+          <div className="w-px h-6 bg-ink-200 mx-1"></div>
           <Button
             onClick={() => setViewMode("card")}
             variant={viewMode === "card" ? "primary" : "ghost"}
             size="sm"
-            className={`p-2 ${viewMode === "card" ? "" : "text-gray-600 hover:bg-gray-100"}`}
+            className={`p-2 ${viewMode === "card" ? "" : "text-ink-600 hover:bg-ink-100"}`}
             icon={<HugeiconsIcon icon={GridIcon} size={18} />}
           />
           <Button
             onClick={() => setViewMode("table")}
             variant={viewMode === "table" ? "primary" : "ghost"}
             size="sm"
-            className={`p-2 ${viewMode === "table" ? "" : "text-gray-600 hover:bg-gray-100"}`}
+            className={`p-2 ${viewMode === "table" ? "" : "text-ink-600 hover:bg-ink-100"}`}
             icon={<HugeiconsIcon icon={TableIcon} size={18} />}
           />
         </div>
       </div>
 
       {submissions.length === 0 ? (
-        <div className="mt-4 p-8 border border-gray-200 rounded-3xl text-center">
-          <p className="text-gray-500 text-sm mb-4">
+        <div className="mt-4 p-8 border border-ink-200 rounded-3xl text-center">
+          <p className="text-ink-500 text-sm mb-4">
             No submissions yet for this form.
           </p>
           <Button
@@ -457,35 +449,38 @@ function RouteComponent() {
           </Button>
         </div>
       ) : viewMode === "card" ? (
-        <div className="mt-4 space-y-4">
+        // Same ceiling as the table view, so switching between the two does
+        // not change how much of the page the list occupies. Grows with the
+        // cards up to it, then scrolls.
+        <div className="mt-3 max-h-[32rem] space-y-3 overflow-y-auto pr-1">
           {submissions.map((submission) => (
             <div
               key={submission.id}
-              className="p-5 border border-gray-200 rounded-3xl hover:border-accent/50 transition-colors cursor-pointer"
+              className="p-5 border border-ink-200 rounded-3xl hover:border-accent-500/50 transition-colors cursor-pointer"
               onClick={() => setSelectedSubmission(submission)}
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="flex-1">
-                  <p className="text-xs text-gray-600 mb-1">{submission.id}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-ink-600 mb-1">{submission.id}</p>
+                  <p className="text-xs text-ink-500">
                     {moment(submission.createdAt).format(
                       "MMM DD, YYYY [at] h:mm A",
                     )}
                   </p>
                 </div>
               </div>
-              <div className="bg-gray-50 p-4 rounded-2xl overflow-hidden">
-                <pre className="text-xs text-gray-700 overflow-x-auto whitespace-pre-wrap wrap-break-word">
+              <div className="bg-ink-50 p-4 rounded-2xl overflow-hidden">
+                <pre className="text-xs text-ink-700 overflow-x-auto whitespace-pre-wrap wrap-break-word">
                   {JSON.stringify(submission.payload, null, 2)}
                 </pre>
               </div>
               {(submission.ip || submission.userAgent) && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
+                <div className="mt-3 pt-3 border-t border-ink-200">
                   {submission.ip && (
-                    <p className="text-xs text-gray-500">IP: {submission.ip}</p>
+                    <p className="text-xs text-ink-500">IP: {submission.ip}</p>
                   )}
                   {submission.userAgent && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-ink-500 mt-1">
                       User Agent: {submission.userAgent}
                     </p>
                   )}
@@ -498,7 +493,7 @@ function RouteComponent() {
               <div className="flex justify-center py-4">
                 <HugeiconsIcon
                   icon={Loading03Icon}
-                  className="animate-spin text-gray-400"
+                  className="animate-spin text-ink-400"
                   size={24}
                 />
               </div>
@@ -506,100 +501,16 @@ function RouteComponent() {
           </div>
         </div>
       ) : (
-        <div className="mt-4 border border-gray-200 rounded-3xl overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 w-10">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-accent focus:ring-accent cursor-pointer"
-                    checked={
-                      submissions.length > 0 &&
-                      selectedSubmissionIds.length === submissions.length
-                    }
-                    onChange={toggleSelectAll}
-                  />
-                </th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 whitespace-nowrap">
-                  Timestamp
-                </th>
-                {allKeys.map((key) => (
-                  <th
-                    key={key}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-600 whitespace-nowrap"
-                  >
-                    {key}
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 whitespace-nowrap">
-                  IP
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {submissions.map((submission) => (
-                <tr
-                  key={submission.id}
-                  className={`hover:bg-gray-50 transition-colors cursor-pointer ${
-                    selectedSubmissionIds.includes(submission.id)
-                      ? "bg-accent/5"
-                      : ""
-                  }`}
-                  onClick={() => setSelectedSubmission(submission)}
-                >
-                  <td
-                    className="px-4 py-3"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <input
-                      type="checkbox"
-                      className="rounded border-gray-300 text-accent focus:ring-accent cursor-pointer"
-                      checked={selectedSubmissionIds.includes(submission.id)}
-                      onChange={() => toggleSelect(submission.id)}
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">
-                    {moment(submission.createdAt).format("MMM DD, h:mm A")}
-                  </td>
-                  {allKeys.map((key) => {
-                    const value = submission.payload[key];
-                    const displayValue =
-                      value !== undefined
-                        ? typeof value === "object"
-                          ? JSON.stringify(value)
-                          : String(value)
-                        : "-";
-                    return (
-                      <td
-                        key={key}
-                        className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap max-w-xs truncate"
-                      >
-                        {truncateText(displayValue)}
-                      </td>
-                    );
-                  })}
-                  <td className="px-4 py-3 text-xs text-gray-500 whitespace-nowrap">
-                    {submission.ip || "-"}
-                  </td>
-                </tr>
-              ))}
-              <tr ref={lastSubmissionElementRef}>
-                <td colSpan={allKeys.length + 3} className="p-0 border-0">
-                  {isFetchingNextPage && (
-                    <div className="flex justify-center py-4">
-                      <HugeiconsIcon
-                        icon={Loading03Icon}
-                        className="animate-spin text-gray-400"
-                        size={24}
-                      />
-                    </div>
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <SubmissionsTable
+          formId={id}
+          submissions={submissions}
+          selectedIds={selectedSubmissionIds}
+          onToggleSelect={toggleSelect}
+          onToggleSelectAll={toggleSelectAll}
+          onOpen={setSelectedSubmission}
+          lastRowRef={lastSubmissionElementRef}
+          isFetchingNextPage={isFetchingNextPage}
+        />
       )}
 
       <AnimatePresence>
@@ -617,35 +528,35 @@ function RouteComponent() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="fixed right-0 top-0 bottom-0 w-full max-w-2xl bg-white shadow-xl overflow-y-auto"
+              className="fixed top-0 right-0 bottom-0 w-full max-w-2xl overflow-y-auto border-l border-ink-200 bg-white"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+              <div className="sticky top-0 bg-white border-b border-ink-200 p-6 flex items-center justify-between">
                 <h3 className="text-lg font-semibold">Submission Details</h3>
                 <Button
                   onClick={() => setSelectedSubmission(null)}
                   variant="ghost"
                   size="sm"
-                  className="hover:bg-gray-100 p-2 h-auto"
+                  className="hover:bg-ink-100 p-2 h-auto"
                   icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
                 />
               </div>
 
               <div className="p-6 space-y-6">
                 <div>
-                  <label className="text-xs font-medium text-gray-600">
+                  <label className="text-xs font-medium text-ink-600">
                     Submission ID
                   </label>
-                  <p className="text-sm text-gray-900 mt-1">
+                  <p className="text-sm text-ink-950 mt-1">
                     {selectedSubmission.id}
                   </p>
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-600 block mb-3">
+                  <label className="text-xs font-medium text-ink-600 block mb-3">
                     Payload
                   </label>
-                  <div className="space-y-0 border border-gray-200 rounded-2xl overflow-hidden">
+                  <div className="space-y-0 border border-ink-200 rounded-2xl overflow-hidden">
                     {Object.entries(selectedSubmission.payload).map(
                       ([key, value]) => (
                         <div key={key} className="px-4 bg-white">
@@ -657,10 +568,10 @@ function RouteComponent() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-medium text-gray-600">
+                  <label className="text-xs font-medium text-ink-600">
                     Timestamp
                   </label>
-                  <p className="text-sm text-gray-900 mt-1">
+                  <p className="text-sm text-ink-950 mt-1">
                     {moment(selectedSubmission.createdAt).format(
                       "MMMM DD, YYYY [at] h:mm:ss A",
                     )}
@@ -669,10 +580,10 @@ function RouteComponent() {
 
                 {selectedSubmission.ip && (
                   <div>
-                    <label className="text-xs font-medium text-gray-600">
+                    <label className="text-xs font-medium text-ink-600">
                       IP Address
                     </label>
-                    <p className="text-sm text-gray-900 mt-1">
+                    <p className="text-sm text-ink-950 mt-1">
                       {selectedSubmission.ip}
                     </p>
                   </div>
@@ -680,10 +591,10 @@ function RouteComponent() {
 
                 {selectedSubmission.userAgent && (
                   <div>
-                    <label className="text-xs font-medium text-gray-600">
+                    <label className="text-xs font-medium text-ink-600">
                       User Agent
                     </label>
-                    <p className="text-sm text-gray-900 mt-1 break-all">
+                    <p className="text-sm text-ink-950 mt-1 break-all">
                       {selectedSubmission.userAgent}
                     </p>
                   </div>
@@ -703,26 +614,26 @@ function RouteComponent() {
       >
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+            <div className="w-10 h-10 rounded-full bg-tint-rose flex items-center justify-center text-tint-rose-ink">
               <HugeiconsIcon icon={AlertCircleIcon} size={20} />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-ink-950">
               Delete Submissions
             </h3>
           </div>
-          <p className="text-gray-600 text-sm">
+          <p className="text-ink-600 text-sm">
             Are you sure you want to delete {selectedSubmissionIds.length}{" "}
             selected submission
             {selectedSubmissionIds.length > 1 ? "s" : ""}? This action cannot be
             undone.
           </p>
         </div>
-        <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+        <div className="bg-ink-50 px-6 py-4 flex justify-end gap-3">
           <Button
             onClick={() => setShowDeleteConfirm(false)}
             variant="secondary"
             size="md"
-            className="rounded-lg bg-transparent border-transparent hover:bg-gray-100"
+            className="rounded-lg bg-transparent border-transparent hover:bg-ink-100"
           >
             Cancel
           </Button>
@@ -751,21 +662,21 @@ function RouteComponent() {
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">
+            <h3 className="text-xl font-bold text-ink-950">
               Export Submissions
             </h3>
             <Button
               onClick={() => setShowExportModal(false)}
               variant="ghost"
               size="sm"
-              className="p-2 hover:bg-gray-100 rounded-lg h-auto"
+              className="p-2 hover:bg-ink-100 rounded-lg h-auto"
               icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
             />
           </div>
 
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink-700 mb-2">
                 Format
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -776,7 +687,7 @@ function RouteComponent() {
                     className={`px-4 py-3 rounded-xl text-sm font-medium border transition-all ${
                       exportFormat === format
                         ? "bg-black text-white border-black"
-                        : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
+                        : "bg-white text-ink-700 border-ink-200 hover:border-ink-300"
                     }`}
                   >
                     {format.toUpperCase()}
@@ -786,7 +697,7 @@ function RouteComponent() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink-700 mb-2">
                 Filename
               </label>
               <div className="flex items-center">
@@ -794,27 +705,27 @@ function RouteComponent() {
                   type="text"
                   value={exportFilename}
                   onChange={(e) => setExportFilename(e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-black/5 border-r-0"
+                  className="flex-1 px-3 py-2 border border-ink-300 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-black/5 border-r-0"
                 />
-                <div className="px-3 py-2 bg-gray-50 border border-gray-300 border-l-0 rounded-r-xl text-gray-500 text-sm">
+                <div className="px-3 py-2 bg-ink-50 border border-ink-300 border-l-0 rounded-r-xl text-ink-500 text-sm">
                   .{exportFormat}
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-center gap-3 p-3 border border-ink-200 rounded-xl cursor-pointer hover:bg-ink-50 transition-colors">
                 <input
                   type="checkbox"
                   checked={includeMetadata}
                   onChange={(e) => setIncludeMetadata(e.target.checked)}
-                  className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
+                  className="w-4 h-4 text-black border-ink-300 rounded focus:ring-black"
                 />
                 <div className="text-sm">
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-ink-950">
                     Include technical details
                   </span>
-                  <p className="text-gray-500 text-xs mt-0.5">
+                  <p className="text-ink-500 text-xs mt-0.5">
                     Adds IP address, User Agent, and raw JSON payload to the
                     export
                   </p>
@@ -823,7 +734,7 @@ function RouteComponent() {
             </div>
 
             {!isPro && (
-              <div className="bg-gray-900 rounded-xl p-4 relative overflow-hidden">
+              <div className="bg-ink-950 rounded-xl p-4 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
 
                 <div className="relative flex gap-3">
@@ -838,14 +749,14 @@ function RouteComponent() {
                     <p className="font-semibold text-white">
                       Unlock Unlimited Exports
                     </p>
-                    <p className="mt-1 text-gray-300 leading-relaxed">
+                    <p className="mt-1 text-ink-300 leading-relaxed">
                       Free plans are limited to the most recent 1,000
                       submissions. Upgrade to Pro to export everything.
                     </p>
                     <Link
                       to="/app/settings"
                       search={{ tab: "billing" }}
-                      className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-white hover:text-gray-200 transition-colors"
+                      className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-white hover:text-ink-200 transition-colors"
                     >
                       Upgrade to Pro
                       <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
@@ -881,19 +792,19 @@ function RouteComponent() {
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">
+            <h3 className="text-xl font-bold text-ink-950">
               Integrate {formName}
             </h3>
             <Button
               onClick={() => setShowIntegrationModal(false)}
               variant="ghost"
               size="sm"
-              className="p-2 hover:bg-gray-100 rounded-lg h-auto"
+              className="p-2 hover:bg-ink-100 rounded-lg h-auto"
               icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
             />
           </div>
 
-          <div className="border rounded-3xl border-gray-200 p-4">
+          <div className="border rounded-3xl border-ink-200 p-4">
             <div className="flex items-center gap-x-4 relative">
               <div
                 className={`absolute h-10 w-10 rounded-lg transition-all duration-300 ease-out ${
@@ -930,7 +841,7 @@ function RouteComponent() {
                 }
               />
             </div>
-            <div className="border rounded-3xl border-gray-200 p-4 mt-5 relative bg-gray-50/50">
+            <div className="border rounded-3xl border-ink-200 p-4 mt-5 relative bg-ink-50/50">
               <CopyButton
                 text={
                   selectedTab === "html" ? htmlCodeExample : fetchCodeExample

@@ -66,8 +66,8 @@ function RouteComponent() {
   const forms = data ?? [];
 
   const header = (
-    <div className="flex items-center justify-between">
-      <div>
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="min-w-0">
         <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
           Forms
         </h2>

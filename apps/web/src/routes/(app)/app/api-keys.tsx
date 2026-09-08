@@ -12,7 +12,7 @@ import {
 import moment from "moment";
 import { CopyButton } from "@/components/copy-button";
 import { motion } from "motion/react";
-import { Button, ConfirmModal, Modal } from "@formdrop/ui";
+import { Button, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/api-keys")({
   head: () => ({
@@ -234,17 +234,47 @@ function ApiKeysPage() {
         </form>
       </Modal>
 
-      <ConfirmModal
+      {/* Delete Confirmation Modal */}
+      <Modal
         isOpen={deletingKeyId !== null}
         onClose={() => setDeletingKeyId(null)}
-        onConfirm={() => deletingKeyId && deleteMutation.mutate(deletingKeyId)}
-        title="Revoke API Key?"
-        description="Are you sure you want to revoke this API key? Any applications using it will immediately lose access. This action cannot be undone."
-        icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} />}
-        confirmLabel="Yes, Revoke Key"
-        pendingLabel="Revoking..."
-        isPending={deleteMutation.isPending}
-      />
+        label="Revoke API Key?"
+      >
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 bg-red-100 rounded-full">
+              <HugeiconsIcon
+                icon={AlertCircleIcon}
+                className="text-red-600"
+                size={24}
+              />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Revoke API Key?</h3>
+          </div>
+          <p className="text-gray-600 mb-6">
+            Are you sure you want to revoke this API key? Any applications using
+            it will immediately lose access. This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setDeletingKeyId(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() =>
+                deletingKeyId && deleteMutation.mutate(deletingKeyId)
+              }
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Revoking..." : "Yes, Revoke Key"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -16,7 +16,7 @@ export function HeroBackdrop() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[76rem] overflow-hidden"
     >
-      <div className="absolute inset-0 bg-lines mask-[linear-gradient(to_bottom,#000_0%,#000_62%,transparent_96%)]" />
+      <div className="absolute inset-0 bg-lines mask-[linear-gradient(to_bottom,black_0%,black_62%,transparent_96%)]" />
 
       <div className="absolute inset-0 bg-grain opacity-[0.02] mix-blend-multiply" />
     </div>

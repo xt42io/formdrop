@@ -210,7 +210,12 @@ function RouteComponent() {
                     handleAddDomain();
                   }
                 }}
-                className="flex-1 px-3 py-3 border border-ink-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent transition-all"
+                /* min-w-0 is what makes flex-1 actually shrink here. A flex
+                   item defaults to min-width:auto, and an <input> reports an
+                   intrinsic width from its size attribute -- about 20
+                   characters -- so this refused to go below ~200px and pushed
+                   the Add button past the edge of the panel. */
+                className="min-w-0 flex-1 rounded-2xl border border-ink-200 px-3 py-3 transition-all focus:border-accent focus:ring-2 focus:ring-accent-500/20 focus:outline-none"
                 placeholder="example.com"
               />
               <Button

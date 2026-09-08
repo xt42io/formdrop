@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
+import moment from "moment";
 import { StatStrip } from "@/components/stat-strip";
 import { comparePeriods, sumRecent, useChartTheme } from "@/lib/chart-theme";
 import {
@@ -22,8 +24,14 @@ export const Route = createFileRoute("/(app)/app/analytics")({
   component: RouteComponent,
 });
 
+type Range = 7 | 30;
+
 function RouteComponent() {
   const theme = useChartTheme();
+  // The API returns a fixed 30-day series, so the range narrows what is
+  // already here rather than refetching. Honest either way: 7 and 30 are both
+  // windows the data actually covers.
+  const [range, setRange] = useState<Range>(30);
   const { data, isLoading } = useQuery({
     queryKey: ["global-analytics"],
     queryFn: async () => {
@@ -66,6 +74,12 @@ function RouteComponent() {
   // showed that form a zero.
   const last7 = sumRecent(chartData);
   const comparison = comparePeriods(chartData);
+  const visible = chartData.slice(-range);
+
+  // A form with no submissions is not a top performer. Ranking them and
+  // labelling the section "top performing" said the opposite.
+  const ranked = topForms.filter((f) => f.submissionCount > 0);
+  const busiest = ranked[0]?.submissionCount ?? 0;
 
   return (
     <div>
@@ -100,109 +114,169 @@ function RouteComponent() {
         ]}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-        <div className="lg:col-span-2 p-6 border border-ink-200 rounded-panel bg-white">
-          <h3 className="text-lg font-semibold mb-6">Submission History</h3>
-          <div className="h-[400px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient
-                    id="colorSubmissions"
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={theme.accent}
-                      stopOpacity={0.18}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={theme.accent}
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  vertical={false}
-                  stroke={theme.grid}
-                />
-                <XAxis
-                  dataKey="date"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: theme.tick, fontSize: 11 }}
-                  dy={10}
-                  minTickGap={30}
-                />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: theme.tick, fontSize: 11 }}
-                  dx={-10}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: theme.surface,
-                    borderRadius: "12px",
-                    border: `1px solid ${theme.border}`,
-                  }}
-                  itemStyle={{ fontWeight: 600 }}
-                  cursor={{ stroke: theme.accent, strokeWidth: 1 }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="submissions"
-                  stroke={theme.accent}
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorSubmissions)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+      <div className="mt-3 rounded-panel border border-ink-200 bg-white p-6">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="text-base font-semibold text-ink-950">
+            Submission history
+          </h3>
+          {/* Narrows the window rather than refetching -- see above. */}
+          <div
+            role="group"
+            aria-label="Time range"
+            className="flex items-center gap-1 rounded-full border border-ink-200 p-1"
+          >
+            {([7, 30] as Range[]).map((days) => (
+              <button
+                key={days}
+                type="button"
+                onClick={() => setRange(days)}
+                aria-pressed={range === days}
+                className={`cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+                  range === days
+                    ? "bg-accent-500 text-white"
+                    : "text-ink-600 hover:text-ink-950"
+                }`}
+              >
+                {days} days
+              </button>
+            ))}
           </div>
         </div>
-
-        <div className="p-6 border border-ink-200 rounded-panel bg-white h-fit">
-          <h3 className="text-lg font-semibold mb-6">Top Performing Forms</h3>
-          {topForms.length === 0 ? (
-            <div className="text-center py-8 text-ink-500">
-              No data available yet
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {topForms.map((form, index) => (
-                <Link
-                  key={form.id}
-                  to="/app/forms/$id/analytics"
-                  params={{ id: form.id }}
-                  className="flex items-center justify-between p-3 hover:bg-ink-50 rounded-xl transition-colors group"
+        <div className="h-[320px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={visible}
+              margin={{ top: 4, right: 8, bottom: 0, left: -16 }}
+            >
+              <defs>
+                <linearGradient
+                  id="colorSubmissions"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-ink-100 text-sm font-semibold text-ink-600">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-medium text-ink-950">{form.name}</p>
-                      <p className="text-xs text-ink-500">
-                        {form.submissionCount.toLocaleString()} submissions
-                      </p>
-                    </div>
-                  </div>
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    size={16}
-                    className="text-ink-400 group-hover:text-ink-950 transition-colors"
+                  <stop
+                    offset="5%"
+                    stopColor={theme.accent}
+                    stopOpacity={0.18}
                   />
-                </Link>
-              ))}
-            </div>
-          )}
+                  <stop offset="95%" stopColor={theme.accent} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={false}
+                stroke={theme.grid}
+              />
+              <XAxis
+                dataKey="date"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: theme.tick, fontSize: 11 }}
+                tickFormatter={(value: string) => moment(value).format("MMM D")}
+                dy={8}
+                minTickGap={28}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: theme.tick, fontSize: 11 }}
+                allowDecimals={false}
+                width={44}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: theme.surface,
+                  borderRadius: "12px",
+                  border: `1px solid ${theme.border}`,
+                }}
+                itemStyle={{ fontWeight: 600 }}
+                labelFormatter={(value: string) =>
+                  moment(value).format("dddd, MMM D")
+                }
+                formatter={(value: number) => [value, "Submissions"]}
+                cursor={{ stroke: theme.accent, strokeWidth: 1 }}
+              />
+              {/* isAnimationActive is off deliberately. Recharts animates
+                  the series up from a flat baseline, so if those frames do
+                  not run -- a background tab, a throttled device -- the
+                  chart is left drawing a straight line at zero, which is not
+                  a missing flourish but wrong data. tokens.css makes the
+                  same argument for entrance utilities, and W4 requires
+                  prefers-reduced-motion to disable entrance animation
+                  anyway. */}
+              <Area
+                isAnimationActive={false}
+                type="monotone"
+                dataKey="submissions"
+                stroke={theme.accent}
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#colorSubmissions)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Below the chart rather than beside it. In a third-width column the
+          longer form names wrapped onto two lines and the chart lost most of
+          its horizontal room -- the axis is the thing that needs width. */}
+      <div className="mt-3 overflow-hidden rounded-panel border border-ink-200 bg-white">
+        <div className="flex items-baseline justify-between border-b border-ink-100 px-6 py-4">
+          <h3 className="text-base font-semibold text-ink-950">
+            Busiest forms
+          </h3>
+          <span className="text-xs text-ink-500">All time</span>
+        </div>
+
+        {ranked.length === 0 ? (
+          <p className="px-6 py-10 text-center text-sm text-ink-500">
+            Nothing collected yet. Once a form receives its first submission it
+            shows up here.
+          </p>
+        ) : (
+          <div className="divide-y divide-ink-100">
+            {ranked.map((form, index) => (
+              <Link
+                key={form.id}
+                to="/app/forms/$id/analytics"
+                params={{ id: form.id }}
+                className="group flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-accent-500/4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-inset"
+              >
+                <span className="w-4 shrink-0 text-sm font-semibold text-ink-400 tabular-nums">
+                  {index + 1}
+                </span>
+
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-medium text-ink-950 transition-colors group-hover:text-accent-600">
+                    {form.name}
+                  </span>
+                  {/* Share of the busiest form, so the ranking is legible at a
+                      glance instead of only through the numbers. */}
+                  <span className="mt-1.5 block h-1 w-full overflow-hidden rounded-full bg-ink-100">
+                    <span
+                      className="block h-full rounded-full bg-accent-500/70"
+                      style={{
+                        width: `${Math.max(2, (form.submissionCount / busiest) * 100)}%`,
+                      }}
+                    />
+                  </span>
+                </span>
+
+                <span className="shrink-0 text-sm font-semibold text-ink-950 tabular-nums">
+                  {form.submissionCount.toLocaleString()}
+                </span>
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  size={16}
+                  className="shrink-0 text-ink-300 transition-colors group-hover:text-accent-600"
+                />
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

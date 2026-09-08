@@ -1,11 +1,12 @@
-import { MouseLeftClick01Icon, Add01Icon } from "@hugeicons/core-free-icons";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import moment from "moment";
+import { Add01Icon } from "@hugeicons/core-free-icons";
+import { createFileRoute } from "@tanstack/react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
-import { Modal } from "@formdrop/ui";
+import { Button, Modal } from "@formdrop/ui";
+import { FormsTable } from "@/components/forms-table";
+import { FormsEmptyState } from "@/components/forms-empty-state";
 export const Route = createFileRoute("/(app)/app/forms/")({
   head: () => ({
     meta: [{ title: "Forms | FormDrop" }],
@@ -61,26 +62,42 @@ function RouteComponent() {
     },
   });
 
+  const forms = data ?? [];
+
+  const header = (
+    <div className="flex items-center justify-between">
+      <div>
+        <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+          Forms
+        </h2>
+        <p className="mt-1 text-sm text-ink-600">
+          Every endpoint collecting submissions for you.
+        </p>
+      </div>
+      <Button
+        onClick={() => setIsCreateModalOpen(true)}
+        icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
+      >
+        Create Form
+      </Button>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <div>
-        <div className="flex items-center justify-between py-2">
-          <h2 className="text-lg font-semibold">Forms</h2>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-accent hover:bg-accent/90 transition-colors text-white px-5 py-3 rounded-3xl font-semibold text-sm"
-          >
-            Create Form
-          </button>
-        </div>
-        <div className="mt-4 space-y-4">
-          {[1, 2, 3].map((i) => (
+        {header}
+        <div className="mt-6 overflow-hidden rounded-panel border border-ink-200 bg-white">
+          {[0, 1, 2].map((row) => (
             <div
-              key={i}
-              className="p-5 border border-gray-200 rounded-3xl animate-pulse"
+              key={row}
+              className="flex items-center justify-between border-b border-ink-100 px-5 py-5 last:border-b-0"
             >
-              <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 w-40 animate-pulse rounded bg-ink-100" />
+                <div className="h-3 w-24 animate-pulse rounded bg-ink-100" />
+              </div>
+              <div className="h-8 w-24 animate-pulse rounded bg-ink-100" />
             </div>
           ))}
         </div>
@@ -91,17 +108,9 @@ function RouteComponent() {
   if (error) {
     return (
       <div>
-        <div className="flex items-center justify-between py-2">
-          <h2 className="text-lg font-semibold">Forms</h2>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-accent hover:bg-accent/90 transition-colors text-white px-5 py-3 rounded-3xl font-semibold text-sm"
-          >
-            Create Form
-          </button>
-        </div>
-        <div className="mt-4 p-5 border border-red-200 rounded-3xl bg-red-50">
-          <p className="text-red-600 text-sm">
+        {header}
+        <div className="mt-6 rounded-panel border border-tint-rose bg-tint-rose/40 p-5">
+          <p className="text-sm text-tint-rose-ink">
             Failed to load forms: {error.message}
           </p>
         </div>
@@ -109,73 +118,14 @@ function RouteComponent() {
     );
   }
 
-  const forms = data || [];
-
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Forms</h2>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="bg-accent hover:bg-accent/90 transition-colors text-white px-5 py-3 rounded-3xl font-semibold text-sm"
-        >
-          Create Form
-        </button>
-      </div>
+      {header}
 
       {forms.length === 0 ? (
-        <div className="mt-4 p-12 border border-gray-200 rounded-3xl flex flex-col items-center justify-center text-center bg-gray-50/50">
-          <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mb-6 text-accent">
-            <HugeiconsIcon icon={MouseLeftClick01Icon} size={32} />
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">No forms yet</h3>
-          <p className="text-gray-500 max-w-md mb-8">
-            Create your first form to start collecting submissions. It only
-            takes a few seconds.
-          </p>
-          <button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-accent hover:bg-accent/90 transition-colors text-white px-6 py-3 rounded-2xl font-semibold shadow-lg shadow-accent/20 flex items-center gap-2"
-          >
-            <HugeiconsIcon icon={Add01Icon} size={20} />
-            Create New Form
-          </button>
-        </div>
+        <FormsEmptyState onCreate={() => setIsCreateModalOpen(true)} />
       ) : (
-        <div className="mt-4 space-y-4">
-          {forms.map((form) => (
-            <Link
-              to="/app/forms/$id/submissions"
-              params={{
-                id: form.id,
-              }}
-              key={form.id}
-              className="p-5 border border-gray-200 rounded-3xl flex justify-between items-center hover:border-accent/50 transition-colors"
-            >
-              <div className="">
-                <h3 className="font-medium">{form.name}</h3>
-                <div className="flex gap-x-2 items-center mt-1">
-                  <p className="text-xs text-gray-600">{form.id}</p>
-                  <p className="text-xs text-gray-600 bg-gray-200/70 px-2 py-1 rounded-lg">
-                    {moment(form.createdAt).format("MMM DD, YYYY")}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-x-2">
-                <div className="flex items-center text-gray-500 bg-gray-200/70 px-3 py-1 rounded-lg font-medium gap-x-2">
-                  <HugeiconsIcon
-                    icon={MouseLeftClick01Icon}
-                    size={14}
-                    className="text-accent"
-                  />
-                  <span className="text-xs">
-                    {form.submissionCount?.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <FormsTable forms={forms} />
       )}
 
       <Modal
@@ -184,12 +134,15 @@ function RouteComponent() {
         label="Create New Form"
       >
         <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
+          <h3 className="mb-1 text-lg font-semibold text-ink-950">
             Create New Form
           </h3>
+          <p className="mb-5 text-sm text-ink-600">
+            You can rename it later; the endpoint URL will not change.
+          </p>
           <form onSubmit={handleCreate}>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="mb-1.5 block text-sm font-medium text-ink-700">
                 Form Name
               </label>
               <input
@@ -197,32 +150,28 @@ function RouteComponent() {
                 value={newFormName}
                 onChange={(e) => setNewFormName(e.target.value)}
                 placeholder="e.g. Contact Us"
-                className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent"
+                className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-950 transition-colors placeholder:text-ink-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none"
                 autoFocus
               />
             </div>
 
             {createError && (
-              <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl">
+              <div className="mb-4 rounded-xl bg-tint-rose px-3 py-2.5 text-sm text-tint-rose-ink">
                 {createError}
               </div>
             )}
 
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                onClick={closeCreateModal}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-              >
+            <div className="mt-6 flex justify-end gap-3">
+              <Button type="button" variant="ghost" onClick={closeCreateModal}>
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
                 disabled={createMutation.isPending || !newFormName.trim()}
-                className="px-4 py-2 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                isLoading={createMutation.isPending}
               >
                 {createMutation.isPending ? "Creating..." : "Create Form"}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

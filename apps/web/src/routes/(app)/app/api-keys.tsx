@@ -278,9 +278,13 @@ function ApiKeyRow({
     return () => clearTimeout(timer);
   }, [revealed]);
 
+  // Stacked below sm. The key pill is shrink-0 by necessity -- a truncated
+  // secret is useless -- so on one line it took its ~150px out of the name,
+  // which is the field that identifies the key: "Production server" came out
+  // as "Production s..." and "Staging" as "S...".
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-6 py-4">
-      <div className="min-w-0 flex-1">
+    <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-3 sm:px-6">
+      <div className="min-w-0 sm:flex-1">
         <div className="flex items-center gap-2">
           <span className="truncate text-[15px] font-semibold text-ink-950">
             {apiKey.name || "Untitled key"}
@@ -299,11 +303,11 @@ function ApiKeyRow({
         </div>
       </div>
 
-      <code className="min-w-0 shrink-0 rounded-lg bg-ink-50 px-2.5 py-1.5 font-mono text-xs text-ink-700">
+      <code className="w-fit max-w-full shrink-0 rounded-lg bg-ink-50 px-2.5 py-1.5 font-mono text-xs break-all text-ink-700">
         {revealed ? apiKey.key : `${apiKey.key.slice(0, 12)}${"•".repeat(8)}`}
       </code>
 
-      <div className="flex shrink-0 items-center gap-1">
+      <div className="-ml-2 flex shrink-0 items-center gap-1 sm:ml-0">
         <Button
           variant="ghost"
           size="sm"

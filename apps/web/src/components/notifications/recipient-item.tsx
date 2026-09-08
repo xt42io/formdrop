@@ -51,14 +51,23 @@ export function RecipientItem({
   isToggleDisabled,
   isResending,
 }: RecipientItemProps) {
+  // gap-3 and min-w-0 are what keep the actions on screen. Nothing in this row
+  // could shrink, so a long address or a two-word status badge pushed the
+  // toggle and the delete button clean off the right edge -- the panel grew a
+  // horizontal scrollbar rather than the row adapting.
   return (
-    <div className="p-4 flex items-center justify-between hover:bg-ink-50 transition-colors">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between gap-3 p-4 transition-colors hover:bg-ink-50">
+      <div className="flex min-w-0 items-center gap-3">
         <div className="h-8 w-8 rounded-full bg-ink-100 flex items-center justify-center text-ink-500">
           <HugeiconsIcon icon={Mail01Icon} size={16} />
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-ink-950">{email}</span>
+        {/* Wraps: the badge drops under the address rather than stealing its
+            width, which matters most for "Invitation Expired" -- the longest
+            of the three, and the one whose resend button sits beside it. */}
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="truncate text-sm font-medium text-ink-950">
+            {email}
+          </span>
 
           {status.type === "pending" && (
             <Tooltip
@@ -73,7 +82,7 @@ export function RecipientItem({
                 </div>
               }
             >
-              <span className="px-2 py-0.5 rounded-full bg-tint-amber text-xs font-medium text-tint-amber-ink">
+              <span className="shrink-0 rounded-full px-2 py-0.5 whitespace-nowrap bg-tint-amber text-xs font-medium text-tint-amber-ink">
                 Pending Verification
               </span>
             </Tooltip>
@@ -91,7 +100,7 @@ export function RecipientItem({
               }
             >
               <div className="flex items-center gap-1.5">
-                <span className="px-2 py-0.5 rounded-full bg-tint-rose text-xs font-medium text-tint-rose-ink">
+                <span className="shrink-0 rounded-full px-2 py-0.5 whitespace-nowrap bg-tint-rose text-xs font-medium text-tint-rose-ink">
                   Invitation Expired
                 </span>
                 <Button
@@ -118,14 +127,14 @@ export function RecipientItem({
                 </div>
               }
             >
-              <span className="px-2 py-0.5 rounded-full bg-tint-green text-xs font-medium text-tint-green-ink">
+              <span className="shrink-0 rounded-full px-2 py-0.5 whitespace-nowrap bg-tint-green text-xs font-medium text-tint-green-ink">
                 Verified
               </span>
             </Tooltip>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         {/* An unverified recipient reads as off even when the row says
             enabled, so `checked` is narrowed here rather than in Toggle. */}
         <Toggle

@@ -30,7 +30,15 @@ import type { Form } from "@/lib/app-client";
  * hanging far from the label they belong to -- and inconsistent with the
  * Created column sitting next to them.
  */
-const COLUMNS = "grid grid-cols-[minmax(0,1fr)_7rem_10rem] items-center gap-4";
+/*
+ * Created drops below sm. Three tracks needed 272px of fixed width plus gaps
+ * inside a 327px content box, which left the form name -- the thing you are
+ * actually scanning for -- a couple of characters wide, since minmax(0,1fr)
+ * will happily shrink to nothing. A date is the least useful of the three on a
+ * phone, so it is the one that goes.
+ */
+const COLUMNS =
+  "grid-cols-[minmax(0,1fr)_4.5rem] sm:grid-cols-[minmax(0,1fr)_7rem_10rem] items-center gap-3 sm:gap-4";
 
 export function FormsTable({ forms }: { forms: Form[] }) {
   return (
@@ -42,7 +50,7 @@ export function FormsTable({ forms }: { forms: Form[] }) {
           the moment there were enough forms to scroll. */}
       <div className="max-h-[26rem] overflow-y-auto">
         <div
-          className={`${COLUMNS} sticky top-0 z-10 border-b border-ink-200 bg-ink-50 px-6 py-3`}
+          className={`${COLUMNS} sticky top-0 z-10 hidden border-b border-ink-200 bg-ink-50 px-4 py-3 sm:grid sm:px-6`}
         >
           <span className="text-xs font-medium tracking-wide text-ink-500 uppercase">
             Form
@@ -50,7 +58,7 @@ export function FormsTable({ forms }: { forms: Form[] }) {
           <span className="text-xs font-medium tracking-wide text-ink-500 uppercase">
             Submissions
           </span>
-          <span className="text-xs font-medium tracking-wide text-ink-500 uppercase">
+          <span className="hidden text-xs font-medium tracking-wide text-ink-500 uppercase sm:inline">
             Created
           </span>
         </div>
@@ -61,7 +69,7 @@ export function FormsTable({ forms }: { forms: Form[] }) {
               key={form.id}
               to="/app/forms/$id/submissions"
               params={{ id: form.id }}
-              className={`${COLUMNS} group relative px-6 py-5 transition-colors hover:bg-accent-500/4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-inset`}
+              className={`${COLUMNS} group relative grid px-4 py-4 transition-colors sm:px-6 sm:py-5 hover:bg-accent-500/4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-inset`}
             >
               {/* An accent rail on the row under the cursor, so the eye has an
                 edge to track along. Scaled rather than faded. */}
@@ -83,7 +91,7 @@ export function FormsTable({ forms }: { forms: Form[] }) {
                 {(form.submissionCount ?? 0).toLocaleString()}
               </div>
 
-              <div className="text-sm whitespace-nowrap text-ink-500">
+              <div className="hidden text-sm whitespace-nowrap text-ink-500 sm:block">
                 {moment(form.createdAt).format("MMM D, YYYY")}
               </div>
             </Link>

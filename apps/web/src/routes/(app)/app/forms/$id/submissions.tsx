@@ -27,7 +27,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CopyButton } from "@/components/copy-button";
-import { Button, ConfirmModal, Modal } from "@formdrop/ui";
+import { Button, Modal } from "@formdrop/ui";
 
 import { useIsPro } from "@/hooks/use-is-pro";
 import * as XLSX from "xlsx";
@@ -694,26 +694,55 @@ function RouteComponent() {
         )}
       </AnimatePresence>
 
-      <ConfirmModal
+      <Modal
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
-        onConfirm={confirmDelete}
-        title="Delete Submissions"
-        description={
-          <>
+        label="Delete Submissions"
+        scrim="bg-black/50"
+        radius="rounded-2xl"
+      >
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600">
+              <HugeiconsIcon icon={AlertCircleIcon} size={20} />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Delete Submissions
+            </h3>
+          </div>
+          <p className="text-gray-600 text-sm">
             Are you sure you want to delete {selectedSubmissionIds.length}{" "}
             selected submission
             {selectedSubmissionIds.length > 1 ? "s" : ""}? This action cannot be
             undone.
-          </>
-        }
-        icon={<HugeiconsIcon icon={AlertCircleIcon} size={20} />}
-        confirmLabel="Delete"
-        pendingLabel="Deleting..."
-        isPending={deleteMutation.isPending}
-        confirmIcon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
-        scrim="bg-black/50"
-      />
+          </p>
+        </div>
+        <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+          <Button
+            onClick={() => setShowDeleteConfirm(false)}
+            variant="secondary"
+            size="md"
+            className="rounded-lg bg-transparent border-transparent hover:bg-gray-100"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={confirmDelete}
+            disabled={deleteMutation.isPending}
+            isLoading={deleteMutation.isPending}
+            variant="danger"
+            size="md"
+            className="rounded-lg"
+            icon={
+              !deleteMutation.isPending && (
+                <HugeiconsIcon icon={Delete02Icon} size={16} />
+              )
+            }
+          >
+            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+          </Button>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={showExportModal}

@@ -41,7 +41,7 @@ interface IntegrationCardProps {
 
 export function IntegrationCard({
   icon,
-  iconClassName = "bg-accent/10 text-accent",
+  iconClassName = "bg-accent-500/10 text-accent",
   title,
   description,
   isEnabled,
@@ -62,7 +62,7 @@ export function IntegrationCard({
 
   return (
     <div
-      className={`bg-white rounded-3xl border border-gray-200 overflow-hidden ${className}`}
+      className={`bg-white rounded-3xl border border-ink-200 overflow-hidden ${className}`}
     >
       <div className="p-6 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -72,8 +72,8 @@ export function IntegrationCard({
             {icon}
           </div>
           <div>
-            <h3 className="text-sm font-medium text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-500">{description}</p>
+            <h3 className="text-sm font-medium text-ink-950">{title}</h3>
+            <p className="text-sm text-ink-500">{description}</p>
           </div>
         </div>
 
@@ -101,7 +101,7 @@ export function IntegrationCard({
                   disabled={isDisconnecting}
                   variant="ghost"
                   size="sm"
-                  className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl"
+                  className="text-ink-600 hover:text-ink-800 hover:bg-ink-100 rounded-xl"
                 >
                   Disconnect
                 </Button>

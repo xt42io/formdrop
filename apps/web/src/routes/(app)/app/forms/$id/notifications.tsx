@@ -1,8 +1,8 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useSession } from "@/lib/auth-client";
-import { ArrowLeft01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { EmailNotificationsSection } from "@/components/notifications/email-notifications-section";
 import { SlackNotificationsSection } from "@/components/notifications/slack-notifications-section";
@@ -59,12 +59,12 @@ function RouteComponent() {
     return (
       <div className="max-w-3xl mx-auto animate-pulse">
         <div className="flex items-center gap-x-3 py-2 mb-6">
-          <div className="h-10 w-10 bg-gray-200 rounded-lg"></div>
-          <div className="h-6 w-32 bg-gray-200 rounded"></div>
+          <div className="h-8 w-48 animate-pulse rounded bg-ink-100"></div>
+          <div className="h-4 w-64 animate-pulse rounded bg-ink-100"></div>
         </div>
         <div className="space-y-8">
-          <div className="h-32 w-full bg-gray-200 rounded-3xl"></div>
-          <div className="h-64 w-full bg-gray-200 rounded-3xl"></div>
+          <div className="h-24 w-full animate-pulse rounded-panel bg-ink-100"></div>
+          <div className="h-64 w-full animate-pulse rounded-panel bg-ink-100"></div>
         </div>
       </div>
     );
@@ -129,14 +129,14 @@ function RouteComponent() {
             <div className="flex flex-col items-center text-center">
               {/* Icon with gradient background */}
               <div
-                className={`w-24 h-24 ${modalContent.bgColor} rounded-3xl flex items-center justify-center mb-6 shadow-lg`}
+                className={`w-24 h-24 ${modalContent.bgColor} rounded-panel flex items-center justify-center mb-6`}
               >
                 {modalContent.icon}
               </div>
 
               {/* Success checkmark badge */}
               <div
-                className={`w-12 h-12 ${modalContent.checkBgColor} rounded-full flex items-center justify-center mb-5 shadow-sm`}
+                className={`w-12 h-12 ${modalContent.checkBgColor} rounded-full flex items-center justify-center mb-5`}
               >
                 <HugeiconsIcon
                   icon={Tick02Icon}
@@ -146,12 +146,12 @@ function RouteComponent() {
               </div>
 
               {/* Title */}
-              <h3 className="text-3xl font-bold mb-3 bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <h3 className="mb-3 text-2xl font-semibold tracking-[-0.02em] text-ink-950">
                 {modalContent.title}
               </h3>
 
               {/* Description */}
-              <p className="text-gray-600 mb-8 text-base leading-relaxed">
+              <p className="mb-8 text-sm leading-relaxed text-ink-600">
                 {modalContent.description}
               </p>
 
@@ -160,7 +160,7 @@ function RouteComponent() {
                 onClick={handleCloseModal}
                 variant="primary"
                 size="lg"
-                className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]`}
+                className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full transition-transform active:scale-[0.98]`}
               >
                 Got it!
               </Button>
@@ -170,15 +170,22 @@ function RouteComponent() {
       </Modal>
 
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-x-3 py-2 mb-6">
-          <Link
-            to="/app/forms"
-            className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-          </Link>
-          <h2 className="text-lg font-semibold">Notifications</h2>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+            Notifications
+          </h2>
+          <p className="mt-1 text-sm text-ink-600">
+            Where a submission goes the moment it arrives.
+          </p>
         </div>
+
+        {/* Four cards in a row read as four equal choices. They are not: email
+            is on by default and owns the recipient list beneath it, while
+            Slack and Discord are optional channels you connect. The grouping
+            says so. */}
+        <p className="mb-3 text-xs font-medium tracking-wide text-ink-500 uppercase">
+          Email
+        </p>
 
         <EmailNotificationsSection
           formId={id}
@@ -192,6 +199,10 @@ function RouteComponent() {
             recipients={recipients || []}
           />
         )}
+
+        <p className="mt-8 mb-3 text-xs font-medium tracking-wide text-ink-500 uppercase">
+          Channels
+        </p>
 
         <SlackNotificationsSection
           isConnected={form?.slackConnected ?? false}

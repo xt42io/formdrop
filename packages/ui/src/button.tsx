@@ -19,17 +19,34 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 const baseStyles =
   "inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
+/*
+ * On the token ramps. This is the last file in packages/ui and apps/web
+ * outside the admin surface still mixing Tailwind's stock palette into a
+ * shared surface, and it is the one that mattered most: sixty-nine call sites
+ * take their colour from here, so a call site could be perfectly tokenised and
+ * still paint a stock grey.
+ *
+ * `danger` moves to tint-rose-ink, which is also what the quota meters and the
+ * destructive text elsewhere use, so one red means one thing. White on it is
+ * 6.1:1, up from red-600's 4.8:1.
+ *
+ * Its hover lightens where `primary`'s darkens, and that asymmetry is real
+ * rather than an oversight: the accent ramp has a 600 step to darken into, and
+ * the tint palette has no rose ramp at all -- only the pastel ground and this
+ * ink. Inventing a token here would be the tail wagging the dog; /90 over the
+ * page is the same thing `primary` itself did until this commit.
+ */
 const variants = {
   primary:
-    "bg-accent text-white hover:bg-accent/90 focus:ring-accent border border-transparent shadow-sm",
+    "bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-500 border border-transparent shadow-sm",
   secondary:
-    "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500",
+    "bg-white text-ink-700 border border-ink-300 hover:bg-ink-50 focus:ring-ink-500",
   outline:
-    "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 focus:ring-gray-500",
+    "bg-white text-ink-700 border border-ink-200 hover:bg-ink-50 focus:ring-ink-500",
   ghost:
-    "text-gray-600 hover:bg-gray-100 focus:ring-gray-500 bg-transparent border border-transparent",
+    "text-ink-600 hover:bg-ink-100 focus:ring-ink-500 bg-transparent border border-transparent",
   danger:
-    "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 border border-transparent",
+    "bg-tint-rose-ink text-white hover:bg-tint-rose-ink/90 focus:ring-tint-rose-ink border border-transparent",
 };
 
 const sizes = {

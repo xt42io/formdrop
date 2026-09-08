@@ -245,7 +245,11 @@ export function Sidebar() {
               >
                 <div
                   className={`h-full rounded-full transition-[width] duration-500 ${
-                    quota.exceeded ? "bg-red-500" : "bg-accent-500"
+                    // tint-rose-ink rather than a stock red: the billing panel
+                    // draws the same meter from the same quota, and two bars
+                    // reporting one fact in two different reds is a bug
+                    // waiting to be noticed.
+                    quota.exceeded ? "bg-tint-rose-ink" : "bg-accent-500"
                   }`}
                   style={{
                     width: `${Math.min(100, (quota.used / quota.limit) * 100)}%`,

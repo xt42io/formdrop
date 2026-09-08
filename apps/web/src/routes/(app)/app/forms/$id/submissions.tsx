@@ -317,7 +317,7 @@ function RouteComponent() {
   if (isLoading) {
     return (
       <div>
-        <div className="flex items-center justify-between py-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 py-2">
           <div className="flex items-center gap-x-3">
             <Link
               to="/app/forms"
@@ -354,7 +354,7 @@ function RouteComponent() {
   if (error) {
     return (
       <div>
-        <div className="flex items-center justify-between py-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 py-2">
           <div className="flex items-center gap-x-3">
             <Link
               to="/app/forms"
@@ -376,7 +376,10 @@ function RouteComponent() {
 
   return (
     <div>
-      <div className="sticky top-[69px] z-10 bg-white flex items-center justify-between py-2">
+      {/* top-[69px] clears the form header above it. That header is shorter
+          below sm (a smaller title, a wrapped button row), so the offset has
+          to be too, or this bar sticks with a gap under the one above it. */}
+      <div className="sticky top-[57px] z-10 flex flex-wrap items-center justify-between gap-2 bg-white py-2 sm:top-[69px]">
         <div className="flex items-center gap-x-3">
           <Link
             to="/app/forms"
@@ -394,7 +397,7 @@ function RouteComponent() {
             )}
           </h2>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex shrink-0 items-center gap-2">
           {selectedSubmissionIds.length > 0 && (
             <Button
               onClick={handleDelete}

@@ -47,7 +47,7 @@ export function Toggle({
       onClick={onChange}
       disabled={disabled}
       className={`relative inline-flex ${tracks[size]} items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 ${
-        checked ? "bg-accent" : "bg-gray-200"
+        checked ? "bg-accent" : "bg-ink-200"
       } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
     >
       <span

@@ -139,7 +139,7 @@ export function RecipientItem({
           onClick={onDelete}
           variant="ghost"
           size="sm"
-          className="text-ink-400 hover:text-tint-rose-ink hover:bg-tint-rose p-2 h-auto"
+          className="hover:text-tint-rose-ink hover:bg-tint-rose p-2 h-auto"
           icon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
         />
       </div>

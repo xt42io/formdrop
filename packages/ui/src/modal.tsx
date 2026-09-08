@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 
 /**
@@ -54,7 +56,31 @@ export function Modal({
   className = "",
   children,
 }: ModalProps) {
-  return (
+  /*
+   * Rendered into <body> rather than where it is written.
+   *
+   * `position: fixed` is only relative to the viewport when no ancestor
+   * establishes a containing block for it, and any ancestor carrying a
+   * non-none transform, translate, scale, filter, backdrop-filter, perspective
+   * or contain does exactly that. The dashboard's own entrance utility sets
+   * `translate`, so a dialog opened from inside one of those sections had
+   * `fixed inset-0` resolve against that section's box: the scrim covered only
+   * the panel it was opened from, and the dialog centred itself inside that
+   * panel instead of the page.
+   *
+   * Portalling fixes the whole class of it rather than the one instance --
+   * every call site is inside *some* subtree, and a future `translate` three
+   * levels up would otherwise break a dialog nobody thought to re-test.
+   *
+   * `mounted` keeps this off the server, where there is no document. Nothing is
+   * lost: a dialog is closed on first paint, so there is no open one to render.
+   */
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -78,6 +104,7 @@ export function Modal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

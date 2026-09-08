@@ -70,10 +70,10 @@ export function Tooltip({ content, children }: TooltipProps) {
               }`,
             }}
           >
-            <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg relative">
+            <div className="bg-ink-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap relative">
               {content}
               <div
-                className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-gray-900 rotate-45 ${
+                className={`absolute left-1/2 -translate-x-1/2 w-2 h-2 bg-ink-900 rotate-45 ${
                   position === "top" ? "-bottom-1" : "-top-1"
                 }`}
               />

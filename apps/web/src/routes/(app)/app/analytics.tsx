@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
+import { StatStrip } from "@/components/stat-strip";
+import { comparePeriods, sumRecent, useChartTheme } from "@/lib/chart-theme";
 import {
   Area,
   AreaChart,
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/(app)/app/analytics")({
 });
 
 function RouteComponent() {
+  const theme = useChartTheme();
   const { data, isLoading } = useQuery({
     queryKey: ["global-analytics"],
     queryFn: async () => {
@@ -35,17 +38,17 @@ function RouteComponent() {
   if (isLoading) {
     return (
       <div className="p-4 md:p-8 max-w-6xl mx-auto">
-        <div className="h-8 w-48 bg-gray-100 rounded-lg animate-pulse mb-8"></div>
+        <div className="h-8 w-48 bg-ink-100 rounded-lg animate-pulse mb-8"></div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-32 bg-gray-100 rounded-3xl animate-pulse"
+              className="h-32 bg-ink-100 rounded-panel animate-pulse"
             ></div>
           ))}
         </div>
-        <div className="h-96 bg-gray-100 rounded-3xl animate-pulse mb-8"></div>
-        <div className="h-64 bg-gray-100 rounded-3xl animate-pulse"></div>
+        <div className="h-96 bg-ink-100 rounded-panel animate-pulse mb-8"></div>
+        <div className="h-64 bg-ink-100 rounded-panel animate-pulse"></div>
       </div>
     );
   }
@@ -56,37 +59,49 @@ function RouteComponent() {
     topForms: [],
   };
 
-  return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">
-        Global Analytics
-      </h1>
+  // Both derived from the series already on the page rather than a second
+  // request. The count is computed independently of the comparison: a form
+  // with nine days of history has no previous week to compare against, but it
+  // certainly has a last-seven-days figure, and reading it off `comparison`
+  // showed that form a zero.
+  const last7 = sumRecent(chartData);
+  const comparison = comparePeriods(chartData);
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white">
-          <p className="text-sm font-medium text-gray-500">Total Forms</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {stats.totalForms.toLocaleString()}
-          </p>
-        </div>
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white">
-          <p className="text-sm font-medium text-gray-500">Total Submissions</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {stats.totalSubmissions.toLocaleString()}
-          </p>
-        </div>
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white">
-          <p className="text-sm font-medium text-gray-500">
-            Submissions (30 Days)
-          </p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {stats.submissionsThisMonth.toLocaleString()}
-          </p>
-        </div>
+  return (
+    <div>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+          Analytics
+        </h1>
+        <p className="mt-1 text-sm text-ink-600">
+          Everything your forms have collected, across the account.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 p-6 border border-gray-200 rounded-3xl bg-white">
+      <StatStrip
+        stats={[
+          {
+            label: "Total submissions",
+            value: stats.totalSubmissions,
+            detail: `across ${stats.totalForms.toLocaleString()} forms`,
+            feature: true,
+          },
+          {
+            label: "Last 7 days",
+            value: last7,
+            delta: comparison,
+            detail: comparison ? "vs previous 7" : "not enough history yet",
+          },
+          {
+            label: "Last 30 days",
+            value: stats.submissionsThisMonth,
+            detail: "rolling window",
+          },
+        ]}
+      />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="lg:col-span-2 p-6 border border-ink-200 rounded-panel bg-white">
           <h3 className="text-lg font-semibold mb-6">Submission History</h3>
           <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -99,43 +114,50 @@ function RouteComponent() {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="5%" stopColor="#6f63e4" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#6f63e4" stopOpacity={0} />
+                    <stop
+                      offset="5%"
+                      stopColor={theme.accent}
+                      stopOpacity={0.18}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={theme.accent}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#E5E7EB"
+                  stroke={theme.grid}
                 />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
+                  tick={{ fill: theme.tick, fontSize: 11 }}
                   dy={10}
                   minTickGap={30}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6B7280", fontSize: 12 }}
+                  tick={{ fill: theme.tick, fontSize: 11 }}
                   dx={-10}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#fff",
+                    backgroundColor: theme.surface,
                     borderRadius: "12px",
-                    border: "1px solid #E5E7EB",
-                    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                    border: `1px solid ${theme.border}`,
                   }}
-                  itemStyle={{ color: "#111827", fontWeight: 600 }}
-                  cursor={{ stroke: "#6f63e4", strokeWidth: 1 }}
+                  itemStyle={{ fontWeight: 600 }}
+                  cursor={{ stroke: theme.accent, strokeWidth: 1 }}
                 />
                 <Area
                   type="monotone"
                   dataKey="submissions"
-                  stroke="#6f63e4"
+                  stroke={theme.accent}
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorSubmissions)"
@@ -145,10 +167,10 @@ function RouteComponent() {
           </div>
         </div>
 
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white h-fit">
+        <div className="p-6 border border-ink-200 rounded-panel bg-white h-fit">
           <h3 className="text-lg font-semibold mb-6">Top Performing Forms</h3>
           {topForms.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-ink-500">
               No data available yet
             </div>
           ) : (
@@ -158,15 +180,15 @@ function RouteComponent() {
                   key={form.id}
                   to="/app/forms/$id/analytics"
                   params={{ id: form.id }}
-                  className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                  className="flex items-center justify-between p-3 hover:bg-ink-50 rounded-xl transition-colors group"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-sm font-semibold text-gray-600">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-ink-100 text-sm font-semibold text-ink-600">
                       {index + 1}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">{form.name}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-medium text-ink-950">{form.name}</p>
+                      <p className="text-xs text-ink-500">
                         {form.submissionCount.toLocaleString()} submissions
                       </p>
                     </div>
@@ -174,7 +196,7 @@ function RouteComponent() {
                   <HugeiconsIcon
                     icon={ArrowRight01Icon}
                     size={16}
-                    className="text-gray-400 group-hover:text-gray-900 transition-colors"
+                    className="text-ink-400 group-hover:text-ink-950 transition-colors"
                   />
                 </Link>
               ))}

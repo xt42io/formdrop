@@ -62,7 +62,7 @@ function RouteComponent() {
         onClose={() => setShowIntegrationModal(false)}
         formSlug={form?.slug ?? ""}
       />
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-200 mb-6 pt-8">
+      <div className="sticky top-0 z-10 bg-white border-b border-ink-200 mb-6 pt-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">{form?.name}</h1>
           {!isLoading && (
@@ -86,7 +86,7 @@ function RouteComponent() {
                 to={link.to}
                 params={{ id: Route.useParams().id }}
                 key={link.name}
-                className="relative py-2 px-1 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
+                className="relative py-2 px-1 text-sm font-medium text-ink-600 hover:text-ink-950 transition-colors"
               >
                 <span className={isActive ? "text-accent" : ""}>
                   {link.name}

@@ -59,8 +59,8 @@ export function GoogleSheetsSection({
 
   return (
     <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden">
-      <div className="p-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="flex min-w-0 items-center gap-4">
           <div className="h-16 w-16 bg-green-50 rounded-2xl flex items-center justify-center">
             <img
               src="/google-sheet.svg"

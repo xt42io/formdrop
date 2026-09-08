@@ -34,6 +34,10 @@ export interface ModalProps {
   size?: keyof typeof widths;
   /** Overlay classes. Preserves each call site's original scrim; see above. */
   scrim?: string;
+  /** Panel corner radius. One dialog was rounded-2xl rather than rounded-3xl,
+      and a class passed through `className` would not reliably win against the
+      default without tailwind-merge. */
+  radius?: string;
   /** Names the dialog for assistive tech when the body has no heading. */
   label?: string;
   className?: string;
@@ -45,6 +49,7 @@ export function Modal({
   onClose,
   size = "md",
   scrim = DEFAULT_SCRIM,
+  radius = "rounded-3xl",
   label,
   className = "",
   children,
@@ -67,7 +72,7 @@ export function Modal({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className={`relative bg-white rounded-3xl shadow-xl w-full ${widths[size]} overflow-hidden ${className}`}
+            className={`relative bg-white ${radius} shadow-xl w-full ${widths[size]} overflow-hidden ${className}`}
           >
             {children}
           </motion.div>

@@ -64,20 +64,24 @@ export function IntegrationCard({
     <div
       className={`bg-white rounded-3xl border border-ink-200 overflow-hidden ${className}`}
     >
-      <div className="p-6 flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      {/* Stacks below sm. Side by side, the actions kept their full width
+          while the description -- the only part that can reflow -- absorbed
+          every pixel of the squeeze, so a two-line summary became five lines
+          against a "Coming Soon" pill that had itself wrapped in half. */}
+      <div className="flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="flex min-w-0 items-center gap-4">
           <div
             className={`h-10 w-10 shrink-0 rounded-full flex items-center justify-center ${iconClassName}`}
           >
             {icon}
           </div>
-          <div>
+          <div className="min-w-0">
             <h3 className="text-sm font-medium text-ink-950">{title}</h3>
             <p className="text-sm text-ink-500">{description}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           {needsConnecting ? (
             <Button
               onClick={onConnect}

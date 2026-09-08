@@ -44,19 +44,26 @@ function RouteComponent() {
   });
 
   if (isLoading) {
+    // No container of its own. The (app) layout already pads every screen, and
+    // the loaded branch below adds nothing on top -- so the `p-4 md:p-8
+    // max-w-6xl mx-auto` this replaces inset the skeleton further than the
+    // content that came to replace it, and the whole page stepped left and up
+    // the moment the query resolved. The gaps below track StatStrip's own
+    // `mt-6` and the panels' `mt-3` for the same reason.
     return (
-      <div className="p-4 md:p-8 max-w-6xl mx-auto">
-        <div className="h-8 w-48 bg-ink-100 rounded-lg animate-pulse mb-8"></div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div>
+        <div className="h-8 w-40 animate-pulse rounded bg-ink-100" />
+        <div className="mt-2 h-4 w-80 animate-pulse rounded bg-ink-100" />
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-32 bg-ink-100 rounded-panel animate-pulse"
-            ></div>
+              className="h-[7.25rem] animate-pulse rounded-panel bg-ink-100"
+            />
           ))}
         </div>
-        <div className="h-96 bg-ink-100 rounded-panel animate-pulse mb-8"></div>
-        <div className="h-64 bg-ink-100 rounded-panel animate-pulse"></div>
+        <div className="mt-3 h-96 animate-pulse rounded-panel bg-ink-100" />
+        <div className="mt-3 h-64 animate-pulse rounded-panel bg-ink-100" />
       </div>
     );
   }

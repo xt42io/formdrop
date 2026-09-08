@@ -1,17 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient, type ApiKey } from "@/lib/app-client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
-  Delete02Icon,
-  InformationCircleIcon,
   AlertCircleIcon,
+  Delete02Icon,
+  ViewIcon,
+  ViewOffIcon,
 } from "@hugeicons/core-free-icons";
 import moment from "moment";
 import { CopyButton } from "@/components/copy-button";
-import { motion } from "motion/react";
 import { Button, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/api-keys")({
@@ -78,17 +78,21 @@ function ApiKeysPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div>
-          <div className="h-8 w-32 bg-gray-200 rounded-lg animate-pulse mb-2" />
-          <div className="h-5 w-64 bg-gray-100 rounded-lg animate-pulse" />
-        </div>
-        <div className="grid gap-6">
-          {[1, 2].map((i) => (
+      <div className="mx-auto max-w-4xl">
+        <div className="h-8 w-40 animate-pulse rounded bg-ink-100" />
+        <div className="mt-2 h-4 w-72 animate-pulse rounded bg-ink-100" />
+        <div className="mt-6 overflow-hidden rounded-panel border border-ink-200 bg-white">
+          {[0, 1].map((row) => (
             <div
-              key={i}
-              className="bg-white rounded-3xl border border-gray-200 p-6 h-40 animate-pulse"
-            />
+              key={row}
+              className="flex items-center justify-between border-b border-ink-100 px-6 py-5 last:border-b-0"
+            >
+              <div className="space-y-2">
+                <div className="h-4 w-40 animate-pulse rounded bg-ink-100" />
+                <div className="h-3 w-56 animate-pulse rounded bg-ink-100" />
+              </div>
+              <div className="h-7 w-40 animate-pulse rounded bg-ink-100" />
+            </div>
           ))}
         </div>
       </div>
@@ -96,100 +100,67 @@ function ApiKeysPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto max-w-4xl">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">API Keys</h1>
-          <p className="text-gray-500 mt-1">
-            Manage your API keys for backend access.
+          <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+            API keys
+          </h1>
+          <p className="mt-1 text-sm text-ink-600">
+            Read your forms and submissions from your own backend.
           </p>
         </div>
         <Button
           onClick={() => setIsCreating(true)}
           icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
         >
-          Create New Key
+          Create key
         </Button>
       </div>
 
-      <div className="grid gap-6">
-        {keys.map((key) => (
-          <motion.div
-            key={key.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl border border-gray-200 p-6"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {key.name || "API Key"}
-                  </h3>
-                  <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg">
-                    {key.key.substring(0, 8)}...
-                  </span>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                onClick={() => setDeletingKeyId(key.id)}
-                icon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
-              >
-                Revoke
-              </Button>
-            </div>
-
-            <div className="bg-gray-50 rounded-xl border border-gray-200 p-4 flex items-center gap-3">
-              <code className="flex-1 font-mono text-sm text-gray-700 break-all blur-sm hover:blur-none transition-all duration-300">
-                {key.key}
-              </code>
-              <CopyButton text={key.key} className="" />
-            </div>
-
-            <div className="mt-4 flex items-center gap-2 text-xs text-gray-400">
-              <HugeiconsIcon icon={InformationCircleIcon} size={14} />
-              <span>Created {moment(key.createdAt).fromNow()}</span>
-              {key.lastUsedAt && (
-                <>
-                  <span>•</span>
-                  <span>Last used {moment(key.lastUsedAt).fromNow()}</span>
-                </>
-              )}
-            </div>
-          </motion.div>
-        ))}
-
-        {keys.length === 0 && (
-          <div className="text-center py-12 bg-gray-50 rounded-3xl border border-dashed border-gray-300">
-            <p className="text-gray-500">No API keys found.</p>
+      {keys.length === 0 ? (
+        <div className="mt-6 overflow-hidden rounded-panel border border-ink-200 bg-white">
+          <div className="px-8 py-12 text-center">
+            <h3 className="text-lg font-semibold text-ink-950">No keys yet</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink-600">
+              You only need one if you are reading submissions from your own
+              code. Collecting them needs no key at all -- a form posts to its
+              endpoint directly.
+            </p>
             <Button
-              variant="ghost"
-              className="mt-4"
               onClick={() => setIsCreating(true)}
+              className="mt-6"
+              icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
             >
               Create your first key
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="animate-enter-late mt-6 overflow-hidden rounded-panel border border-ink-200 bg-white">
+          <div className="divide-y divide-ink-100">
+            {keys.map((key) => (
+              <ApiKeyRow
+                key={key.id}
+                apiKey={key}
+                onRevoke={() => setDeletingKeyId(key.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
-      <div className="bg-blue-50 border border-blue-100 rounded-3xl p-4 flex gap-3">
+      <div className="mt-6 flex gap-3 rounded-panel border border-tint-amber bg-tint-amber/40 p-4">
         <HugeiconsIcon
           icon={AlertCircleIcon}
-          size={20}
-          className="text-blue-600 shrink-0 mt-0.5"
+          size={18}
+          className="mt-0.5 shrink-0 text-tint-amber-ink"
         />
-        <div className="text-sm text-blue-900">
-          <p className="font-medium">Security Note</p>
-          <p className="mt-1 text-blue-700">
-            These keys grant full access to your account's forms and
-            submissions. Keep them secure and never expose them in client-side
-            code.
-          </p>
-        </div>
+        <p className="text-sm leading-relaxed text-tint-amber-ink">
+          A key grants full access to every form and submission on this account.
+          Keep it on a server -- anything shipped to a browser is public,
+          however it is bundled.
+        </p>
       </div>
 
       <Modal
@@ -198,12 +169,12 @@ function ApiKeysPage() {
         label="Create New API Key"
       >
         <form onSubmit={handleCreate} className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
+          <h3 className="text-xl font-bold text-ink-950 mb-4">
             Create New API Key
           </h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-ink-700 mb-1">
                 Key Name
               </label>
               <input
@@ -211,7 +182,7 @@ function ApiKeysPage() {
                 value={newKeyName}
                 onChange={(e) => setNewKeyName(e.target.value)}
                 placeholder="e.g. Production Server"
-                className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/5"
+                className="w-full px-3 py-2 border border-ink-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/5"
                 autoFocus
               />
             </div>
@@ -242,16 +213,16 @@ function ApiKeysPage() {
       >
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-red-100 rounded-full">
+            <div className="p-3 bg-tint-rose rounded-full">
               <HugeiconsIcon
                 icon={AlertCircleIcon}
-                className="text-red-600"
+                className="text-tint-rose-ink"
                 size={24}
               />
             </div>
-            <h3 className="text-xl font-bold text-gray-900">Revoke API Key?</h3>
+            <h3 className="text-xl font-bold text-ink-950">Revoke API Key?</h3>
           </div>
-          <p className="text-gray-600 mb-6">
+          <p className="text-ink-600 mb-6">
             Are you sure you want to revoke this API key? Any applications using
             it will immediately lose access. This action cannot be undone.
           </p>
@@ -275,6 +246,86 @@ function ApiKeysPage() {
           </div>
         </div>
       </Modal>
+    </div>
+  );
+}
+
+/**
+ * One key.
+ *
+ * The secret is behind a button, not a CSS blur. The previous row rendered the
+ * whole key with `blur-sm hover:blur-none`, which is not a control at all: the
+ * value sits in the DOM and in the page source, and a stray hover reveals it
+ * during a screen-share. Revealing is now deliberate and times out.
+ *
+ * This is also the shape the PRD is heading for. W2 stores a SHA-256 and keeps
+ * a display prefix, after which the plaintext genuinely cannot be shown again
+ * -- at that point Reveal simply stops being rendered and the rest of this row
+ * is already correct.
+ */
+function ApiKeyRow({
+  apiKey,
+  onRevoke,
+}: {
+  apiKey: ApiKey;
+  onRevoke: () => void;
+}) {
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!revealed) return;
+    const timer = setTimeout(() => setRevealed(false), 15_000);
+    return () => clearTimeout(timer);
+  }, [revealed]);
+
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-6 py-4">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="truncate text-[15px] font-semibold text-ink-950">
+            {apiKey.name || "Untitled key"}
+          </span>
+          {!apiKey.lastUsedAt && (
+            <span className="shrink-0 rounded-full bg-ink-100 px-2 py-0.5 text-[11px] font-medium text-ink-500">
+              Never used
+            </span>
+          )}
+        </div>
+        <div className="mt-1 text-xs text-ink-500">
+          Created {moment(apiKey.createdAt).fromNow()}
+          {apiKey.lastUsedAt && (
+            <> &middot; last used {moment(apiKey.lastUsedAt).fromNow()}</>
+          )}
+        </div>
+      </div>
+
+      <code className="min-w-0 shrink-0 rounded-lg bg-ink-50 px-2.5 py-1.5 font-mono text-xs text-ink-700">
+        {revealed ? apiKey.key : `${apiKey.key.slice(0, 12)}${"•".repeat(8)}`}
+      </code>
+
+      <div className="flex shrink-0 items-center gap-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setRevealed((r) => !r)}
+          aria-pressed={revealed}
+          icon={
+            <HugeiconsIcon icon={revealed ? ViewOffIcon : ViewIcon} size={15} />
+          }
+        >
+          {revealed ? "Hide" : "Reveal"}
+        </Button>
+        <CopyButton text={apiKey.key} className="relative" />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-tint-rose-ink hover:bg-tint-rose"
+          onClick={onRevoke}
+          icon={<HugeiconsIcon icon={Delete02Icon} size={15} />}
+        >
+          Revoke
+        </Button>
+      </div>
     </div>
   );
 }

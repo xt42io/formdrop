@@ -52,20 +52,20 @@ export function RecipientItem({
   isResending,
 }: RecipientItemProps) {
   return (
-    <div className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+    <div className="p-4 flex items-center justify-between hover:bg-ink-50 transition-colors">
       <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+        <div className="h-8 w-8 rounded-full bg-ink-100 flex items-center justify-center text-ink-500">
           <HugeiconsIcon icon={Mail01Icon} size={16} />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-900">{email}</span>
+          <span className="text-sm font-medium text-ink-950">{email}</span>
 
           {status.type === "pending" && (
             <Tooltip
               content={
                 <div className="text-center">
                   <div className="font-medium">Pending Verification</div>
-                  <div className="text-gray-300 text-xs mt-1">
+                  <div className="text-ink-300 text-xs mt-1">
                     Expires:{" "}
                     {status.verificationTokenExpiresAt &&
                       formatDate(status.verificationTokenExpiresAt)}
@@ -73,7 +73,7 @@ export function RecipientItem({
                 </div>
               }
             >
-              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-xs font-medium text-amber-700">
+              <span className="px-2 py-0.5 rounded-full bg-tint-amber text-xs font-medium text-tint-amber-ink">
                 Pending Verification
               </span>
             </Tooltip>
@@ -84,14 +84,14 @@ export function RecipientItem({
               content={
                 <div className="text-center">
                   <div className="font-medium">Invitation Expired</div>
-                  <div className="text-gray-300 text-xs mt-1">
+                  <div className="text-ink-300 text-xs mt-1">
                     Click the resend button to send a new invitation
                   </div>
                 </div>
               }
             >
               <div className="flex items-center gap-1.5">
-                <span className="px-2 py-0.5 rounded-full bg-red-100 text-xs font-medium text-red-700">
+                <span className="px-2 py-0.5 rounded-full bg-tint-rose text-xs font-medium text-tint-rose-ink">
                   Invitation Expired
                 </span>
                 <Button
@@ -99,7 +99,7 @@ export function RecipientItem({
                   disabled={isResending}
                   variant="ghost"
                   size="sm"
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-auto rounded"
+                  className="text-tint-rose-ink hover:text-tint-rose-ink hover:bg-tint-rose p-1 h-auto rounded"
                   icon={<HugeiconsIcon icon={ReloadIcon} size={14} />}
                 />
               </div>
@@ -111,14 +111,14 @@ export function RecipientItem({
               content={
                 <div className="text-center">
                   <div className="font-medium">Verified</div>
-                  <div className="text-gray-300 text-xs mt-1">
+                  <div className="text-ink-300 text-xs mt-1">
                     Verified on:{" "}
                     {status.verifiedAt && formatDate(status.verifiedAt)}
                   </div>
                 </div>
               }
             >
-              <span className="px-2 py-0.5 rounded-full bg-green-100 text-xs font-medium text-green-700">
+              <span className="px-2 py-0.5 rounded-full bg-tint-green text-xs font-medium text-tint-green-ink">
                 Verified
               </span>
             </Tooltip>
@@ -139,7 +139,7 @@ export function RecipientItem({
           onClick={onDelete}
           variant="ghost"
           size="sm"
-          className="text-gray-400 hover:text-red-500 hover:bg-red-50 p-2 h-auto"
+          className="text-ink-400 hover:text-tint-rose-ink hover:bg-tint-rose p-2 h-auto"
           icon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
         />
       </div>

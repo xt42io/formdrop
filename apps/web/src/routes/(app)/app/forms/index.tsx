@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button, Modal } from "@formdrop/ui";
 import { FormsTable } from "@/components/forms-table";
 import { FormsEmptyState } from "@/components/forms-empty-state";
+import { StatStrip } from "@/components/stat-strip";
 export const Route = createFileRoute("/(app)/app/forms/")({
   head: () => ({
     meta: [{ title: "Forms | FormDrop" }],
@@ -125,7 +126,35 @@ function RouteComponent() {
       {forms.length === 0 ? (
         <FormsEmptyState onCreate={() => setIsCreateModalOpen(true)} />
       ) : (
-        <FormsTable forms={forms} />
+        <>
+          {/* Computed from the rows already on the page -- no extra request
+              to show the numbers that summarise them. */}
+          <StatStrip
+            stats={[
+              {
+                label: "Submissions",
+                value: forms.reduce((n, f) => n + (f.submissionCount ?? 0), 0),
+                detail: `across ${forms.length} form${forms.length === 1 ? "" : "s"}`,
+                feature: true,
+              },
+              {
+                label: "Last 7 days",
+                value: forms.reduce(
+                  (n, f) =>
+                    n + (f.recentUsage ?? []).reduce((d, u) => d + u.count, 0),
+                  0,
+                ),
+                detail: "across every form",
+              },
+              {
+                label: "Collecting",
+                value: forms.filter((f) => (f.submissionCount ?? 0) > 0).length,
+                detail: `of ${forms.length} have submissions`,
+              },
+            ]}
+          />
+          <FormsTable forms={forms} />
+        </>
       )}
 
       <Modal

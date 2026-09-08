@@ -111,23 +111,35 @@ export function Sidebar() {
 
   return (
     <div
-      className={`flex h-full flex-col justify-between gap-4 rounded-panel border border-ink-200 bg-white p-2 transition-[width] duration-200 ${
+      className={`flex h-full flex-col justify-between gap-4 overflow-hidden rounded-panel border border-ink-200 bg-white p-2 transition-[width,min-width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         collapsed ? "w-[4.5rem] min-w-[4.5rem]" : "w-72 min-w-72"
       }`}
     >
       <div className="min-w-0 flex-1">
         <div
-          className={`flex items-center pt-3 ${collapsed ? "justify-center px-0" : "justify-between px-5"}`}
+          className={`flex items-center pt-3 transition-[padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            collapsed ? "px-0" : "px-5"
+          }`}
         >
-          {!collapsed && (
-            <img src="/purple_wordmark.png" alt="FormDrop" className="w-30" />
-          )}
+          <span
+            className={`overflow-hidden transition-[max-width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              collapsed ? "max-w-0" : "max-w-40"
+            }`}
+          >
+            <img
+              src="/purple_wordmark.png"
+              alt="FormDrop"
+              className="w-30 max-w-none"
+            />
+          </span>
           <button
             type="button"
             onClick={toggle}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-expanded={!collapsed}
-            className="cursor-pointer rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
+            className={`shrink-0 cursor-pointer rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 ${
+              collapsed ? "mx-auto" : "ml-auto"
+            }`}
           >
             <HugeiconsIcon icon={SidebarLeftIcon} size={18} />
           </button>
@@ -142,8 +154,15 @@ export function Sidebar() {
                 to={link.path}
                 key={link.path}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex items-center gap-3 rounded-4xl py-3 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 ${
-                  collapsed ? "justify-center px-0" : "px-4"
+                // gap-0 when collapsed is load-bearing. The label stays
+                // mounted at zero width so it can be clipped smoothly, but a
+                // gap still applies between it and the icon -- so centring
+                // measured icon+gap+label and put the icon 6px left of the
+                // pill it sits in.
+                className={`relative flex items-center overflow-hidden rounded-2xl transition-[background-color,color,width] duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 ${
+                  collapsed
+                    ? "h-11 w-11 justify-center gap-0 px-0"
+                    : "h-11 w-full gap-3 px-4"
                 } ${
                   isActive
                     ? "text-accent-600"
@@ -152,8 +171,13 @@ export function Sidebar() {
               >
                 {isActive && (
                   <motion.div
-                    layoutId="sidebar-active-link"
-                    className="absolute inset-0 rounded-4xl bg-accent-500/12"
+                    // Keyed by collapse state on purpose. With one shared id,
+                    // collapsing made the indicator animate from a 270px pill
+                    // to a 44px square -- a shape morph nobody asked for. Two
+                    // ids means collapsing swaps it instantly while moving
+                    // between links still slides, which is what it is for.
+                    layoutId={`sidebar-active-link-${collapsed ? "rail" : "wide"}`}
+                    className="absolute inset-0 rounded-2xl bg-accent-500/12"
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
@@ -162,11 +186,13 @@ export function Sidebar() {
                   size={20}
                   className="relative z-10 shrink-0"
                 />
-                {!collapsed && (
-                  <span className="relative z-10 text-sm font-medium">
-                    {link.name}
-                  </span>
-                )}
+                <span
+                  className={`relative z-10 overflow-hidden text-sm font-medium whitespace-nowrap transition-[max-width] duration-200 ${
+                    collapsed ? "max-w-0" : "max-w-40"
+                  }`}
+                >
+                  {link.name}
+                </span>
               </Link>
             );
 
@@ -230,7 +256,7 @@ export function Sidebar() {
 
             <button
               onClick={() => setIsUpgradeModalOpen(true)}
-              className="relative z-10 w-full cursor-pointer rounded-3xl bg-accent-500 py-3 text-xs font-medium text-white shadow-sm shadow-accent-500/20 transition-all hover:bg-accent-600 hover:shadow-accent-500/30 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
+              className="relative z-10 w-full cursor-pointer rounded-3xl bg-accent-500 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-600 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
             >
               Upgrade Plan
             </button>

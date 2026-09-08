@@ -63,8 +63,10 @@ function RouteComponent() {
         formSlug={form?.slug ?? ""}
       />
       <div className="sticky top-0 z-10 mb-6 border-b border-ink-200 bg-white pt-8 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-8 before:bg-white">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold">{form?.name}</h1>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h1 className="min-w-0 truncate text-xl font-bold sm:text-2xl">
+            {form?.name}
+          </h1>
           {!isLoading && (
             <Button
               onClick={() => setShowIntegrationModal(true)}
@@ -76,7 +78,12 @@ function RouteComponent() {
             </Button>
           )}
         </div>
-        <nav className="flex gap-8">
+        {/* Scrolls rather than wraps: a wrapped row would change the height
+            of a sticky header, and the underline that springs between tabs
+            assumes they share a line. The negative margin and matching padding
+            let it bleed to the screen edge, so a half-visible tab reads as
+            "there is more this way" instead of as a clipped one. */}
+        <nav className="-mx-4 flex gap-6 overflow-x-auto px-4 [scrollbar-width:none] sm:mx-0 sm:gap-8 sm:px-0 [&::-webkit-scrollbar]:hidden">
           {links.map((link) => {
             const isActive = location.pathname === link.to.replace("$id", id);
             return (
@@ -84,7 +91,7 @@ function RouteComponent() {
                 to={link.to}
                 params={{ id }}
                 key={link.name}
-                className={`relative px-1 py-2 text-sm font-medium transition-colors duration-200 ${
+                className={`relative shrink-0 px-1 py-2 text-sm font-medium transition-colors duration-200 ${
                   isActive
                     ? "text-accent-600"
                     : "text-ink-600 hover:text-ink-950"

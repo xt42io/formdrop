@@ -49,7 +49,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
       <div className="absolute top-4 right-4 z-10">
         <button
           onClick={onClose}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500"
+          className="p-2 hover:bg-ink-100 rounded-full transition-colors text-ink-500"
         >
           <HugeiconsIcon icon={Cancel01Icon} size={20} />
         </button>
@@ -57,12 +57,12 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
       <div className="p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-accent/10 rounded-2xl text-accent">
+          <div className="p-3 bg-accent-500/10 rounded-2xl text-accent-600">
             <HugeiconsIcon icon={StarIcon} size={24} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Upgrade to Pro</h2>
-            <p className="text-gray-500 text-sm">
+            <h2 className="text-2xl font-bold text-ink-950">Upgrade to Pro</h2>
+            <p className="text-ink-500 text-sm">
               Unlock the full potential of FormDrop
             </p>
           </div>
@@ -84,7 +84,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
               layoutId is what animates it between the two now, the same way the
               settings and form tabs move their underline. */}
-          <div className="bg-gray-100 p-1 rounded-xl flex items-center">
+          <div className="bg-ink-100 p-1 rounded-xl flex items-center">
             {(["month", "year"] as const).map((interval) => {
               const isActive = billingInterval === interval;
               return (
@@ -93,8 +93,8 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                   onClick={() => setBillingInterval(interval)}
                   className={`relative cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? "text-gray-900"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "text-ink-950"
+                      : "text-ink-500 hover:text-ink-700"
                   }`}
                 >
                   {isActive && (
@@ -114,7 +114,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
                     ) : (
                       <>
                         Yearly
-                        <span className="text-xs text-green-600 font-bold ml-1.5">
+                        <span className="text-xs text-tint-green-ink font-bold ml-1.5">
                           -20%
                         </span>
                       </>
@@ -129,12 +129,12 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         {/* Pricing */}
         <div className="text-center mb-8">
           <div className="flex items-baseline justify-center gap-1">
-            <span className="text-4xl font-bold text-gray-900">
+            <span className="text-4xl font-bold text-ink-950">
               ${billingInterval === "year" ? "24" : "29"}
             </span>
-            <span className="text-gray-500">/month</span>
+            <span className="text-ink-500">/month</span>
           </div>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-ink-500 mt-2">
             {billingInterval === "year"
               ? "Billed $288 yearly"
               : "Billed monthly"}
@@ -145,10 +145,10 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         <div className="space-y-3 mb-8">
           {benefits.map((benefit, index) => (
             <div key={index} className="flex items-center gap-3">
-              <div className="shrink-0 text-accent">
+              <div className="shrink-0 text-accent-500">
                 <HugeiconsIcon icon={Tick02Icon} size={20} />
               </div>
-              <span className="text-gray-700 text-sm">{benefit}</span>
+              <span className="text-ink-700 text-sm">{benefit}</span>
             </div>
           ))}
         </div>
@@ -156,7 +156,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         <button
           onClick={handleUpgrade}
           disabled={isLoading}
-          className="w-full py-4 bg-accent hover:bg-accent/90 text-white rounded-2xl font-semibold text-lg shadow-lg shadow-accent/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-4 bg-accent-500 hover:bg-accent-600 text-white rounded-2xl font-semibold text-lg transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? "Redirecting..." : "Upgrade Now"}
         </button>

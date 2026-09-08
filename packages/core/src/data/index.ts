@@ -65,6 +65,7 @@ export {
   sumUsageForForm,
   sumUsageForUser,
   topFormsForUser,
+  dailyUsageByFormForUser,
 } from "./analytics.ts";
 export {
   countSubmissionsForForm,

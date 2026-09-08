@@ -111,7 +111,7 @@ function IntegrationPills({ form }: { form: Form }) {
 
 export function FormsTable({ forms }: { forms: Form[] }) {
   return (
-    <div className="mt-6 overflow-hidden rounded-panel border border-ink-200 bg-white">
+    <div className="animate-enter-late mt-3 overflow-hidden rounded-panel border border-ink-200 bg-white shadow-lift">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[52rem] border-collapse text-left">
           <thead>
@@ -152,32 +152,38 @@ export function FormsTable({ forms }: { forms: Form[] }) {
             {forms.map((form) => (
               <tr
                 key={form.id}
-                className="group transition-colors hover:bg-accent-500/4"
+                className="group relative transition-colors hover:bg-accent-500/4"
               >
-                <td className="px-5 py-4">
+                <td className="relative px-5 py-5">
+                  {/* An accent rail on the active row, so the eye has an edge
+                      to track along a wide table. */}
+                  <span
+                    aria-hidden
+                    className="absolute inset-y-0 left-0 w-0.5 scale-y-0 bg-accent-500 transition-transform duration-200 group-hover:scale-y-100"
+                  />
                   {/* The link covers the name rather than the row: a row-wide
                       anchor cannot contain the tooltip triggers beside it. */}
                   <Link
                     to="/app/forms/$id/submissions"
                     params={{ id: form.id }}
-                    className="rounded-sm font-medium text-ink-950 transition-colors group-hover:text-accent-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
+                    className="rounded-sm text-[15px] font-semibold tracking-[-0.01em] text-ink-950 transition-colors group-hover:text-accent-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
                   >
                     {form.name}
                   </Link>
-                  <div className="mt-0.5 font-mono text-xs text-ink-400">
+                  <div className="mt-1 font-mono text-xs text-ink-400">
                     /f/{form.slug}
                   </div>
                 </td>
-                <td className="px-5 py-4">
+                <td className="px-5 py-5">
                   <Sparkline series={form.recentUsage} />
                 </td>
-                <td className="px-5 py-4 text-right text-sm font-medium text-ink-950 tabular-nums">
+                <td className="px-5 py-5 text-right text-base font-semibold text-ink-950 tabular-nums">
                   {(form.submissionCount ?? 0).toLocaleString()}
                 </td>
-                <td className="px-5 py-4">
+                <td className="px-5 py-5">
                   <IntegrationPills form={form} />
                 </td>
-                <td className="px-5 py-4 text-sm whitespace-nowrap text-ink-500">
+                <td className="px-5 py-5 text-sm whitespace-nowrap text-ink-500">
                   {moment(form.createdAt).format("MMM D, YYYY")}
                 </td>
               </tr>

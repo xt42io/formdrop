@@ -1,4 +1,10 @@
 import type { ReactNode } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowDownRight01Icon,
+  ArrowUpRight01Icon,
+} from "@hugeicons/core-free-icons";
+import type { PeriodComparison } from "@/lib/chart-theme";
 
 /**
  * The row of figures at the top of a dashboard screen.
@@ -21,6 +27,56 @@ export interface Stat {
   /** Renders in the accent. Use on one tile at most. */
   feature?: boolean;
   icon?: ReactNode;
+  /** This period against the one before it (W4 4.5). */
+  delta?: PeriodComparison | null;
+}
+
+/**
+ * The change against the previous period.
+ *
+ * Up is not automatically good and down is not automatically bad, but for
+ * submission counts it is, so the colours follow direction. A period that grew
+ * from zero has no percentage to show, so it shows the count instead of a
+ * misleading infinity.
+ */
+function Delta({
+  comparison,
+  feature,
+}: {
+  comparison: PeriodComparison;
+  feature?: boolean;
+}) {
+  if (comparison.direction === "flat") {
+    return (
+      <span className={`text-xs ${feature ? "text-white/70" : "text-ink-500"}`}>
+        No change
+      </span>
+    );
+  }
+
+  const up = comparison.direction === "up";
+  const label =
+    comparison.percent === null
+      ? `+${comparison.current.toLocaleString()}`
+      : `${up ? "+" : ""}${comparison.percent.toFixed(0)}%`;
+
+  const tone = feature
+    ? "text-white/90"
+    : up
+      ? "text-tint-green-ink"
+      : "text-tint-rose-ink";
+
+  return (
+    <span
+      className={`inline-flex items-center gap-0.5 text-xs font-medium ${tone}`}
+    >
+      <HugeiconsIcon
+        icon={up ? ArrowUpRight01Icon : ArrowDownRight01Icon}
+        size={13}
+      />
+      {label}
+    </span>
+  );
 }
 
 function Tile({ stat }: { stat: Stat }) {
@@ -29,7 +85,7 @@ function Tile({ stat }: { stat: Stat }) {
 
   if (stat.feature) {
     return (
-      <div className="relative overflow-hidden rounded-panel bg-accent-600 p-6">
+      <div className="relative overflow-hidden rounded-panel bg-accent-600 p-5">
         {/* Atmosphere, not decoration: one soft bloom rather than a gradient
             across the whole tile, so the figure stays the brightest thing. */}
         <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/15 blur-3xl" />
@@ -38,11 +94,14 @@ function Tile({ stat }: { stat: Stat }) {
             {stat.icon}
             {stat.label}
           </div>
-          <div className="mt-3 text-[2.75rem] leading-none font-semibold tracking-[-0.04em] text-white tabular-nums">
+          <div className="mt-2 text-[2rem] leading-none font-semibold tracking-[-0.035em] text-white tabular-nums">
             {value}
           </div>
-          {stat.detail && (
-            <div className="mt-2 text-sm text-white/70">{stat.detail}</div>
+          {(stat.detail || stat.delta) && (
+            <div className="mt-1.5 flex items-center gap-2 text-xs text-white/70">
+              {stat.delta && <Delta comparison={stat.delta} feature />}
+              {stat.detail}
+            </div>
           )}
         </div>
       </div>
@@ -50,16 +109,19 @@ function Tile({ stat }: { stat: Stat }) {
   }
 
   return (
-    <div className="rounded-panel border border-ink-200 bg-white p-6">
+    <div className="rounded-panel border border-ink-200 bg-white p-5">
       <div className="flex items-center gap-2 text-xs font-medium tracking-wide text-ink-500 uppercase">
         {stat.icon}
         {stat.label}
       </div>
-      <div className="mt-3 text-[2.75rem] leading-none font-semibold tracking-[-0.04em] text-ink-950 tabular-nums">
+      <div className="mt-2 text-[2rem] leading-none font-semibold tracking-[-0.035em] text-ink-950 tabular-nums">
         {value}
       </div>
-      {stat.detail && (
-        <div className="mt-2 text-sm text-ink-500">{stat.detail}</div>
+      {(stat.detail || stat.delta) && (
+        <div className="mt-1.5 flex items-center gap-2 text-xs text-ink-500">
+          {stat.delta && <Delta comparison={stat.delta} />}
+          {stat.detail}
+        </div>
       )}
     </div>
   );

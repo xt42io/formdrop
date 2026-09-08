@@ -59,6 +59,7 @@ function makeForm(
     createdAt: daysAgo(40),
     updatedAt: daysAgo(2),
     submissionCount: 0,
+    recentUsage: [],
     ...over,
   } as Form;
 }
@@ -110,6 +111,19 @@ const FORMS: Form[] = [
     createdAt: daysAgo(3),
   }),
 ];
+
+// Seven days ending today, shaped so each form's sparkline differs.
+function recentUsage(total: number, seed: number) {
+  const base = Math.max(0, total / 90);
+  return Array.from({ length: 7 }, (_, i) => ({
+    date: daysAgo(6 - i).slice(0, 10),
+    count: Math.round(base * (1 + Math.sin((i + seed) / 1.6) * 0.7)),
+  }));
+}
+
+for (const [i, form] of FORMS.entries()) {
+  form.recentUsage = recentUsage(form.submissionCount ?? 0, i * 2);
+}
 
 const PAYLOADS: Record<string, unknown>[] = [
   {

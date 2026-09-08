@@ -1,5 +1,10 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Mail01Icon, Add01Icon, Alert01Icon } from "@hugeicons/core-free-icons";
+import {
+  Mail01Icon,
+  Add01Icon,
+  Alert01Icon,
+  AlertCircleIcon,
+} from "@hugeicons/core-free-icons";
 import { motion, AnimatePresence } from "motion/react";
 import { RecipientActions } from "./recipient-actions";
 import { useNotificationsStore } from "@/stores/notifications-store";
@@ -10,7 +15,7 @@ import {
   useResendVerification,
 } from "@/hooks/use-recipient-mutations";
 
-import { Button } from "@formdrop/ui";
+import { Button, Modal } from "@formdrop/ui";
 // Derived from the query that produces it. The local copy this replaces
 // declared the two timestamps as Date, which they are not after JSON.
 import type { Recipient } from "@/lib/app-client";
@@ -46,35 +51,33 @@ export function EmailRecipientsList({
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden mb-8">
-      <div className="p-6 border-b border-gray-100">
-        <h3 className="text-sm font-medium text-gray-900">Recipients</h3>
-        <p className="text-sm text-gray-500 mt-1">
+    <div className="bg-white rounded-3xl border border-ink-200 overflow-hidden mb-8">
+      <div className="p-6 border-b border-ink-100">
+        <h3 className="text-sm font-medium text-ink-950">Recipients</h3>
+        <p className="text-sm text-ink-500 mt-1">
           Who should receive email notifications?
         </p>
       </div>
 
-      <div className="divide-y divide-gray-100">
+      <div className="max-h-72 divide-y divide-ink-100 overflow-y-auto">
         {/* Owner - Always first */}
-        <div className="p-4 flex items-center justify-between bg-gray-50/50">
+        <div className="p-4 flex items-center justify-between bg-ink-50/50">
           <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500">
+            <div className="h-8 w-8 rounded-full bg-ink-100 flex items-center justify-center text-ink-500">
               <HugeiconsIcon icon={Mail01Icon} size={16} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-900">
+                <span className="text-sm font-medium text-ink-950">
                   {ownerEmail}
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
+                <span className="px-2 py-0.5 rounded-full bg-ink-100 text-xs font-medium text-ink-600">
                   Owner
                 </span>
               </div>
             </div>
           </div>
-          <div className="text-xs text-gray-400 italic px-3">
-            Always enabled
-          </div>
+          <div className="text-xs text-ink-400 italic px-3">Always enabled</div>
         </div>
 
         {/* Other Recipients */}
@@ -82,9 +85,6 @@ export function EmailRecipientsList({
           <RecipientActions
             key={recipient.id}
             recipient={recipient}
-            isDeleting={deletingRecipientId === recipient.id}
-            onConfirmDelete={() => removeRecipientMutation.mutate(recipient.id)}
-            onCancelDelete={() => setDeletingRecipientId(null)}
             onToggle={() =>
               updateRecipientMutation.mutate({
                 recipientId: recipient.id,
@@ -96,12 +96,11 @@ export function EmailRecipientsList({
               resendVerificationMutation.mutate(recipient.id)
             }
             isResending={resendVerificationMutation.variables === recipient.id}
-            isDeletingRecipient={removeRecipientMutation.isPending}
           />
         ))}
       </div>
 
-      <div className="p-4 bg-gray-50 border-t border-gray-100">
+      <div className="p-4 bg-ink-50 border-t border-ink-100">
         <form onSubmit={handleAddRecipient} className="flex items-start gap-3">
           <div className="flex-1">
             <input
@@ -114,10 +113,10 @@ export function EmailRecipientsList({
                   addRecipientMutation.reset();
                 }
               }}
-              className={`w-full px-3 py-3 text-sm border rounded-3xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent ${
+              className={`w-full px-3 py-3 text-sm border rounded-3xl focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent ${
                 addRecipientMutation.isError
-                  ? "border-red-300 bg-red-50 text-red-900 placeholder:text-red-300"
-                  : "border-gray-200"
+                  ? "border-tint-rose bg-tint-rose text-tint-rose-ink placeholder:text-tint-rose-ink"
+                  : "border-ink-200"
               }`}
               required
             />
@@ -129,7 +128,7 @@ export function EmailRecipientsList({
                   exit={{ opacity: 0, height: 0, marginTop: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="flex items-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-medium border border-red-100">
+                  <div className="flex items-center gap-2 px-3 py-2 bg-tint-rose text-tint-rose-ink rounded-xl text-xs font-medium border border-tint-rose">
                     <HugeiconsIcon icon={Alert01Icon} size={16} />
                     <p>{addRecipientMutation.error.message}</p>
                   </div>
@@ -150,6 +149,53 @@ export function EmailRecipientsList({
           </Button>
         </form>
       </div>
+
+      {/* A dialog rather than the row swapping itself for a tick and a cross,
+          which hid the address being deleted at the one moment it mattered. */}
+      <Modal
+        isOpen={deletingRecipientId !== null}
+        onClose={() => setDeletingRecipientId(null)}
+        label="Remove recipient?"
+      >
+        <div className="p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tint-rose text-tint-rose-ink">
+              <HugeiconsIcon icon={AlertCircleIcon} size={20} />
+            </div>
+            <h3 className="text-lg font-semibold text-ink-950">
+              Remove recipient?
+            </h3>
+          </div>
+          <p className="text-sm text-ink-600">
+            <strong className="font-medium text-ink-950">
+              {recipients.find((r) => r.id === deletingRecipientId)?.email}
+            </strong>{" "}
+            will stop receiving email for this form. You can add them again
+            later, but they will have to verify the address a second time.
+          </p>
+          <div className="mt-6 flex justify-end gap-3">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setDeletingRecipientId(null)}
+              disabled={removeRecipientMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() =>
+                deletingRecipientId &&
+                removeRecipientMutation.mutate(deletingRecipientId)
+              }
+              disabled={removeRecipientMutation.isPending}
+              isLoading={removeRecipientMutation.isPending}
+            >
+              {removeRecipientMutation.isPending ? "Removing..." : "Remove"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

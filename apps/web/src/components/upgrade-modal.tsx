@@ -70,44 +70,59 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
 
         {/* Billing Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="bg-gray-100 p-1 rounded-xl flex items-center relative">
-            <button
-              onClick={() => setBillingInterval("month")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all relative z-10 ${
-                billingInterval === "month"
-                  ? "text-gray-900"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingInterval("year")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all relative z-10 ${
-                billingInterval === "year"
-                  ? "text-gray-900"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Yearly{" "}
-              <span className="text-xs text-green-600 font-bold ml-1">
-                -20%
-              </span>
-            </button>
+          {/* The pill is rendered inside whichever button is active and sized
+              `inset-0`, so it is that button's box by construction.
 
-            <motion.div
-              className="absolute top-1 bottom-1 bg-white rounded-lg shadow-sm"
-              initial={false}
-              animate={{
-                left: billingInterval === "month" ? 4 : "50%",
-                width:
-                  billingInterval === "month"
-                    ? "calc(50% - 4px)"
-                    : "calc(50% - 4px)",
-                x: billingInterval === "month" ? 0 : 0,
-              }}
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-            />
+              It used to be a sibling positioned at `left: 50%` with
+              `width: calc(50% - 4px)`, which assumes the two buttons split the
+              row evenly. They never did -- "Yearly -20%" measures 115px against
+              "Monthly" at 87px -- so the pill sat 14px narrower than the button
+              it was meant to be highlighting and offset to the right of it,
+              leaving under 2px between its left edge and the "Y" while 16px
+              went spare on the other side. On Monthly the same maths overhung
+              the pill 14px into its neighbour.
+
+              layoutId is what animates it between the two now, the same way the
+              settings and form tabs move their underline. */}
+          <div className="bg-gray-100 p-1 rounded-xl flex items-center">
+            {(["month", "year"] as const).map((interval) => {
+              const isActive = billingInterval === interval;
+              return (
+                <button
+                  key={interval}
+                  onClick={() => setBillingInterval(interval)}
+                  className={`relative cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? "text-gray-900"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="billing-interval-pill"
+                      className="absolute inset-0 bg-white rounded-lg"
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                  <span className="relative z-10 whitespace-nowrap">
+                    {interval === "month" ? (
+                      "Monthly"
+                    ) : (
+                      <>
+                        Yearly
+                        <span className="text-xs text-green-600 font-bold ml-1.5">
+                          -20%
+                        </span>
+                      </>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 

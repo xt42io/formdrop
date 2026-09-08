@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
   createForm,
+  dailyUsageByFormForUser,
   findLiveFormByName,
   listFormsForUser,
 } from "@formdrop/core/data";
+import { usagePeriod } from "@formdrop/core";
 import { auth } from "@/lib/auth";
 
 export const Route = createFileRoute("/api/forms")({
@@ -19,9 +21,39 @@ export const Route = createFileRoute("/api/forms")({
             return Response.json({ error: "Unauthorized" }, { status: 401 });
           }
 
-          const userForms = await listFormsForUser(session.user.id);
+          // The list renders a last-7-day sparkline per row (W4 4.5). One
+          // grouped query rather than one per form, and the sparse rows it
+          // returns are filled to a fixed seven-day window here so the client
+          // never has to reason about which days are missing.
+          const DAYS = 7;
+          const today = new Date();
+          const window = Array.from({ length: DAYS }, (_, i) => {
+            const day = new Date(today);
+            day.setUTCDate(day.getUTCDate() - (DAYS - 1 - i));
+            return usagePeriod(day);
+          });
 
-          return Response.json({ forms: userForms });
+          const [userForms, usageRows] = await Promise.all([
+            listFormsForUser(session.user.id),
+            dailyUsageByFormForUser(session.user.id, window[0]),
+          ]);
+
+          const byForm = new Map<string, Map<string, number>>();
+          for (const row of usageRows) {
+            const days = byForm.get(row.formId) ?? new Map<string, number>();
+            days.set(row.date, row.count);
+            byForm.set(row.formId, days);
+          }
+
+          const forms = userForms.map((form) => ({
+            ...form,
+            recentUsage: window.map((date) => ({
+              date,
+              count: byForm.get(form.id)?.get(date) ?? 0,
+            })),
+          }));
+
+          return Response.json({ forms });
         } catch (error: any) {
           return Response.json(
             {

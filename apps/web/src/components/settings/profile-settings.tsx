@@ -10,19 +10,26 @@ interface ProfileSettingsProps {
 
 export function ProfileSettings({ session }: ProfileSettingsProps) {
   const queryClient = useQueryClient();
-  const [name, setName] = useState(session?.user?.name || "");
+  const savedName: string = session?.user?.name || "";
+  const email: string = session?.user?.email || "";
+  const [name, setName] = useState(savedName);
 
   useEffect(() => {
-    if (session?.user?.name) {
-      setName(session.user.name);
+    if (savedName) {
+      setName(savedName);
     }
-  }, [session?.user?.name]);
+  }, [savedName]);
+
+  const trimmed = name.trim();
+  // Save used to be permanently enabled, so the obvious thing to do on this
+  // screen -- open it, look at it, press the only button -- sent a write that
+  // changed nothing and reported success. It now only lights up when there is
+  // an actual edit to save.
+  const isDirty = trimmed.length > 0 && trimmed !== savedName;
 
   const updateProfileMutation = useMutation({
     mutationFn: async () => {
-      await authClient.updateUser({
-        name,
-      });
+      await authClient.updateUser({ name: trimmed });
     },
     onSuccess: () => {
       toast.success("Profile updated successfully");
@@ -34,56 +41,83 @@ export function ProfileSettings({ session }: ProfileSettingsProps) {
   });
 
   return (
-    <div className="bg-white rounded-3xl border border-gray-200 p-6 md:p-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-6">
-        Profile Information
-      </h2>
-      <div className="space-y-6">
-        <div className="flex items-center gap-6">
-          <div className="h-20 w-20 rounded-full bg-accent/10 flex items-center justify-center text-accent text-2xl font-medium">
-            {session?.user?.name?.charAt(0).toUpperCase() ||
-              session?.user?.email?.charAt(0).toUpperCase()}
-          </div>
-          {/* Avatar upload to be implemented */}
+    <div className="overflow-hidden rounded-panel border border-ink-200 bg-white">
+      {/* The avatar used to sit alone in an empty flex row next to a comment
+          promising an upload that does not exist, which read as a broken
+          control. Paired with the name and address it is what it actually is:
+          a summary of the account you are editing. */}
+      <div className="flex items-center gap-4 border-b border-ink-100 bg-ink-50 px-6 py-5">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-500 text-xl font-semibold text-white">
+          {(savedName || email).charAt(0).toUpperCase()}
         </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
-            />
+        <div className="min-w-0">
+          <div className="truncate text-[15px] font-semibold tracking-[-0.01em] text-ink-950">
+            {savedName || "Unnamed account"}
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              defaultValue={session?.user?.email || ""}
-              disabled
-              className="w-full px-4 py-3 border border-gray-200 rounded-3xl bg-gray-50 text-gray-500 cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        <div className="pt-4 flex justify-end">
-          <Button
-            variant="primary"
-            size="lg"
-            className="shadow-lg shadow-accent/20"
-            onClick={() => updateProfileMutation.mutate()}
-            isLoading={updateProfileMutation.isPending}
-          >
-            Save Changes
-          </Button>
+          <div className="truncate text-sm text-ink-500">{email}</div>
         </div>
       </div>
+
+      <form
+        className="px-6 py-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (isDirty) updateProfileMutation.mutate();
+        }}
+      >
+        <div className="grid gap-5 md:grid-cols-2">
+          <div>
+            <label
+              htmlFor="profile-name"
+              className="block text-sm font-medium text-ink-700"
+            >
+              Full name
+            </label>
+            <input
+              id="profile-name"
+              type="text"
+              value={name}
+              autoComplete="name"
+              onChange={(e) => setName(e.target.value)}
+              className="mt-2 w-full rounded-xl border border-ink-200 px-4 py-2.5 text-sm text-ink-950 transition-colors focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="profile-email"
+              className="block text-sm font-medium text-ink-700"
+            >
+              Email address
+            </label>
+            <input
+              id="profile-email"
+              type="email"
+              value={email}
+              disabled
+              readOnly
+              className="mt-2 w-full cursor-not-allowed rounded-xl border border-ink-200 bg-ink-50 px-4 py-2.5 text-sm text-ink-500"
+            />
+            {/* A greyed-out field with no explanation reads as a bug. */}
+            <p className="mt-2 text-xs text-ink-500">
+              Your email identifies the account and cannot be changed here.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-end gap-4 border-t border-ink-100 pt-5">
+          {isDirty && (
+            <span className="text-xs text-ink-500">Unsaved changes</span>
+          )}
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={!isDirty}
+            isLoading={updateProfileMutation.isPending}
+          >
+            Save changes
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Tick02Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
@@ -68,9 +68,9 @@ function RouteComponent() {
             className="w-16 h-16"
           />
         ),
-        bgColor: "bg-green-50",
-        accentColor: "bg-green-600",
-        hoverColor: "hover:bg-green-700",
+        bgColor: "bg-tint-green",
+        accentColor: "bg-tint-green-ink",
+        hoverColor: "hover:opacity-90",
       };
     }
     return null;
@@ -82,8 +82,8 @@ function RouteComponent() {
     return (
       <div className="max-w-3xl mx-auto">
         <div className="space-y-4 animate-pulse">
-          <div className="h-32 bg-gray-200 rounded-3xl" />
-          <div className="h-32 bg-gray-200 rounded-3xl" />
+          <div className="h-32 bg-ink-200 rounded-panel" />
+          <div className="h-32 bg-ink-200 rounded-panel" />
         </div>
       </div>
     );
@@ -104,26 +104,26 @@ function RouteComponent() {
           <div className="p-10">
             <div className="flex flex-col items-center text-center">
               <div
-                className={`w-24 h-24 ${modalContent.bgColor} rounded-3xl flex items-center justify-center mb-6 shadow-lg`}
+                className={`w-24 h-24 ${modalContent.bgColor} rounded-panel flex items-center justify-center mb-6`}
               >
                 {modalContent.icon}
               </div>
 
               <div
-                className={`w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-5 shadow-sm`}
+                className={`w-12 h-12 bg-tint-green rounded-full flex items-center justify-center mb-5`}
               >
                 <HugeiconsIcon
                   icon={Tick02Icon}
                   size={24}
-                  className="text-green-600"
+                  className="text-tint-green-ink"
                 />
               </div>
 
-              <h3 className="text-3xl font-bold mb-3 bg-linear-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              <h3 className="text-3xl font-bold mb-3 text-ink-950">
                 {modalContent.title}
               </h3>
 
-              <p className="text-gray-600 mb-8 text-base leading-relaxed">
+              <p className="text-ink-600 mb-8 text-base leading-relaxed">
                 {modalContent.description}
               </p>
 
@@ -131,7 +131,7 @@ function RouteComponent() {
                 onClick={handleCloseModal}
                 variant="primary"
                 size="lg"
-                className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]`}
+                className={`${modalContent.accentColor} ${modalContent.hoverColor} text-white rounded-full w-full transform hover:scale-[1.02] active:scale-[0.98]`}
               >
                 Got it!
               </Button>
@@ -141,14 +141,13 @@ function RouteComponent() {
       </Modal>
 
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-x-3 py-2 mb-6">
-          <Link
-            to="/app/forms"
-            className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-          </Link>
-          <h2 className="text-lg font-semibold">Integrations</h2>
+        <div className="mb-6">
+          <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+            Integrations
+          </h2>
+          <p className="mt-1 text-sm text-ink-600">
+            Send every submission straight into the tools you already use.
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -160,44 +159,39 @@ function RouteComponent() {
             spreadsheetId={form?.googleSheetsSpreadsheetId}
           />
 
-          {/* Airtable - Coming soon */}
-          <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden">
-            <div className="p-6 flex items-center justify-between">
+          {/* Airtable is not available yet, so the card reads as unavailable
+              rather than looking identical to a connectable one and relying on
+              a label to say otherwise. */}
+          <div className="overflow-hidden rounded-panel border border-dashed border-ink-200 bg-white">
+            <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-4">
-                <div className="h-16 w-16 bg-yellow-50 rounded-2xl flex items-center justify-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-tint-amber opacity-60">
                   <img
                     src="/airtable.svg"
-                    alt="Airtable"
-                    className="w-10 h-10"
+                    alt=""
+                    className="h-10 w-10 grayscale"
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg">Airtable</h3>
-                  <p className="text-gray-600 text-sm">
+                  <h3 className="text-lg font-semibold text-ink-700">
+                    Airtable
+                  </h3>
+                  <p className="text-sm text-ink-500">
                     Send form submissions to your Airtable base
                   </p>
                 </div>
               </div>
 
-              <div className="px-4 py-3 bg-gray-100 text-gray-500 text-sm font-medium rounded-3xl">
+              <div className="rounded-full bg-ink-100 px-3.5 py-1.5 text-xs font-medium text-ink-500">
                 Coming Soon
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-8 bg-blue-50 border border-blue-100 rounded-3xl p-6">
-          <div className="flex gap-3">
-            <div className="text-2xl">💡</div>
-            <div>
-              <h4 className="font-semibold mb-1">Need another integration?</h4>
-              <p className="text-gray-700 text-sm">
-                Let us know which services you'd like to connect and we'll
-                prioritize them in our roadmap.
-              </p>
-            </div>
-          </div>
-        </div>
+        <p className="mt-6 text-center text-sm text-ink-500">
+          Need something else? Tell us which service and we will prioritise it.
+        </p>
       </div>
     </>
   );

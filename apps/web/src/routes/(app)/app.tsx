@@ -15,11 +15,18 @@ function RouteComponent() {
 
   return (
     <PlanGateProvider isPro={Boolean(isPro)}>
-      <div className="p-2 bg-gray-100 h-screen gap-2 flex">
+      {/* The shell sits on the canvas token rather than flat grey, with the
+          same faint rule grid the landing page uses, masked so it fades out
+          before it reaches the content. W4 4.1: atmosphere, not decoration. */}
+      <div className="relative isolate flex h-screen gap-2 bg-canvas p-2">
+        <div
+          aria-hidden
+          className="bg-lines pointer-events-none absolute inset-0 -z-10 mask-[radial-gradient(120%_80%_at_0%_0%,black_0%,transparent_70%)]"
+        />
         <Sidebar />
-        <div className="bg-white rounded-2xl border border-gray-200 w-full py-5 px-20 overflow-y-auto">
+        <main className="w-full overflow-y-auto rounded-panel border border-ink-200 bg-white px-16 py-8">
           <Outlet />
-        </div>
+        </main>
       </div>
     </PlanGateProvider>
   );

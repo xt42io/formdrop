@@ -62,7 +62,7 @@ function RouteComponent() {
         onClose={() => setShowIntegrationModal(false)}
         formSlug={form?.slug ?? ""}
       />
-      <div className="sticky top-0 z-10 bg-white border-b border-ink-200 mb-6 pt-8">
+      <div className="sticky top-0 z-10 mb-6 border-b border-ink-200 bg-white pt-8 before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-8 before:bg-white">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold">{form?.name}</h1>
           {!isLoading && (
@@ -78,24 +78,24 @@ function RouteComponent() {
         </div>
         <nav className="flex gap-8">
           {links.map((link) => {
-            const isActive =
-              location.pathname ===
-              link.to.replace("$id", Route.useParams().id);
+            const isActive = location.pathname === link.to.replace("$id", id);
             return (
               <Link
                 to={link.to}
-                params={{ id: Route.useParams().id }}
+                params={{ id }}
                 key={link.name}
-                className="relative py-2 px-1 text-sm font-medium text-ink-600 hover:text-ink-950 transition-colors"
+                className={`relative px-1 py-2 text-sm font-medium transition-colors duration-200 ${
+                  isActive
+                    ? "text-accent-600"
+                    : "text-ink-600 hover:text-ink-950"
+                }`}
               >
-                <span className={isActive ? "text-accent" : ""}>
-                  {link.name}
-                </span>
+                {link.name}
                 {isActive && (
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"
-                    layoutId="underline"
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    className="absolute right-0 -bottom-px left-0 h-0.5 rounded-full bg-accent-500"
+                    layoutId="form-tab-underline"
+                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
                   />
                 )}
               </Link>

@@ -9,7 +9,19 @@ interface Tab {
   language: string;
 }
 
-export function CodeTabs({ tabs }: { tabs: Tab[] }) {
+/**
+ * `maxHeight` is opt-in and off by default, so the docs pages -- where a
+ * snippet should simply be as tall as it is -- are untouched. It exists for
+ * the integration dialog, where a long React example otherwise pushed the
+ * modal past the bottom of the viewport with no way to reach the rest.
+ */
+export function CodeTabs({
+  tabs,
+  maxHeight,
+}: {
+  tabs: Tab[];
+  maxHeight?: string;
+}) {
   const [activeTab, setActiveTab] = useState(tabs[0].value);
 
   const activeCode = tabs.find((tab) => tab.value === activeTab);
@@ -36,8 +48,20 @@ export function CodeTabs({ tabs }: { tabs: Tab[] }) {
       </div>
 
       {activeCode && (
-        <div className="[&>div]:my-0 [&>div]:rounded-none [&>div]:border-0">
-          <CodeBlock code={activeCode.code} language={activeCode.language} />
+        <div className="relative">
+          <div
+            className="overflow-auto [&>div]:my-0 [&>div]:rounded-none [&>div]:border-0"
+            style={maxHeight ? { maxHeight } : undefined}
+          >
+            <CodeBlock code={activeCode.code} language={activeCode.language} />
+          </div>
+          {/* A fade at the lower edge, so a clipped snippet reads as "there is
+              more below" rather than as one that simply ends there. Only when
+              a height is imposed; pointer-events-none so it never eats a
+              click or a scroll. */}
+          {maxHeight && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-linear-to-t from-ink-950 to-transparent" />
+          )}
         </div>
       )}
     </div>

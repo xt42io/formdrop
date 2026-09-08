@@ -171,10 +171,15 @@ export function Sidebar() {
             );
 
             // Collapsed, the icon is the only label there is.
+            //
+            // The extra wrapper is load-bearing: Tooltip renders an
+            // inline-flex element, which shrink-wraps its child instead of
+            // filling the rail, so the icons sat 17px left of the centre the
+            // toggle above them is on. This re-centres them.
             return collapsed ? (
-              <Tooltip key={link.path} content={link.name}>
-                {item}
-              </Tooltip>
+              <div key={link.path} className="flex justify-center">
+                <Tooltip content={link.name}>{item}</Tooltip>
+              </div>
             ) : (
               item
             );

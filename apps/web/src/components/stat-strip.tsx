@@ -29,7 +29,7 @@ function Tile({ stat }: { stat: Stat }) {
 
   if (stat.feature) {
     return (
-      <div className="relative overflow-hidden rounded-panel bg-accent-600 p-6 shadow-lift">
+      <div className="relative overflow-hidden rounded-panel bg-accent-600 p-6">
         {/* Atmosphere, not decoration: one soft bloom rather than a gradient
             across the whole tile, so the figure stays the brightest thing. */}
         <div className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-white/15 blur-3xl" />

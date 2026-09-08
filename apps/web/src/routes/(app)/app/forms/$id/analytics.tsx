@@ -1,8 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { appClient } from "@/lib/app-client";
-import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Area,
   AreaChart,
@@ -12,6 +9,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import moment from "moment";
+import { appClient } from "@/lib/app-client";
+import { StatStrip } from "@/components/stat-strip";
+import { comparePeriods, sumRecent, useChartTheme } from "@/lib/chart-theme";
 
 export const Route = createFileRoute("/(app)/app/forms/$id/analytics")({
   head: () => ({
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/(app)/app/forms/$id/analytics")({
 
 function RouteComponent() {
   const { id } = Route.useParams();
+  const theme = useChartTheme();
 
   const { data, isLoading } = useQuery({
     queryKey: ["analytics", id],
@@ -34,121 +36,152 @@ function RouteComponent() {
     },
   });
 
+  const header = (
+    <div>
+      <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+        Analytics
+      </h2>
+      <p className="mt-1 text-sm text-ink-600">
+        How this form has been collecting over the last 30 days.
+      </p>
+    </div>
+  );
+
   if (isLoading) {
     return (
       <div>
-        <div className="flex items-center gap-x-3 py-2">
-          <Link
-            to="/app/forms"
-            className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-          </Link>
-          <h2 className="text-lg font-semibold">Analytics</h2>
-        </div>
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
+        {header}
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {[0, 1, 2].map((tile) => (
             <div
-              key={i}
-              className="h-32 bg-gray-100 rounded-2xl animate-pulse"
-            ></div>
+              key={tile}
+              className="h-32 animate-pulse rounded-panel bg-ink-100"
+            />
           ))}
         </div>
-        <div className="mt-4 h-96 bg-gray-100 rounded-2xl animate-pulse"></div>
+        <div className="mt-3 h-96 animate-pulse rounded-panel bg-ink-100" />
       </div>
     );
   }
 
-  const { stats, chartData } = data || {
+  const { stats, chartData } = data ?? {
     stats: { total: 0, thisMonth: 0, today: 0 },
     chartData: [],
   };
 
+  // Both derived from the series already on the page rather than a second
+  // request. The count is computed independently of the comparison: a form
+  // with nine days of history has no previous week to compare against, but it
+  // certainly has a last-seven-days figure, and reading it off `comparison`
+  // showed that form a zero.
+  const last7 = sumRecent(chartData);
+  const comparison = comparePeriods(chartData);
+
   return (
     <div>
-      <div className="flex items-center gap-x-3 py-2">
-        <Link
-          to="/app/forms"
-          className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
-        >
-          <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-        </Link>
-        <h2 className="text-lg font-semibold">Analytics</h2>
-      </div>
+      {header}
 
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white">
-          <p className="text-sm font-medium text-gray-500">Total Submissions</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {stats.total.toLocaleString()}
-          </p>
-        </div>
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white">
-          <p className="text-sm font-medium text-gray-500">This Month</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {stats.thisMonth}
-          </p>
-        </div>
-        <div className="p-6 border border-gray-200 rounded-3xl bg-white">
-          <p className="text-sm font-medium text-gray-500">Today</p>
-          <p className="text-3xl font-bold text-gray-900 mt-2">
-            {stats.today.toLocaleString()}
-          </p>
-        </div>
-      </div>
+      <StatStrip
+        stats={[
+          {
+            label: "Total submissions",
+            value: stats.total,
+            detail: "all time",
+            feature: true,
+          },
+          {
+            label: "Last 7 days",
+            value: last7,
+            delta: comparison,
+            detail: comparison ? "vs previous 7" : "not enough history yet",
+          },
+          {
+            label: "Today",
+            value: stats.today,
+            detail: `${stats.thisMonth.toLocaleString()} this month`,
+          },
+        ]}
+      />
 
-      <div className="mt-6 p-6 border border-gray-200 rounded-3xl bg-white">
-        <h3 className="text-lg font-semibold mb-6">Submission History</h3>
-        <div className="h-[400px] w-full">
+      <div className="animate-enter-late mt-3 rounded-panel border border-ink-200 bg-white p-6">
+        <div className="mb-6 flex items-baseline justify-between">
+          <h3 className="text-base font-semibold text-ink-950">
+            Submission history
+          </h3>
+          <span className="text-xs text-ink-500">Last 30 days</span>
+        </div>
+
+        <div className="h-[360px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={chartData}>
+            <AreaChart
+              data={chartData}
+              margin={{ top: 4, right: 8, bottom: 0, left: -16 }}
+            >
               <defs>
+                {/* Every colour below comes from the token file, read back at
+                    runtime -- Recharts takes strings, so a class cannot reach
+                    it, and hard-coding them is what W4 forbids. */}
                 <linearGradient
-                  id="colorSubmissions"
+                  id="submissionsFill"
                   x1="0"
                   y1="0"
                   x2="0"
                   y2="1"
                 >
-                  <stop offset="5%" stopColor="#6f63e4" stopOpacity={0.1} />
-                  <stop offset="95%" stopColor="#6f63e4" stopOpacity={0} />
+                  <stop
+                    offset="0%"
+                    stopColor={theme.accent}
+                    stopOpacity={0.18}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={theme.accent}
+                    stopOpacity={0}
+                  />
                 </linearGradient>
               </defs>
+
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f3f4f6"
+                stroke={theme.grid}
               />
               <XAxis
                 dataKey="date"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6b7280", fontSize: 12 }}
-                dy={10}
-                minTickGap={30}
+                tick={{ fill: theme.tick, fontSize: 11 }}
+                tickFormatter={(value: string) => moment(value).format("MMM D")}
+                dy={8}
+                minTickGap={28}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6b7280", fontSize: 12 }}
-                dx={-10}
+                tick={{ fill: theme.tick, fontSize: 11 }}
+                allowDecimals={false}
+                width={44}
               />
               <Tooltip
+                cursor={{ stroke: theme.accent, strokeWidth: 1 }}
+                labelFormatter={(value: string) =>
+                  moment(value).format("dddd, MMM D")
+                }
+                formatter={(value: number) => [value, "Submissions"]}
                 contentStyle={{
-                  backgroundColor: "#fff",
+                  backgroundColor: theme.surface,
                   borderRadius: "12px",
-                  border: "1px solid #e5e7eb",
-                  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+                  border: `1px solid ${theme.border}`,
+                  fontSize: "12px",
                 }}
-                cursor={{ stroke: "#6f63e4", strokeWidth: 1 }}
               />
               <Area
                 type="monotone"
                 dataKey="submissions"
-                stroke="#6f63e4"
+                stroke={theme.accent}
                 strokeWidth={2}
+                fill="url(#submissionsFill)"
                 fillOpacity={1}
-                fill="url(#colorSubmissions)"
               />
             </AreaChart>
           </ResponsiveContainer>

@@ -1,8 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import {
-  ArrowLeft01Icon,
   Tick02Icon,
   Delete02Icon,
   AlertCircleIcon,
@@ -117,10 +116,10 @@ function RouteComponent() {
   if (isLoading) {
     return (
       <div className="animate-pulse">
-        <div className="h-8 w-48 bg-gray-200 rounded mb-6"></div>
+        <div className="h-8 w-48 bg-ink-200 rounded mb-6"></div>
         <div className="space-y-4">
-          <div className="h-12 w-full bg-gray-200 rounded"></div>
-          <div className="h-32 w-full bg-gray-200 rounded"></div>
+          <div className="h-12 w-full bg-ink-200 rounded"></div>
+          <div className="h-32 w-full bg-ink-200 rounded"></div>
         </div>
       </div>
     );
@@ -130,43 +129,43 @@ function RouteComponent() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center gap-x-3 py-2 mb-6">
-        <Link
-          to="/app/forms"
-          className="hover:bg-gray-100 p-2 rounded-lg transition-colors"
-        >
-          <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
-        </Link>
-        <h2 className="text-lg font-semibold">Form Settings</h2>
+      <div className="mb-6">
+        <h2 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+          Settings
+        </h2>
+        <p className="mt-1 text-sm text-ink-600">
+          The form&rsquo;s name, where it accepts submissions from, and how to
+          delete it.
+        </p>
       </div>
 
       <div className="space-y-8">
         {/* General Settings */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-6">
+        <div className="bg-white border border-ink-200 rounded-panel p-6">
           <h3 className="text-lg font-semibold mb-4">General Information</h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-ink-700 mb-1">
                 Form Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                className="w-full px-3 py-3 border border-ink-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent transition-all"
                 placeholder="My Awesome Form"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-ink-700 mb-1">
                 Description
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                className="w-full px-3 py-3 border border-ink-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent transition-all"
                 placeholder="What is this form for?"
               />
             </div>
@@ -178,7 +177,7 @@ function RouteComponent() {
                 isLoading={updateMutation.isPending}
                 variant="primary"
                 size="md"
-                className="rounded-3xl"
+                className="rounded-panel"
                 icon={
                   !updateMutation.isPending && (
                     <HugeiconsIcon icon={Tick02Icon} size={18} />
@@ -192,10 +191,10 @@ function RouteComponent() {
         </div>
 
         {/* Allowed Domains */}
-        <div className="bg-white border border-gray-200 rounded-3xl p-6">
+        <div className="bg-white border border-ink-200 rounded-panel p-6">
           <h3 className="text-lg font-semibold mb-4">Allowed Domains</h3>
           <div className="space-y-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-ink-500">
               Restrict which websites can submit to this form. Leave empty to
               allow all domains.
             </p>
@@ -211,7 +210,7 @@ function RouteComponent() {
                     handleAddDomain();
                   }
                 }}
-                className="flex-1 px-3 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
+                className="flex-1 px-3 py-3 border border-ink-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent transition-all"
                 placeholder="example.com"
               />
               <Button
@@ -219,7 +218,7 @@ function RouteComponent() {
                 disabled={!newDomain.trim()}
                 variant="secondary"
                 size="lg"
-                className="rounded-3xl bg-gray-100 border-transparent"
+                className="rounded-panel bg-ink-100 border-transparent"
                 icon={<HugeiconsIcon icon={Add01Icon} size={20} />}
               />
             </div>
@@ -229,24 +228,24 @@ function RouteComponent() {
                 {allowedDomains.map((domain) => (
                   <div
                     key={domain}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100"
+                    className="flex items-center justify-between p-3 bg-ink-50 rounded-xl border border-ink-100"
                   >
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-ink-700">
                       {domain}
                     </span>
                     <Button
                       onClick={() => handleRemoveDomain(domain)}
                       variant="ghost"
                       size="sm"
-                      className="text-gray-400 hover:text-red-500 p-1 h-auto"
+                      className="text-ink-400 hover:text-tint-rose-ink p-1 h-auto"
                       icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
                     />
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-4 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center">
-                <p className="text-sm text-gray-500">
+              <div className="p-4 bg-ink-50 rounded-xl border border-dashed border-ink-200 text-center">
+                <p className="text-sm text-ink-500">
                   No domains restricted. All domains are allowed.
                 </p>
               </div>
@@ -255,11 +254,11 @@ function RouteComponent() {
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-red-50 border border-red-100 rounded-3xl p-6">
-          <h3 className="text-lg font-semibold text-red-900 mb-2">
+        <div className="bg-tint-rose border border-tint-rose rounded-panel p-6">
+          <h3 className="text-lg font-semibold text-tint-rose-ink mb-2">
             Danger Zone
           </h3>
-          <p className="text-sm text-red-700 mb-6">
+          <p className="text-sm text-tint-rose-ink mb-6">
             Once you delete a form, there is no going back. Please be certain.
           </p>
 
@@ -281,28 +280,26 @@ function RouteComponent() {
         label="Delete Form?"
       >
         <div className="p-6">
-          <div className="flex items-center gap-x-3 mb-4 text-red-600">
-            <div className="p-2 bg-red-100 rounded-xl">
+          <div className="flex items-center gap-x-3 mb-4 text-tint-rose-ink">
+            <div className="p-2 bg-tint-rose rounded-xl">
               <HugeiconsIcon icon={AlertCircleIcon} size={24} />
             </div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              Delete Form?
-            </h3>
+            <h3 className="text-lg font-semibold text-ink-950">Delete Form?</h3>
           </div>
-          <p className="text-gray-600 mb-6">
+          <p className="text-ink-600 mb-6">
             This action cannot be undone. This will permanently delete the form{" "}
             <strong>{form.name}</strong> and all of its submissions.
           </p>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-ink-700 mb-1">
               Type <strong>{form.name}</strong> to confirm
             </label>
             <input
               type="text"
               value={deleteConfirmationText}
               onChange={(e) => setDeleteConfirmationText(e.target.value)}
-              className="w-full px-3 py-3 border border-gray-200 rounded-3xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+              className="w-full px-3 py-3 border border-ink-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-tint-rose-ink/20 focus:border-tint-rose-ink transition-all"
             />
           </div>
 
@@ -311,7 +308,7 @@ function RouteComponent() {
               onClick={() => setShowDeleteConfirm(false)}
               variant="secondary"
               size="md"
-              className="rounded-3xl bg-transparent border-transparent hover:bg-gray-100"
+              className="rounded-panel bg-transparent border-transparent hover:bg-ink-100"
             >
               Cancel
             </Button>
@@ -323,7 +320,7 @@ function RouteComponent() {
               isLoading={deleteMutation.isPending}
               variant="danger"
               size="md"
-              className="rounded-3xl"
+              className="rounded-panel"
             >
               {deleteMutation.isPending ? "Deleting..." : "Delete Form"}
             </Button>

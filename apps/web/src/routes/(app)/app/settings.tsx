@@ -1,18 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { motion, AnimatePresence } from "motion/react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  UserIcon,
-  LockKeyIcon,
-  CreditCardIcon,
-} from "@hugeicons/core-free-icons";
-import { useSession } from "@/lib/auth-client";
+import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
+import { useSession } from "@/lib/auth-client";
 import { ProfileSettings } from "@/components/settings/profile-settings";
 import { PasswordSettings } from "@/components/settings/password-settings";
 import { BillingSettings } from "@/components/settings/billing-settings";
 
 type Tab = "profile" | "password" | "billing";
+
+const TABS = [
+  { id: "profile", label: "Profile" },
+  { id: "password", label: "Password" },
+  { id: "billing", label: "Billing" },
+] as const;
 
 export const Route = createFileRoute("/(app)/app/settings")({
   head: () => ({
@@ -33,10 +33,6 @@ function SettingsPage() {
   const navigate = Route.useNavigate();
   const { data: session } = useSession();
 
-  const setActiveTab = (tab: Tab) => {
-    navigate({ search: { tab } });
-  };
-
   const { data: settings, isLoading: isSettingsLoading } = useQuery({
     queryKey: ["user-settings"],
     queryFn: async () => {
@@ -46,86 +42,92 @@ function SettingsPage() {
     },
   });
 
-  const tabs = [
-    { id: "profile", label: "Profile", icon: UserIcon },
-    { id: "password", label: "Password", icon: LockKeyIcon },
-    { id: "billing", label: "Billing", icon: CreditCardIcon },
-  ] as const;
+  /* The heading is rendered by both branches rather than only by the loaded
+     one, so it does not appear late and shove the rest of the page down. */
+  const header = (
+    <div>
+      <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+        Settings
+      </h1>
+      <p className="mt-1 text-sm text-ink-600">
+        Your account, how you sign in, and your plan.
+      </p>
+    </div>
+  );
 
   if (isSettingsLoading) {
     return (
-      <div className="max-w-6xl mx-auto animate-pulse">
-        <div className="h-8 w-32 bg-gray-200 rounded mb-8"></div>
-        <div className="flex gap-8">
-          <div className="w-64 h-64 bg-gray-200 rounded-3xl"></div>
-          <div className="flex-1 h-96 bg-gray-200 rounded-3xl"></div>
+      <div>
+        {header}
+        {/* Shaped like what replaces it -- a tab rule at the same height, then
+            a panel -- so the page does not rearrange itself when data lands. */}
+        <div className="mt-6 flex gap-8 border-b border-ink-200 pb-3">
+          {[3.5, 4.5, 3.5].map((w, i) => (
+            <div
+              key={i}
+              className="h-4 animate-pulse rounded bg-ink-100"
+              style={{ width: `${w}rem` }}
+            />
+          ))}
         </div>
+        <div className="mt-6 h-80 animate-pulse rounded-panel bg-ink-100" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
-        <p className="text-gray-500 mt-1">
-          Manage your account settings and preferences.
-        </p>
-      </div>
+    <div>
+      {header}
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Sidebar Tabs */}
-        <div className="w-full md:w-64 shrink-0">
-          <div className="bg-white rounded-3xl border border-gray-200 p-2 space-y-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-colors duration-200 ${
-                  activeTab === tab.id
-                    ? "text-white"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                }`}
-              >
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="active-settings-tab"
-                    className="absolute inset-0 bg-accent rounded-2xl shadow-md shadow-accent/20"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  />
-                )}
-                <span className="relative z-10 flex items-center gap-3">
-                  <HugeiconsIcon icon={tab.icon} size={20} />
-                  {tab.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+      {/* Underline tabs rather than the 256px left rail this replaces. Three
+          items did not need a quarter of the page to themselves, and the form
+          detail screen already navigates this way -- the two tabbed surfaces
+          in the dashboard now behave identically, down to the underline
+          springing between labels instead of cutting. */}
+      <nav
+        aria-label="Settings sections"
+        className="mt-6 flex gap-8 border-b border-ink-200"
+      >
+        {TABS.map((tab) => {
+          const isActive = tab.id === activeTab;
+          return (
+            <button
+              key={tab.id}
+              /* Deliberately not role="tab". These write the URL, so they are
+                 navigation, and aria-current says so honestly. The tablist
+                 role would promise a roving-tabindex arrow-key contract that
+                 is not implemented -- announcing a pattern and then not
+                 honouring it strands a screen reader worse than plain
+                 buttons do. */
+              aria-current={isActive ? "page" : undefined}
+              onClick={() => navigate({ search: { tab: tab.id } })}
+              className={`relative cursor-pointer px-1 py-3 text-sm font-medium transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+                isActive ? "text-accent-600" : "text-ink-600 hover:text-ink-950"
+              }`}
             >
-              {activeTab === "profile" && <ProfileSettings session={session} />}
-
-              {activeTab === "password" && (
-                <PasswordSettings hasPassword={settings?.hasPassword} />
+              {tab.label}
+              {isActive && (
+                <motion.span
+                  layoutId="settings-tab-underline"
+                  className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-accent-500"
+                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                />
               )}
+            </button>
+          );
+        })}
+      </nav>
 
-              {activeTab === "billing" && (
-                <BillingSettings settings={settings} />
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
+      {/* Keyed on the tab so switching remounts and re-runs the entrance. That
+          entrance is the CSS utility, not a motion fade: tokens.css makes the
+          case at length, but the short version is that anything starting at
+          opacity 0 can strand the panel invisible if its frames never run. */}
+      <div key={activeTab} className="animate-enter mt-6">
+        {activeTab === "profile" && <ProfileSettings session={session} />}
+        {activeTab === "password" && (
+          <PasswordSettings hasPassword={settings?.hasPassword} />
+        )}
+        {activeTab === "billing" && <BillingSettings settings={settings} />}
       </div>
     </div>
   );

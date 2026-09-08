@@ -175,7 +175,16 @@ function RouteComponent() {
                   fontSize: "12px",
                 }}
               />
+              {/* isAnimationActive is off deliberately. Recharts animates
+                  the series up from a flat baseline, so if those frames do
+                  not run -- a background tab, a throttled device -- the
+                  chart is left drawing a straight line at zero, which is not
+                  a missing flourish but wrong data. tokens.css makes the
+                  same argument for entrance utilities, and W4 requires
+                  prefers-reduced-motion to disable entrance animation
+                  anyway. */}
               <Area
+                isAnimationActive={false}
                 type="monotone"
                 dataKey="submissions"
                 stroke={theme.accent}

@@ -112,3 +112,33 @@ export async function topFormsForUser(userId: string, limit: number) {
     submissionCount: Number(row.submissionCount || 0),
   }));
 }
+
+/**
+ * Daily usage for every one of a user's forms, in one query.
+ *
+ * The forms list shows a last-7-day sparkline per row (W4 section 4.5). Asking
+ * dailyUsageForForm once per form would be one round trip per row, so this
+ * groups by form as well as period and lets the caller bucket the result.
+ *
+ * Sparse, like the other usage reads: a day with no submissions has no row at
+ * all, so a caller drawing a fixed-width series has to fill the gaps.
+ */
+export async function dailyUsageByFormForUser(userId: string, from: string) {
+  const rows = await db
+    .select({
+      formId: usage.formId,
+      date: usage.period,
+      count: sql<number>`sum(${usage.count})`,
+    })
+    .from(usage)
+    .innerJoin(forms, eq(usage.formId, forms.id))
+    .where(and(ownedByUser(userId), gte(usage.period, from)))
+    .groupBy(usage.formId, usage.period)
+    .orderBy(usage.period);
+
+  return rows.map((row) => ({
+    formId: row.formId,
+    date: row.date,
+    count: Number(row.count || 0),
+  }));
+}

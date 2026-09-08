@@ -54,7 +54,15 @@ type Row<T extends (...args: never[]) => unknown> = NonNullable<Rows<T>>;
  * silently drifting — which is what W3 asks for: no component re-declaring a
  * type that packages/db or packages/core already knows.
  */
-export type Form = Rows<typeof listFormsForUser>[number];
+/**
+ * The list row, plus the sparkline series the handler assembles on top of the
+ * query. recentUsage is declared rather than derived because it does not come
+ * from listFormsForUser -- the handler joins a second, grouped usage query and
+ * fills it to a fixed seven-day window.
+ */
+export type Form = Rows<typeof listFormsForUser>[number] & {
+  recentUsage: { date: string; count: number }[];
+};
 export type FormDetail = Row<typeof findFormDetailForUser>;
 export type Recipient = Rows<typeof listRecipientsForForm>[number];
 export type Submission = Rows<typeof listSubmissionsForForm>[number];

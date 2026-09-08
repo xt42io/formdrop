@@ -163,8 +163,8 @@ function RouteComponent() {
               rather than looking identical to a connectable one and relying on
               a label to say otherwise. */}
           <div className="overflow-hidden rounded-panel border border-dashed border-ink-200 bg-white">
-            <div className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-4">
+            <div className="flex flex-col items-start gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+              <div className="flex min-w-0 items-center gap-4">
                 <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-tint-amber opacity-60">
                   <img
                     src="/airtable.svg"
@@ -172,7 +172,7 @@ function RouteComponent() {
                     className="h-10 w-10 grayscale"
                   />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="text-lg font-semibold text-ink-700">
                     Airtable
                   </h3>
@@ -182,7 +182,7 @@ function RouteComponent() {
                 </div>
               </div>
 
-              <div className="rounded-full bg-ink-100 px-3.5 py-1.5 text-xs font-medium text-ink-500">
+              <div className="w-fit shrink-0 rounded-full bg-ink-100 px-3.5 py-1.5 text-xs font-medium whitespace-nowrap text-ink-500">
                 Coming Soon
               </div>
             </div>

@@ -101,7 +101,7 @@ function ApiKeysPage() {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
             API keys

@@ -2,6 +2,7 @@ import { Modal } from "@formdrop/ui";
 import { CodeTabs } from "@/components/docs/code-tabs";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { CopyButton } from "@/components/copy-button";
 
 interface IntegrationExamplesModalProps {
   isOpen: boolean;
@@ -72,23 +73,46 @@ export function IntegrationExamplesModal({
       size="2xl"
       label="Integration Examples"
       scrim="bg-black/40 backdrop-blur-sm"
+      className="flex max-h-[85vh] flex-col"
     >
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
-        <h2 className="text-xl font-semibold">Integration Examples</h2>
+      <div className="flex shrink-0 items-start justify-between gap-4 border-b border-ink-100 px-6 py-5">
+        <div>
+          <h2 className="text-lg font-semibold text-ink-950">
+            Integration guide
+          </h2>
+          <p className="mt-1 text-sm text-ink-600">
+            Point any form at this endpoint. No key, no SDK, no backend.
+          </p>
+        </div>
         <button
           onClick={onClose}
-          className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          aria-label="Close"
+          className="shrink-0 cursor-pointer rounded-lg p-2 text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
         >
           <HugeiconsIcon icon={Cancel01Icon} size={20} />
         </button>
       </div>
 
-      <div className="p-6">
-        <p className="text-gray-600 mb-4">
-          Use your unique endpoint to collect submissions from anywhere.
+      {/* The endpoint, on its own and copyable. It is the one thing anyone
+          opens this dialog for, and it was previously only reachable by
+          reading it out of a code sample. */}
+      <div className="shrink-0 border-b border-ink-100 bg-ink-50/60 px-6 py-4">
+        <p className="mb-2 text-[11px] font-medium tracking-wide text-ink-500 uppercase">
+          Your endpoint
         </p>
+        <div className="flex items-center gap-2 rounded-xl border border-ink-200 bg-white py-2.5 pr-2 pl-3.5">
+          <span className="mr-auto truncate font-mono text-[13px] text-ink-950">
+            {endpoint}
+          </span>
+          <span className="shrink-0 rounded-md bg-tint-green px-2 py-0.5 font-mono text-[11px] font-semibold text-tint-green-ink">
+            POST
+          </span>
+          <CopyButton text={endpoint} className="relative" />
+        </div>
+      </div>
 
-        <CodeTabs tabs={tabs} />
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <CodeTabs tabs={tabs} maxHeight="18rem" />
       </div>
     </Modal>
   );

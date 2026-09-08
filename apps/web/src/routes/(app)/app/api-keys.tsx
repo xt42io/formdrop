@@ -78,7 +78,7 @@ function ApiKeysPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl">
+      <div>
         <div className="h-8 w-40 animate-pulse rounded bg-ink-100" />
         <div className="mt-2 h-4 w-72 animate-pulse rounded bg-ink-100" />
         <div className="mt-6 overflow-hidden rounded-panel border border-ink-200 bg-white">
@@ -100,7 +100,7 @@ function ApiKeysPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div>
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">

@@ -115,7 +115,7 @@ export function GoogleSheetsSection({
                       disabled={disconnectMutation.isPending}
                       variant="ghost"
                       size="sm"
-                      className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl"
+                      className="hover:text-ink-950 hover:bg-ink-100 rounded-xl"
                     >
                       Disconnect
                     </Button>
@@ -137,7 +137,7 @@ export function GoogleSheetsSection({
                       disabled={disconnectMutation.isPending}
                       variant="ghost"
                       size="sm"
-                      className="text-green-600 hover:text-green-700 hover:bg-green-50 p-2 h-auto"
+                      className="text-tint-green-ink hover:bg-tint-green p-2 h-auto"
                       icon={<HugeiconsIcon icon={Tick02Icon} size={16} />}
                     />
                     <Button
@@ -145,7 +145,7 @@ export function GoogleSheetsSection({
                       disabled={disconnectMutation.isPending}
                       variant="ghost"
                       size="sm"
-                      className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 h-auto"
+                      className="hover:text-ink-950 hover:bg-ink-100 p-2 h-auto"
                       icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
                     />
                   </motion.div>

@@ -8,92 +8,88 @@ import { auth } from "@/lib/auth";
 import { RecipientVerificationEmail } from "@/emails/RecipientVerificationEmail";
 import crypto from "crypto";
 import { getResend } from "@/lib/email";
+import { json, type HandlerPayload } from "@/lib/api/respond";
+
+const POST = async ({
+  request,
+  params,
+}: {
+  request: Request;
+  params: { formId: string; recipientId: string };
+}) => {
+  try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session?.user) {
+      return json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { formId, recipientId } = params;
+
+    // Verify form belongs to user
+    const form = await findOwnedForm(formId, session.user.id);
+
+    if (!form) {
+      return json({ error: "Form not found" }, { status: 404 });
+    }
+
+    // Get recipient
+    const recipient = await findRecipientInForm(formId, recipientId);
+
+    if (!recipient) {
+      return json({ error: "Recipient not found" }, { status: 404 });
+    }
+
+    // Check if already verified
+    if (recipient.verifiedAt) {
+      return json({ error: "Recipient already verified" }, { status: 400 });
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    const verificationTokenExpiresAt = new Date(
+      Date.now() + 24 * 60 * 60 * 1000,
+    ); // 24 hours
+
+    // Update recipient with new token
+    await setRecipientVerificationToken(
+      recipientId,
+      verificationToken,
+      verificationTokenExpiresAt,
+    );
+
+    // Send verification email
+    const verificationUrl = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
+
+    await getResend().emails.send({
+      from: "FormDrop <noreply@formdrop.co>",
+      to: recipient.email,
+      subject: "Verify your email address",
+      react: RecipientVerificationEmail({
+        verificationLink: verificationUrl,
+        formName: form.name,
+      }),
+    });
+
+    return json({ success: true });
+  } catch (error: any) {
+    return json(
+      {
+        error: "Internal server error",
+        details: error.message,
+      },
+      { status: 500 },
+    );
+  }
+};
+
+export type FormsFormidRecipientsRecipientidResendVerificationPostResponse =
+  HandlerPayload<typeof POST>;
 
 export const Route = createFileRoute(
   "/api/forms/$formId/recipients/$recipientId/resend-verification",
 )({
-  server: {
-    handlers: {
-      POST: async ({
-        request,
-        params,
-      }: {
-        request: Request;
-        params: { formId: string; recipientId: string };
-      }) => {
-        try {
-          const session = await auth.api.getSession({
-            headers: request.headers,
-          });
-
-          if (!session?.user) {
-            return Response.json({ error: "Unauthorized" }, { status: 401 });
-          }
-
-          const { formId, recipientId } = params;
-
-          // Verify form belongs to user
-          const form = await findOwnedForm(formId, session.user.id);
-
-          if (!form) {
-            return Response.json({ error: "Form not found" }, { status: 404 });
-          }
-
-          // Get recipient
-          const recipient = await findRecipientInForm(formId, recipientId);
-
-          if (!recipient) {
-            return Response.json(
-              { error: "Recipient not found" },
-              { status: 404 },
-            );
-          }
-
-          // Check if already verified
-          if (recipient.verifiedAt) {
-            return Response.json(
-              { error: "Recipient already verified" },
-              { status: 400 },
-            );
-          }
-
-          // Generate new verification token
-          const verificationToken = crypto.randomBytes(32).toString("hex");
-          const verificationTokenExpiresAt = new Date(
-            Date.now() + 24 * 60 * 60 * 1000,
-          ); // 24 hours
-
-          // Update recipient with new token
-          await setRecipientVerificationToken(
-            recipientId,
-            verificationToken,
-            verificationTokenExpiresAt,
-          );
-
-          // Send verification email
-          const verificationUrl = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
-
-          await getResend().emails.send({
-            from: "FormDrop <noreply@formdrop.co>",
-            to: recipient.email,
-            subject: "Verify your email address",
-            react: RecipientVerificationEmail({
-              verificationLink: verificationUrl,
-              formName: form.name,
-            }),
-          });
-
-          return Response.json({ success: true });
-        } catch (error: any) {
-          return Response.json(
-            {
-              error: "Internal server error",
-              details: error.message,
-            },
-            { status: 500 },
-          );
-        }
-      },
-    },
-  },
+  server: { handlers: { POST } },
 });

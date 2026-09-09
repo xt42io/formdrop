@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { CodeIcon, RocketIcon, SparklesIcon } from "@hugeicons/core-free-icons";
 
 /**
@@ -37,11 +37,7 @@ export function DocsSidebar() {
         {sidebarItems.map((section) => (
           <div key={section.title}>
             <h2 className="mb-2 flex items-center gap-2 px-3 text-[13px] font-semibold text-ink-900">
-              <HugeiconsIcon
-                icon={section.icon}
-                size={15}
-                className="text-ink-400"
-              />
+              <Icon icon={section.icon} size={15} className="text-ink-400" />
               {section.title}
             </h2>
             <ul className="flex flex-col gap-0.5">

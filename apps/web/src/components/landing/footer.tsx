@@ -17,7 +17,7 @@ export function Footer() {
           </Link>
         </div>
 
-        <p className="text-sm text-ink-400">
+        <p className="text-sm text-ink-500">
           &copy; {new Date().getFullYear()} FormDrop. All rights reserved.
         </p>
       </div>

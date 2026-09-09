@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 // Derived from the query the handler calls. The local copy this replaces
 // declared createdAt as a Date, which JSON never delivers.
 import type { AdminForm } from "@/lib/app-client";
-import axios from "axios";
 import {
   createColumnHelper,
   flexRender,
@@ -23,6 +22,7 @@ import {
   ArrowDown01Icon,
 } from "@hugeicons/core-free-icons";
 import { useState, useEffect } from "react";
+import { adminClient } from "@/lib/admin-client";
 
 export const Route = createFileRoute("/(admin)/admin/forms")({
   component: AdminForms,
@@ -113,7 +113,11 @@ async function handleDeleteForm(formId: string) {
   }
 
   try {
-    await axios.delete(`/api/admin/forms/${formId}`);
+    // NOTE: there is no handler for DELETE /api/admin/forms/:formId. Only
+    // GET /api/admin/forms exists, so this request cannot delete anything --
+    // a pre-existing gap, left as-is because building the endpoint is admin
+    // feature work rather than part of moving this page off axios.
+    await fetch(`/api/admin/forms/${formId}`, { method: "DELETE" });
     window.location.reload();
   } catch {
     alert("Failed to delete form");
@@ -132,8 +136,10 @@ function AdminForms() {
   const { data: forms, isLoading } = useQuery({
     queryKey: ["admin", "forms"],
     queryFn: async () => {
-      const res = await axios.get("/api/admin/forms");
-      return res.data.forms as AdminForm[];
+      const response = await adminClient.forms();
+      if ("error" in response) throw new Error(response.error);
+      // No cast -- the type comes from the handler.
+      return response.forms;
     },
   });
 

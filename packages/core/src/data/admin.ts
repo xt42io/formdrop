@@ -111,6 +111,30 @@ export function listRecentSubmissionsAcrossAllForms(limit: number) {
 }
 
 /**
+ * How many rows the retention tool would remove.
+ *
+ * Exists so the confirmation can name a number. PRD 4.6 asks for the
+ * maintenance actions to sit "behind an explicit confirm that names what will
+ * be deleted and how many rows", and that is not a nicety here: the delete
+ * below is a hard one, so an operator who guesses wrong does not get the rows
+ * back.
+ *
+ * It is a separate query from the delete rather than a dry-run flag, so the
+ * two cannot be confused for one another at the call site. The count can go
+ * stale between reading and deleting -- submissions age past the cutoff by the
+ * second -- which is why the result reports what was actually removed rather
+ * than assuming this number held.
+ */
+export async function countSubmissionsOlderThan(cutoff: Date): Promise<number> {
+  const [row] = await db
+    .select({ value: count() })
+    .from(submissions)
+    .where(lt(submissions.createdAt, cutoff));
+
+  return row?.value ?? 0;
+}
+
+/**
  * A hard delete, unlike everywhere else in this package — the admin
  * retention tool removes rows rather than marking them deleted, so these do
  * not come back. Returns how many went.

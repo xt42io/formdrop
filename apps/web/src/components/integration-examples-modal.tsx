@@ -1,7 +1,6 @@
-import { Modal } from "@formdrop/ui";
+import { Icon, Modal } from "@formdrop/ui";
 import { CodeTabs } from "@/components/docs/code-tabs";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { CopyButton } from "@/components/copy-button";
 
 interface IntegrationExamplesModalProps {
@@ -89,7 +88,7 @@ export function IntegrationExamplesModal({
           aria-label="Close"
           className="shrink-0 cursor-pointer rounded-lg p-2 text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
         >
-          <HugeiconsIcon icon={Cancel01Icon} size={20} />
+          <Icon icon={Cancel01Icon} size={20} />
         </button>
       </div>
 

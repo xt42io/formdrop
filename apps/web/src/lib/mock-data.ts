@@ -358,10 +358,9 @@ function respond(config: MockConfig) {
 /**
  * Replaces the transport, so no request leaves the browser.
  *
- * This patches `fetch` rather than an axios adapter, because app-client is on
- * fetch now. It still catches the admin pages, which call axios directly --
- * axios uses the fetch adapter in the browser, so wrapping fetch reaches both
- * without this file needing to know axios exists.
+ * This patches `fetch` rather than the axios adapter it replaced. Everything
+ * that talks to the API -- appClient, adminClient -- now goes through fetch,
+ * so there is one place to intercept.
  *
  * Anything that is not a dashboard API path falls through to the real fetch,
  * so auth, assets and the Vite dev channels are untouched.

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@formdrop/ui";
 import { useState } from "react";
-import axios from "axios";
+import { adminClient } from "@/lib/admin-client";
 
 export const Route = createFileRoute("/(admin)/admin/settings")({
   component: AdminSettings,
@@ -24,8 +24,9 @@ function AdminSettings() {
     setMessage("");
 
     try {
-      const res = await axios.post("/api/admin/settings/clear-old-submissions");
-      setMessage(`Successfully deleted ${res.data.deletedCount} submissions.`);
+      const response = await adminClient.clearOldSubmissions();
+      if ("error" in response) throw new Error(response.error);
+      setMessage(`Successfully deleted ${response.deletedCount} submissions.`);
     } catch {
       setMessage("Failed to clear old submissions.");
     } finally {

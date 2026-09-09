@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "motion/react";
-import { Icon } from "@formdrop/ui";
+import { Icon, palette } from "@formdrop/ui";
 import {
   StarIcon,
   ArrowRight01Icon,
@@ -20,7 +20,18 @@ const FEATURES = [
   "Unlimited team members",
 ];
 
-const CONFETTI_COLORS = ["#6f63e4", "#b8aef2", "#ffd166", "#4ecdc4"];
+/*
+ * Values rather than classes, because each piece is positioned and coloured
+ * inline -- but from the palette, not typed out. Two of these were already
+ * accent-500 and accent-300 written longhand, so the confetti would have
+ * stopped matching the brand the moment the ramp moved.
+ */
+const CONFETTI_COLORS = [
+  palette["accent-500"],
+  palette["accent-300"],
+  palette["tint-amber"],
+  palette["tint-mint"],
+];
 
 /**
  * Derived from the index rather than from Math.random(): the page is rendered

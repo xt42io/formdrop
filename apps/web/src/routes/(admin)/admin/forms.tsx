@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import { Button, Icon, Modal } from "@formdrop/ui";
 import { Delete02Icon, ViewIcon } from "@hugeicons/core-free-icons";
@@ -33,6 +33,7 @@ const columnHelper = createColumnHelper<AdminForm>();
 
 function AdminForms() {
   const navigate = useNavigate({ from: Route.fullPath });
+  const queryClient = useQueryClient();
   const searchParams = Route.useSearch();
   const [deleting, setDeleting] = useState<AdminForm | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -47,17 +48,23 @@ function AdminForms() {
     },
   });
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const confirmDelete = async () => {
     if (!deleting) return;
     setIsDeleting(true);
+    setDeleteError(null);
     try {
-      // NOTE: there is no handler for DELETE /api/admin/forms/:formId. Only
-      // GET /api/admin/forms exists, so this request cannot delete anything.
-      // Pre-existing, and building the endpoint is admin feature work rather
-      // than part of the redesign -- but the dialog now at least states what
-      // it intends to do, where window.confirm could not even name the form.
-      await fetch(`/api/admin/forms/${deleting.id}`, { method: "DELETE" });
-      window.location.reload();
+      const response = await adminClient.deleteForm(deleting.id);
+      if ("error" in response) {
+        // Reported rather than swallowed. The version this replaces reloaded
+        // the page whatever happened, so a failure looked exactly like a
+        // success until you noticed the row was still there.
+        setDeleteError(response.error);
+        return;
+      }
+      setDeleting(null);
+      await queryClient.invalidateQueries({ queryKey: ["admin", "forms"] });
     } finally {
       setIsDeleting(false);
     }
@@ -157,6 +164,7 @@ function AdminForms() {
       </div>
 
       <AdminTable
+        tableId="admin-forms"
         data={forms ?? []}
         columns={columns}
         isLoading={isLoading}
@@ -169,7 +177,9 @@ function AdminForms() {
         onSearchParamsChange={(next) =>
           navigate({ search: (prev) => ({ ...prev, ...next }) })
         }
-        onRowClick={(form) => navigate({ to: "/app/forms/$id", params: { id: form.id } })}
+        onRowClick={(form) =>
+          navigate({ to: "/app/forms/$id", params: { id: form.id } })
+        }
         rowLabel={(form) => `Open ${form.name}`}
       />
 
@@ -184,14 +194,26 @@ function AdminForms() {
           </h3>
           <p className="mt-2 text-sm leading-relaxed text-ink-600">
             <span className="font-medium text-ink-950">{deleting?.name}</span>{" "}
-            and its{" "}
-            {(deleting?.submissionCount ?? 0).toLocaleString()} submission
+            and its {(deleting?.submissionCount ?? 0).toLocaleString()}{" "}
+            submission
             {deleting?.submissionCount === 1 ? "" : "s"} belong to{" "}
             {deleting?.userName || "another account"}. Its endpoint stops
             accepting posts and this cannot be undone.
           </p>
+          {deleteError && (
+            <p className="mt-4 rounded-card border border-tint-rose bg-tint-rose/40 px-3 py-2 text-sm text-tint-rose-ink">
+              {deleteError}
+            </p>
+          )}
+
           <div className="mt-6 flex justify-end gap-3">
-            <Button variant="ghost" onClick={() => setDeleting(null)}>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setDeleting(null);
+                setDeleteError(null);
+              }}
+            >
               Cancel
             </Button>
             <Button

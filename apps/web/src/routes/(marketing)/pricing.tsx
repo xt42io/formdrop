@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { Cancel01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 import { Navbar } from "@/components/landing/navbar";
@@ -122,7 +122,7 @@ function PricingPage() {
             <ul className="mt-8 flex flex-1 flex-col gap-3 border-t border-ink-100 pt-7">
               {freeFeatures.map((feature) => (
                 <li key={feature.label} className="flex items-start gap-2.5">
-                  <HugeiconsIcon
+                  <Icon
                     icon={feature.included ? Tick02Icon : Cancel01Icon}
                     size={17}
                     className={`mt-0.5 shrink-0 ${
@@ -175,7 +175,7 @@ function PricingPage() {
             <ul className="mt-8 flex flex-1 flex-col gap-3 border-t border-white/10 pt-7">
               {proFeatures.map((feature) => (
                 <li key={feature} className="flex items-start gap-2.5">
-                  <HugeiconsIcon
+                  <Icon
                     icon={Tick02Icon}
                     size={17}
                     className="mt-0.5 shrink-0 text-accent-300"

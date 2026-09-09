@@ -7,7 +7,7 @@ import {
   AnalyticsUpIcon,
   Settings02Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useSession, signOut } from "@/lib/auth-client";
 import { motion } from "motion/react";
@@ -78,7 +78,7 @@ export function AdminSidebar() {
                     }}
                   />
                 )}
-                <HugeiconsIcon
+                <Icon
                   icon={link.icon}
                   size={20}
                   className="relative z-10"
@@ -98,7 +98,7 @@ export function AdminSidebar() {
           to="/app"
           className="flex items-center gap-3 px-4 py-3 rounded-4xl text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
         >
-          <HugeiconsIcon icon={ArrowLeft01Icon} size={20} />
+          <Icon icon={ArrowLeft01Icon} size={20} />
           <span className="text-sm font-medium">Back to App</span>
         </Link>
 
@@ -128,7 +128,7 @@ export function AdminSidebar() {
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           >
-            <HugeiconsIcon icon={Logout01Icon} size={18} />
+            <Icon icon={Logout01Icon} />
             Sign out
           </button>
         </div>

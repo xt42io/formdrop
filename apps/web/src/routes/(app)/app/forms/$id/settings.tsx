@@ -8,9 +8,8 @@ import {
   Add01Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect } from "react";
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/forms/$id/settings")({
   head: () => ({
@@ -178,11 +177,7 @@ function RouteComponent() {
                 variant="primary"
                 size="md"
                 className="rounded-panel"
-                icon={
-                  !updateMutation.isPending && (
-                    <HugeiconsIcon icon={Tick02Icon} size={18} />
-                  )
-                }
+                icon={!updateMutation.isPending && <Icon icon={Tick02Icon} />}
               >
                 {updateMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
@@ -224,7 +219,7 @@ function RouteComponent() {
                 variant="secondary"
                 size="lg"
                 className="rounded-panel bg-ink-100 border-transparent"
-                icon={<HugeiconsIcon icon={Add01Icon} size={20} />}
+                icon={<Icon icon={Add01Icon} size={20} />}
               />
             </div>
 
@@ -243,7 +238,7 @@ function RouteComponent() {
                       variant="ghost"
                       size="sm"
                       className="text-ink-400 hover:text-tint-rose-ink p-1 h-auto"
-                      icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
+                      icon={<Icon icon={Cancel01Icon} size={16} />}
                     />
                   </div>
                 ))}
@@ -271,7 +266,7 @@ function RouteComponent() {
             onClick={() => setShowDeleteConfirm(true)}
             variant="danger"
             size="md"
-            icon={<HugeiconsIcon icon={Delete02Icon} size={18} />}
+            icon={<Icon icon={Delete02Icon} />}
           >
             Delete Form
           </Button>
@@ -287,7 +282,7 @@ function RouteComponent() {
         <div className="p-6">
           <div className="flex items-center gap-x-3 mb-4 text-tint-rose-ink">
             <div className="p-2 bg-tint-rose rounded-xl">
-              <HugeiconsIcon icon={AlertCircleIcon} size={24} />
+              <Icon icon={AlertCircleIcon} size={24} />
             </div>
             <h3 className="text-lg font-semibold text-ink-950">Delete Form?</h3>
           </div>

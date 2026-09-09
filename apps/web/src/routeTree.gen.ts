@@ -63,6 +63,7 @@ import { Route as ApiFormsFormIdDisconnectDiscordRouteImport } from './routes/ap
 import { Route as ApiFormsFormIdAnalyticsRouteImport } from './routes/api/forms/$formId/analytics'
 import { Route as ApiAdminUsersUserIdRouteImport } from './routes/api/admin/users/$userId'
 import { Route as ApiAdminSettingsClearOldSubmissionsRouteImport } from './routes/api/admin/settings/clear-old-submissions'
+import { Route as ApiAdminFormsFormIdRouteImport } from './routes/api/admin/forms/$formId'
 import { Route as appAppFormsIdRouteImport } from './routes/(app)/app/forms/$id'
 import { Route as adminAdminUsersUserIdRouteImport } from './routes/(admin)/admin/users/$userId'
 import { Route as ApiFormsFormIdSubmissionsSubmissionIdRouteImport } from './routes/api/forms/$formId/submissions/$submissionId'
@@ -359,6 +360,11 @@ const ApiAdminSettingsClearOldSubmissionsRoute =
     path: '/api/admin/settings/clear-old-submissions',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiAdminFormsFormIdRoute = ApiAdminFormsFormIdRouteImport.update({
+  id: '/$formId',
+  path: '/$formId',
+  getParentRoute: () => ApiAdminFormsRoute,
+} as any)
 const appAppFormsIdRoute = appAppFormsIdRouteImport.update({
   id: '/forms/$id',
   path: '/forms/$id',
@@ -445,7 +451,7 @@ export interface FileRoutesByFullPath {
   '/app/analytics': typeof appAppAnalyticsRoute
   '/app/api-keys': typeof appAppApiKeysRoute
   '/app/settings': typeof appAppSettingsRoute
-  '/api/admin/forms': typeof ApiAdminFormsRoute
+  '/api/admin/forms': typeof ApiAdminFormsRouteWithChildren
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -454,6 +460,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof adminAdminIndexRoute
   '/admin/users/$userId': typeof adminAdminUsersUserIdRoute
   '/app/forms/$id': typeof appAppFormsIdRouteWithChildren
+  '/api/admin/forms/$formId': typeof ApiAdminFormsFormIdRoute
   '/api/admin/settings/clear-old-submissions': typeof ApiAdminSettingsClearOldSubmissionsRoute
   '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
   '/api/forms/$formId/analytics': typeof ApiFormsFormIdAnalyticsRoute
@@ -509,7 +516,7 @@ export interface FileRoutesByTo {
   '/app/analytics': typeof appAppAnalyticsRoute
   '/app/api-keys': typeof appAppApiKeysRoute
   '/app/settings': typeof appAppSettingsRoute
-  '/api/admin/forms': typeof ApiAdminFormsRoute
+  '/api/admin/forms': typeof ApiAdminFormsRouteWithChildren
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -518,6 +525,7 @@ export interface FileRoutesByTo {
   '/admin': typeof adminAdminIndexRoute
   '/admin/users/$userId': typeof adminAdminUsersUserIdRoute
   '/app/forms/$id': typeof appAppFormsIdRouteWithChildren
+  '/api/admin/forms/$formId': typeof ApiAdminFormsFormIdRoute
   '/api/admin/settings/clear-old-submissions': typeof ApiAdminSettingsClearOldSubmissionsRoute
   '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
   '/api/forms/$formId/analytics': typeof ApiFormsFormIdAnalyticsRoute
@@ -576,7 +584,7 @@ export interface FileRoutesById {
   '/(app)/app/analytics': typeof appAppAnalyticsRoute
   '/(app)/app/api-keys': typeof appAppApiKeysRoute
   '/(app)/app/settings': typeof appAppSettingsRoute
-  '/api/admin/forms': typeof ApiAdminFormsRoute
+  '/api/admin/forms': typeof ApiAdminFormsRouteWithChildren
   '/api/admin/stats': typeof ApiAdminStatsRoute
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -585,6 +593,7 @@ export interface FileRoutesById {
   '/(admin)/admin/': typeof adminAdminIndexRoute
   '/(admin)/admin/users/$userId': typeof adminAdminUsersUserIdRoute
   '/(app)/app/forms/$id': typeof appAppFormsIdRouteWithChildren
+  '/api/admin/forms/$formId': typeof ApiAdminFormsFormIdRoute
   '/api/admin/settings/clear-old-submissions': typeof ApiAdminSettingsClearOldSubmissionsRoute
   '/api/admin/users/$userId': typeof ApiAdminUsersUserIdRoute
   '/api/forms/$formId/analytics': typeof ApiFormsFormIdAnalyticsRoute
@@ -653,6 +662,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/users/$userId'
     | '/app/forms/$id'
+    | '/api/admin/forms/$formId'
     | '/api/admin/settings/clear-old-submissions'
     | '/api/admin/users/$userId'
     | '/api/forms/$formId/analytics'
@@ -717,6 +727,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/users/$userId'
     | '/app/forms/$id'
+    | '/api/admin/forms/$formId'
     | '/api/admin/settings/clear-old-submissions'
     | '/api/admin/users/$userId'
     | '/api/forms/$formId/analytics'
@@ -783,6 +794,7 @@ export interface FileRouteTypes {
     | '/(admin)/admin/'
     | '/(admin)/admin/users/$userId'
     | '/(app)/app/forms/$id'
+    | '/api/admin/forms/$formId'
     | '/api/admin/settings/clear-old-submissions'
     | '/api/admin/users/$userId'
     | '/api/forms/$formId/analytics'
@@ -830,7 +842,7 @@ export interface RootRouteChildren {
   ApiVerifyRecipientRoute: typeof ApiVerifyRecipientRoute
   IngestSplatRoute: typeof IngestSplatRoute
   marketingIndexRoute: typeof marketingIndexRoute
-  ApiAdminFormsRoute: typeof ApiAdminFormsRoute
+  ApiAdminFormsRoute: typeof ApiAdminFormsRouteWithChildren
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
   ApiAdminSubmissionsRoute: typeof ApiAdminSubmissionsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -1228,6 +1240,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminSettingsClearOldSubmissionsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/forms/$formId': {
+      id: '/api/admin/forms/$formId'
+      path: '/$formId'
+      fullPath: '/api/admin/forms/$formId'
+      preLoaderRoute: typeof ApiAdminFormsFormIdRouteImport
+      parentRoute: typeof ApiAdminFormsRoute
+    }
     '/(app)/app/forms/$id': {
       id: '/(app)/app/forms/$id'
       path: '/forms/$id'
@@ -1459,6 +1478,18 @@ const ApiFormsRouteWithChildren = ApiFormsRoute._addFileChildren(
   ApiFormsRouteChildren,
 )
 
+interface ApiAdminFormsRouteChildren {
+  ApiAdminFormsFormIdRoute: typeof ApiAdminFormsFormIdRoute
+}
+
+const ApiAdminFormsRouteChildren: ApiAdminFormsRouteChildren = {
+  ApiAdminFormsFormIdRoute: ApiAdminFormsFormIdRoute,
+}
+
+const ApiAdminFormsRouteWithChildren = ApiAdminFormsRoute._addFileChildren(
+  ApiAdminFormsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   DocsRoute: DocsRouteWithChildren,
   adminAdminRoute: adminAdminRouteWithChildren,
@@ -1477,7 +1508,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiVerifyRecipientRoute: ApiVerifyRecipientRoute,
   IngestSplatRoute: IngestSplatRoute,
   marketingIndexRoute: marketingIndexRoute,
-  ApiAdminFormsRoute: ApiAdminFormsRoute,
+  ApiAdminFormsRoute: ApiAdminFormsRouteWithChildren,
   ApiAdminStatsRoute: ApiAdminStatsRoute,
   ApiAdminSubmissionsRoute: ApiAdminSubmissionsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

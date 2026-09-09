@@ -1,7 +1,6 @@
 import { Tick02Icon, Cancel01Icon, StarIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { motion } from "motion/react";
-import { Modal } from "@formdrop/ui";
+import { Icon, Modal } from "@formdrop/ui";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
@@ -51,14 +50,14 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           onClick={onClose}
           className="p-2 hover:bg-ink-100 rounded-full transition-colors text-ink-500"
         >
-          <HugeiconsIcon icon={Cancel01Icon} size={20} />
+          <Icon icon={Cancel01Icon} size={20} />
         </button>
       </div>
 
       <div className="p-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-3 bg-accent-500/10 rounded-2xl text-accent-600">
-            <HugeiconsIcon icon={StarIcon} size={24} />
+            <Icon icon={StarIcon} size={24} />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-ink-950">Upgrade to Pro</h2>
@@ -146,7 +145,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           {benefits.map((benefit, index) => (
             <div key={index} className="flex items-center gap-3">
               <div className="shrink-0 text-accent-500">
-                <HugeiconsIcon icon={Tick02Icon} size={20} />
+                <Icon icon={Tick02Icon} size={20} />
               </div>
               <span className="text-ink-700 text-sm">{benefit}</span>
             </div>

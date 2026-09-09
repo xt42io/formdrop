@@ -24,7 +24,7 @@ export const OTPEmail = ({ otp }: OTPEmailProps) => (
           <Heading className="text-2xl font-bold my-10 p-0 text-center">
             Verification Code
           </Heading>
-          <Text className="text-[#333] text-base leading-[26px]">
+          <Text className="text-ink-800 text-base leading-[26px]">
             Your verification code is below. Enter this code to complete your
             authentication.
           </Text>
@@ -33,7 +33,7 @@ export const OTPEmail = ({ otp }: OTPEmailProps) => (
               {otp}
             </Text>
           </Section>
-          <Text className="text-[#333] text-base leading-[26px]">
+          <Text className="text-ink-800 text-base leading-[26px]">
             If you didn't request this code, you can safely ignore this email.
           </Text>
         </Container>

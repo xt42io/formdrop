@@ -1,5 +1,4 @@
-import { Button } from "@formdrop/ui";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Button, Icon } from "@formdrop/ui";
 import { CreditCardIcon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
@@ -87,7 +86,7 @@ export function BillingSettings({ settings }: BillingSettingsProps) {
           {isPro ? (
             <Button
               variant="outline"
-              icon={<HugeiconsIcon icon={CreditCardIcon} size={16} />}
+              icon={<Icon icon={CreditCardIcon} size={16} />}
               onClick={() => authClient.customer.portal()}
             >
               Manage subscription
@@ -96,7 +95,7 @@ export function BillingSettings({ settings }: BillingSettingsProps) {
             <>
               <Button
                 variant="primary"
-                icon={<HugeiconsIcon icon={CreditCardIcon} size={16} />}
+                icon={<Icon icon={CreditCardIcon} size={16} />}
                 onClick={() => setIsUpgradeModalOpen(true)}
               >
                 Upgrade to Pro

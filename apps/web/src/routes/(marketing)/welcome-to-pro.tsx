@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, useReducedMotion } from "motion/react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   StarIcon,
   ArrowRight01Icon,
@@ -87,7 +87,7 @@ function WelcomeToPro() {
 
       <div className="animate-enter relative w-full max-w-lg rounded-panel border border-ink-200 bg-white p-8 text-center md:p-10">
         <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
-          <HugeiconsIcon icon={StarIcon} size={30} />
+          <Icon icon={StarIcon} size={30} />
         </span>
 
         <h1 className="mt-6 text-[clamp(1.6rem,3vw,2rem)] leading-[1.15] font-semibold tracking-[-0.03em] text-ink-950">
@@ -101,7 +101,7 @@ function WelcomeToPro() {
         <ul className="animate-enter-late mt-8 flex flex-col gap-3 rounded-2xl bg-ink-50/70 p-6 text-left">
           {FEATURES.map((feature) => (
             <li key={feature} className="flex items-start gap-2.5">
-              <HugeiconsIcon
+              <Icon
                 icon={Tick02Icon}
                 size={17}
                 className="mt-0.5 shrink-0 text-accent-600"
@@ -118,9 +118,8 @@ function WelcomeToPro() {
           className="group mt-8 flex w-full items-center justify-center gap-1.5 rounded-xl bg-accent-500 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600 active:scale-[0.99]"
         >
           Go to Dashboard
-          <HugeiconsIcon
+          <Icon
             icon={ArrowRight01Icon}
-            size={18}
             className="transition-transform group-hover:translate-x-0.5"
           />
         </Link>

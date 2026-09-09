@@ -82,7 +82,7 @@ export function FormsTable({ forms }: { forms: Form[] }) {
                 <div className="truncate text-[15px] font-semibold tracking-[-0.01em] text-ink-950 transition-colors group-hover:text-accent-600">
                   {form.name}
                 </div>
-                <div className="mt-1 truncate font-mono text-xs text-ink-400">
+                <div className="mt-1 truncate font-mono text-xs text-ink-500">
                   {form.id}
                 </div>
               </div>

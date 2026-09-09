@@ -1,4 +1,18 @@
-import { HugeiconsIcon, type HugeiconsIconProps } from "@hugeicons/react";
+import {
+  HugeiconsIcon,
+  type HugeiconsIconProps,
+  type IconSvgElement,
+} from "@hugeicons/react";
+
+/**
+ * The shape of an icon from @hugeicons/core-free-icons.
+ *
+ * Re-exported so a component that takes an icon can name its type without
+ * importing @hugeicons/react -- which the lint rule forbids, correctly: the
+ * point of the wrapper is that this package is the only one that knows about
+ * the underlying library.
+ */
+export type { IconSvgElement };
 
 /**
  * The one icon (W4 section 4.7).

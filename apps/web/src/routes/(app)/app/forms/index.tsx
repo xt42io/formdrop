@@ -1,6 +1,7 @@
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForms } from "@/hooks/use-forms";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
 import { Button, Icon, Modal } from "@formdrop/ui";
@@ -51,16 +52,7 @@ function RouteComponent() {
     createMutation.mutate(newFormName);
   };
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["forms"],
-    queryFn: async () => {
-      const response = await appClient.forms.list();
-      if ("error" in response) {
-        throw new Error(response.error);
-      }
-      return response.forms;
-    },
-  });
+  const { data, isLoading, error } = useForms();
 
   const forms = data ?? [];
 
@@ -178,7 +170,7 @@ function RouteComponent() {
                 value={newFormName}
                 onChange={(e) => setNewFormName(e.target.value)}
                 placeholder="e.g. Contact Us"
-                className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-950 transition-colors placeholder:text-ink-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none"
+                className="w-full rounded-xl border border-ink-200 px-3 py-2.5 text-sm text-ink-950 transition-colors placeholder:text-ink-500 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none"
                 autoFocus
               />
             </div>

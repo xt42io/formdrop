@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { motion } from "motion/react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { BookOpen01Icon, CodeIcon } from "@hugeicons/core-free-icons";
 import { capture } from "@formdrop/analytics";
 import { DocsSidebar } from "@/components/docs/docs-sidebar";
@@ -68,7 +68,7 @@ function DocsLayout() {
                 tab.active ? "text-ink-950" : "text-ink-500 hover:text-ink-800"
               }`}
             >
-              <HugeiconsIcon icon={tab.icon} size={15} />
+              <Icon icon={tab.icon} size={15} />
               {tab.label}
               {/* A shared layoutId, so the rule slides between tabs rather than
                   cutting. It carries no entrance opacity, so a frame-starved

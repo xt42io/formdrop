@@ -511,7 +511,18 @@ export function installMockData(): void {
           : input.url;
     const path = new URL(raw, window.location.origin).pathname;
 
-    // Better Auth's session lookup is the one auth route that gets answered:
+    // The admin plugin's user list. Not served through the ROUTES table
+    // below because that only covers /api/*, and this lives under /api/auth
+    // where the real handler would answer 401 with no database behind it.
+    if (path === "/api/auth/admin/list-users") {
+      await new Promise((resolve) => setTimeout(resolve, 120));
+      return new Response(
+        JSON.stringify({ users: ADMIN_USERS, total: ADMIN_USERS.length }),
+        { status: 200, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
+    // Better Auth's session lookup is the other auth route that gets answered:
     // without it useSession() is empty, and the admin layout redirects to /
     // before any of these fixtures are ever reached. Every other /api/auth
     // path -- sign-in, callbacks -- still goes to the real handler.

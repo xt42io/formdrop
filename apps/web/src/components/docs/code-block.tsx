@@ -1,4 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 import { useState } from "react";
 import { capture } from "@formdrop/analytics";
@@ -36,7 +36,7 @@ export function CodeBlock({
           aria-label="Copy code"
           className="flex cursor-pointer items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] font-medium text-ink-400 transition-colors hover:bg-white/5 hover:text-ink-100"
         >
-          <HugeiconsIcon
+          <Icon
             icon={copied ? Tick02Icon : Copy01Icon}
             size={13}
             className={copied ? "text-accent-300" : undefined}

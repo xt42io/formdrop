@@ -1,4 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   CheckmarkCircle02Icon,
   DiscordIcon,
@@ -80,7 +80,7 @@ export function Integrations() {
           <ul className="mt-8 flex flex-col gap-3 border-t border-ink-100 pt-7">
             {CHECKLIST.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm">
-                <HugeiconsIcon
+                <Icon
                   icon={CheckmarkCircle02Icon}
                   size={17}
                   className="mt-0.5 shrink-0 text-accent-600"
@@ -161,7 +161,7 @@ function FanOut() {
               <span
                 className={`flex h-12 w-12 items-center justify-center rounded-2xl border border-ink-200/70 shadow-lift ${node.tint}`}
               >
-                <HugeiconsIcon icon={node.icon} size={20} />
+                <Icon icon={node.icon} size={20} />
               </span>
               <span className="max-w-16 text-center text-[11px] leading-tight font-medium text-ink-600">
                 {node.name}

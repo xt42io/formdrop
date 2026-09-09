@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { Button, Icon } from "@formdrop/ui";
 import {
   ArrowLeft01Icon,
@@ -16,34 +15,29 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { adminClient } from "@/lib/admin-client";
 
 export const Route = createFileRoute("/(admin)/admin/users/$userId")({
   component: AdminUserDetail,
 });
 
-type UserDetail = {
-  id: string;
-  name: string;
-  email: string;
-  emailVerified: boolean;
-  role: string | null;
-  banned: boolean;
-  banReason: string | null;
-  banExpires: Date | null;
-  createdAt: Date;
-  forms: Array<{
-    id: string;
-    name: string;
-    createdAt: Date;
-    submissionCount: number;
-  }>;
-  recentSubmissions: Array<{
-    id: string;
-    formId: string;
-    formName: string;
-    createdAt: Date;
-  }>;
-};
+/**
+ * Derived from the handler, not re-declared.
+ *
+ * The version this replaces spelled the same fields out by hand and typed
+ * every timestamp as Date. They are not: the handler serialises to JSON, so
+ * they arrive as ISO strings. An `as UserDetail` cast on the fetch kept that
+ * quiet -- the page has been annotating strings as Dates all along, and would
+ * have thrown on any Date method called on one.
+ *
+ * Taken from the client's return type rather than the handler's: the handler
+ * genuinely holds Dates, and Serialized<> turns them into strings in transit.
+ * This is the shape the page receives.
+ */
+type UserDetail = Extract<
+  Awaited<ReturnType<typeof adminClient.user>>,
+  { user: unknown }
+>["user"];
 
 const formColumnHelper = createColumnHelper<UserDetail["forms"][0]>();
 
@@ -117,8 +111,9 @@ function AdminUserDetail() {
   const { data: user, isLoading } = useQuery({
     queryKey: ["admin", "users", userId],
     queryFn: async () => {
-      const res = await axios.get(`/api/admin/users/${userId}`);
-      return res.data.user as UserDetail;
+      const response = await adminClient.user(userId);
+      if ("error" in response) throw new Error(response.error);
+      return response.user;
     },
   });
 

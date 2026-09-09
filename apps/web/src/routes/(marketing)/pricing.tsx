@@ -67,7 +67,7 @@ function PricingPage() {
           <div className="mt-9 inline-flex items-center gap-3 rounded-2xl border border-ink-200 bg-white p-1.5">
             <span
               className={`px-3 text-sm font-medium transition-colors ${
-                !isAnnual ? "text-ink-950" : "text-ink-400"
+                !isAnnual ? "text-ink-950" : "text-ink-500"
               }`}
             >
               Monthly
@@ -88,7 +88,7 @@ function PricingPage() {
 
             <span
               className={`px-3 text-sm font-medium transition-colors ${
-                isAnnual ? "text-ink-950" : "text-ink-400"
+                isAnnual ? "text-ink-950" : "text-ink-500"
               }`}
             >
               Annual{" "}
@@ -133,7 +133,7 @@ function PricingPage() {
                     className={`text-sm ${
                       feature.included
                         ? "text-ink-700"
-                        : "text-ink-400 line-through"
+                        : "text-ink-500 line-through"
                     }`}
                   >
                     {feature.label}
@@ -150,13 +150,13 @@ function PricingPage() {
             </span>
 
             <h3 className="text-lg font-semibold text-white">Pro</h3>
-            <p className="mt-1 text-sm text-ink-400">For serious businesses</p>
+            <p className="mt-1 text-sm text-ink-500">For serious businesses</p>
 
             <p className="mt-6 flex items-baseline gap-1.5">
               <span className="text-4xl font-semibold tracking-[-0.03em] text-white">
                 ${isAnnual ? "24" : "29"}
               </span>
-              <span className="text-sm text-ink-400">/month</span>
+              <span className="text-sm text-ink-500">/month</span>
             </p>
             {isAnnual && (
               <p className="mt-1.5 text-xs text-accent-300">

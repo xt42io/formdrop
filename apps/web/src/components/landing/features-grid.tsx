@@ -255,7 +255,7 @@ function AlertsVisual() {
           <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink-900">
             {row.label}
           </span>
-          <span className="text-[10px] text-ink-400">{row.meta}</span>
+          <span className="text-[10px] text-ink-500">{row.meta}</span>
         </Float>
       ))}
     </div>
@@ -312,13 +312,13 @@ function SecurityVisual() {
         <span className="text-xs font-semibold text-ink-900">
           Spam Check Passed
         </span>
-        <span className="ml-auto text-[10px] text-ink-400">Score: 98/100</span>
+        <span className="ml-auto text-[10px] text-ink-500">Score: 98/100</span>
       </Float>
 
       <Float className="ml-5 flex items-center gap-2.5 px-3.5 py-3">
         <Icon icon={LockKeyIcon} size={16} className="shrink-0 text-ink-500" />
         <span className="text-xs font-medium text-ink-900">yoursite.com</span>
-        <span className="ml-auto text-[10px] text-ink-400">Allowed</span>
+        <span className="ml-auto text-[10px] text-ink-500">Allowed</span>
       </Float>
 
       <Float className="ml-2 flex items-center gap-2.5 px-3.5 py-3">
@@ -326,7 +326,7 @@ function SecurityVisual() {
         <span className="font-mono text-[11px] text-ink-700">
           fd_sk_••••4f9c
         </span>
-        <span className="ml-auto text-[10px] text-ink-400">Rotated</span>
+        <span className="ml-auto text-[10px] text-ink-500">Rotated</span>
       </Float>
     </div>
   );

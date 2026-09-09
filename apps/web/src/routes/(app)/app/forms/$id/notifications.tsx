@@ -3,14 +3,13 @@ import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useSession } from "@/lib/auth-client";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { EmailNotificationsSection } from "@/components/notifications/email-notifications-section";
 import { SlackNotificationsSection } from "@/components/notifications/slack-notifications-section";
 import { DiscordNotificationsSection } from "@/components/notifications/discord-notifications-section";
 import { EmailRecipientsList } from "@/components/notifications/email-recipients-list";
 import { useEffect, useState } from "react";
 import { Slack, Discord } from "@ridemountainpig/svgl-react";
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/forms/$id/notifications")({
   head: () => ({
@@ -138,7 +137,7 @@ function RouteComponent() {
               <div
                 className={`w-12 h-12 ${modalContent.checkBgColor} rounded-full flex items-center justify-center mb-5`}
               >
-                <HugeiconsIcon
+                <Icon
                   icon={Tick02Icon}
                   size={24}
                   className={modalContent.checkIconColor}

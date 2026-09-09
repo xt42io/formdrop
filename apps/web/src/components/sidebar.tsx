@@ -8,12 +8,11 @@ import {
   SidebarLeftIcon,
   SparklesIcon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "motion/react";
-import { Tooltip } from "@formdrop/ui";
+import { Icon, Tooltip } from "@formdrop/ui";
 import { quotaFor } from "@formdrop/core";
 import { useSession, signOut } from "@/lib/auth-client";
 import { appClient } from "@/lib/app-client";
@@ -208,7 +207,7 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
             aria-label="Close menu"
             className="ml-auto shrink-0 cursor-pointer rounded-lg p-1.5 text-ink-400 transition-colors hover:bg-ink-100 hover:text-ink-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 md:hidden"
           >
-            <HugeiconsIcon icon={Cancel01Icon} size={18} />
+            <Icon icon={Cancel01Icon} />
           </button>
           <button
             type="button"
@@ -219,7 +218,7 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
               railCollapsed ? "mx-auto" : "ml-auto"
             }`}
           >
-            <HugeiconsIcon icon={SidebarLeftIcon} size={18} />
+            <Icon icon={SidebarLeftIcon} />
           </button>
         </div>
 
@@ -259,7 +258,7 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
                   />
                 )}
-                <HugeiconsIcon
+                <Icon
                   icon={link.icon}
                   size={20}
                   className="relative z-10 shrink-0"
@@ -298,7 +297,7 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
 
             <div className="relative z-10 mb-2 flex items-center gap-2">
               <div className="rounded-lg bg-accent-500/10 p-1.5 text-accent-600">
-                <HugeiconsIcon icon={SparklesIcon} size={14} />
+                <Icon icon={SparklesIcon} size={14} />
               </div>
               <h3 className="text-sm font-semibold text-ink-950">
                 Upgrade to Pro
@@ -389,7 +388,7 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: SidebarProps) {
                 title="Sign out"
                 aria-label="Sign out"
               >
-                <HugeiconsIcon icon={Logout01Icon} size={20} />
+                <Icon icon={Logout01Icon} size={20} />
               </button>
             )}
           </div>

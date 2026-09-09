@@ -108,7 +108,7 @@ export function SubmissionsTable({
         size: IP_W,
         enableSorting: false,
         cell: ({ row }) => (
-          <span className="font-mono text-xs text-ink-400">
+          <span className="font-mono text-xs text-ink-500">
             {row.original.ip || "-"}
           </span>
         ),

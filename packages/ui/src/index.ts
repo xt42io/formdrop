@@ -12,6 +12,7 @@ export { Button } from "./button";
 export { Icon, type IconProps } from "./icon";
 export { IntegrationCard } from "./integration-card";
 export { Modal, type ModalProps } from "./modal";
+export { brand, palette, type ColorToken } from "./palette";
 export { PlanGateProvider, usePlanGate } from "./plan-gate";
 export { Toggle } from "./toggle";
 export { Tooltip } from "./tooltip";

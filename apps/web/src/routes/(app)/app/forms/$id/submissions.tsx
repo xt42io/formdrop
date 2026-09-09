@@ -111,6 +111,19 @@ function RouteComponent() {
   const submissions = data?.pages.flatMap((page) => page.submissions) || [];
   const totalSubmissions = data?.pages[0]?.pagination.total || 0;
 
+  /**
+   * The table asks for the next page itself.
+   *
+   * It is virtualized, so the sentinel below only works for the card view --
+   * with rows mounted on demand, the last one is not in the DOM for an
+   * IntersectionObserver to watch until you have already scrolled past where
+   * the fetch should have started.
+   */
+  const loadMore = useCallback(() => {
+    if (isLoading || isFetchingNextPage || !hasNextPage) return;
+    fetchNextPage();
+  }, [isLoading, isFetchingNextPage, hasNextPage, fetchNextPage]);
+
   const observer = useRef<IntersectionObserver | null>(null);
   const lastSubmissionElementRef = useCallback(
     (node: HTMLDivElement | HTMLTableRowElement | null) => {
@@ -510,7 +523,7 @@ function RouteComponent() {
           onToggleSelect={toggleSelect}
           onToggleSelectAll={toggleSelectAll}
           onOpen={setSelectedSubmission}
-          lastRowRef={lastSubmissionElementRef}
+          onEndReached={loadMore}
           isFetchingNextPage={isFetchingNextPage}
         />
       )}

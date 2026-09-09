@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
-import { Button } from "@formdrop/ui";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Button, Icon } from "@formdrop/ui";
 import { Alert01Icon } from "@hugeicons/core-free-icons";
 
 interface PasswordSettingsProps {
@@ -76,9 +75,8 @@ export function PasswordSettings({ hasPassword }: PasswordSettingsProps) {
       >
         {!hasPassword && (
           <div className="mb-6 flex items-start gap-3 rounded-card border border-tint-blue bg-tint-blue/40 p-4">
-            <HugeiconsIcon
+            <Icon
               icon={Alert01Icon}
-              size={18}
               className="mt-0.5 shrink-0 text-tint-blue-ink"
             />
             <p className="text-sm leading-relaxed text-tint-blue-ink">

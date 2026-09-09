@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { Icon } from "@formdrop/ui";
 import {
   Cancel01Icon,
@@ -8,6 +9,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import moment from "moment";
 import type { Submission } from "@/lib/app-client";
+import { useSavedViews } from "./submissions/saved-views";
+import { ViewsMenu } from "./submissions/views-menu";
 
 /**
  * The submissions table (W4 section 4.5, "the workhorse view").
@@ -23,6 +26,17 @@ import type { Submission } from "@/lib/app-client";
  * keyboard-reachable through a roving tabindex instead.
  */
 const HIDDEN_COLUMNS_KEY = "formdrop:submissions-hidden-columns";
+
+/*
+ * Column widths, in pixels, because table-layout: fixed needs them declared
+ * rather than inferred. The table is allowed to be wider than its container --
+ * the payload columns keep a readable width and the container scrolls -- which
+ * is why this is a width and a minWidth rather than w-full.
+ */
+const SELECT_W = 44;
+const RECEIVED_W = 148;
+const PAYLOAD_W = 180;
+const IP_W = 132;
 
 function truncate(value: string, max = 60) {
   return value.length > max ? `${value.slice(0, max)}...` : value;
@@ -65,7 +79,20 @@ function useHiddenColumns(formId: string) {
     });
   };
 
-  return { hidden, toggle };
+  /** Applying a saved view replaces the whole set rather than toggling. */
+  const replace = (next: string[]) => {
+    setHidden(next);
+    try {
+      window.localStorage.setItem(
+        `${HIDDEN_COLUMNS_KEY}:${formId}`,
+        JSON.stringify(next),
+      );
+    } catch {
+      // Preference simply will not persist.
+    }
+  };
+
+  return { hidden, toggle, replace };
 }
 
 function RoundCheckbox({
@@ -191,7 +218,15 @@ export interface SubmissionsTableProps {
   onToggleSelect: (id: string) => void;
   onToggleSelectAll: () => void;
   onOpen: (submission: Submission) => void;
-  lastRowRef: (node: HTMLTableRowElement | null) => void;
+  /**
+   * Called when the reader reaches the end of what is loaded.
+   *
+   * A sentinel row watched by an IntersectionObserver cannot work here: with
+   * virtualization the last row is not in the DOM until you scroll to it, so
+   * the observer would have nothing to see. The virtualizer already knows
+   * which rows it is rendering, so the last index is the signal.
+   */
+  onEndReached: () => void;
   isFetchingNextPage: boolean;
 }
 
@@ -202,7 +237,7 @@ export function SubmissionsTable({
   onToggleSelect,
   onToggleSelectAll,
   onOpen,
-  lastRowRef,
+  onEndReached,
   isFetchingNextPage,
 }: SubmissionsTableProps) {
   const allColumns = useMemo(
@@ -211,20 +246,81 @@ export function SubmissionsTable({
     [submissions],
   );
 
-  const { hidden, toggle } = useHiddenColumns(formId);
+  const { hidden, toggle, replace } = useHiddenColumns(formId);
+  const { views, save, remove } = useSavedViews(formId);
   const columns = allColumns.filter((c) => !hidden.includes(c));
 
   // Roving tabindex: one row is tabbable at a time and the arrows move between
   // them, so reaching row 40 does not mean forty presses of Tab.
   const [focused, setFocused] = useState(0);
   const bodyRef = useRef<HTMLTableSectionElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const focusRow = (index: number) => {
-    const clamped = Math.max(0, Math.min(index, submissions.length - 1));
-    setFocused(clamped);
-    const row = bodyRef.current?.querySelectorAll("tr[data-row]")[clamped];
-    (row as HTMLElement | undefined)?.focus();
-  };
+  /*
+   * Only the rows on screen are in the DOM (PRD W4 4.5, "virtualized table").
+   *
+   * 41px is a measured row: py-3 top and bottom against a text-xs line box,
+   * plus the divider. Rows are uniform because every cell is nowrap and
+   * truncating, so a fixed estimate is honest here rather than a guess the
+   * virtualizer has to keep correcting.
+   */
+  const rowVirtualizer = useVirtualizer({
+    count: submissions.length,
+    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 41,
+    overscan: 12,
+  });
+
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const totalSize = rowVirtualizer.getTotalSize();
+  const paddingTop = virtualRows.length ? virtualRows[0].start : 0;
+  const paddingBottom = virtualRows.length
+    ? totalSize - virtualRows[virtualRows.length - 1].end
+    : 0;
+
+  // Load more when the tail comes into view. This replaces a sentinel row and
+  // an IntersectionObserver, which cannot work once the last row only exists
+  // in the DOM after you have already scrolled to it.
+  const lastVirtualIndex = virtualRows[virtualRows.length - 1]?.index ?? -1;
+  useEffect(() => {
+    if (submissions.length === 0) return;
+    if (lastVirtualIndex >= submissions.length - 1) onEndReached();
+  }, [lastVirtualIndex, submissions.length, onEndReached]);
+
+  /*
+   * Moving focus is two steps, because the target row may not exist yet.
+   *
+   * scrollToIndex asks the virtualizer to render it; the row appears on the
+   * commit that follows, and only then can it take focus. The obvious way to
+   * wait is requestAnimationFrame -- which is wrong: a background tab or a
+   * throttled device does not run frames, and the focus is simply dropped.
+   * Keyboard navigation is the one thing that must not depend on animation
+   * being scheduled.
+   *
+   * So the intent is recorded in state and an effect claims it after the
+   * render. Effects run on commit, whether or not a frame ever does.
+   */
+  const [pendingFocus, setPendingFocus] = useState<number | null>(null);
+
+  const focusRow = useCallback(
+    (index: number) => {
+      const clamped = Math.max(0, Math.min(index, submissions.length - 1));
+      setFocused(clamped);
+      rowVirtualizer.scrollToIndex(clamped, { align: "auto" });
+      setPendingFocus(clamped);
+    },
+    [submissions.length, rowVirtualizer],
+  );
+
+  useEffect(() => {
+    if (pendingFocus === null) return;
+    const row = bodyRef.current?.querySelector(
+      `tr[data-index="${pendingFocus}"]`,
+    );
+    if (!row) return; // Not rendered yet; the next commit will carry it.
+    (row as HTMLElement).focus();
+    setPendingFocus(null);
+  });
 
   const onRowKeyDown = (
     event: React.KeyboardEvent<HTMLTableRowElement>,
@@ -257,6 +353,8 @@ export function SubmissionsTable({
   const allSelected =
     submissions.length > 0 && selectedIds.length === submissions.length;
 
+  const tableWidth = SELECT_W + RECEIVED_W + columns.length * PAYLOAD_W + IP_W;
+
   return (
     <div className="animate-enter-late mt-3 overflow-hidden rounded-panel border border-ink-200 bg-white">
       <div className="flex items-center justify-between border-b border-ink-100 px-4 py-2.5">
@@ -266,12 +364,47 @@ export function SubmissionsTable({
             : `${submissions.length.toLocaleString()} loaded`}
         </p>
         {allColumns.length > 0 && (
-          <ColumnsMenu columns={allColumns} hidden={hidden} onToggle={toggle} />
+          <div className="flex items-center gap-2">
+            <ViewsMenu
+              views={views}
+              hidden={hidden}
+              onApply={(view) => replace(view.hidden)}
+              onSave={(name) => save(name, hidden)}
+              onDelete={remove}
+            />
+            <ColumnsMenu
+              columns={allColumns}
+              hidden={hidden}
+              onToggle={toggle}
+            />
+          </div>
         )}
       </div>
 
-      <div className="max-h-[32rem] overflow-auto">
-        <table className="w-full border-collapse">
+      {/*
+        The virtualizer measures this element, so the scroll container and the
+        max height have to be the same box.
+      */}
+      <div ref={scrollRef} className="max-h-[32rem] overflow-auto">
+        {/*
+          table-layout: fixed is required, not cosmetic. With auto layout a
+          table sizes its columns from the rows it can see -- and with
+          virtualization that is twenty of them, so the widths would shift
+          every time you scrolled a new batch into view. Fixed widths are
+          declared once in the colgroup and stay put.
+        */}
+        <table
+          className="border-collapse"
+          style={{ tableLayout: "fixed", width: tableWidth, minWidth: "100%" }}
+        >
+          <colgroup>
+            <col style={{ width: SELECT_W }} />
+            <col style={{ width: RECEIVED_W }} />
+            {columns.map((column) => (
+              <col key={column} style={{ width: PAYLOAD_W }} />
+            ))}
+            <col style={{ width: IP_W }} />
+          </colgroup>
           <thead className="sticky top-0 z-10 bg-ink-50">
             <tr className="border-b border-ink-200">
               <th scope="col" className="w-10 px-4 py-3">
@@ -306,12 +439,30 @@ export function SubmissionsTable({
           </thead>
 
           <tbody ref={bodyRef} className="divide-y divide-ink-100">
-            {submissions.map((submission, index) => {
+            {/*
+              Spacers stand in for the rows above and below the window, so the
+              scrollbar reflects the whole list rather than the dozen rows
+              actually rendered. A <tr> with no cells collapses, hence the
+              colSpan'd td.
+            */}
+            {paddingTop > 0 && (
+              <tr aria-hidden>
+                <td
+                  colSpan={columns.length + 3}
+                  style={{ height: paddingTop, padding: 0, border: 0 }}
+                />
+              </tr>
+            )}
+
+            {virtualRows.map((virtualRow) => {
+              const submission = submissions[virtualRow.index];
+              const index = virtualRow.index;
               const selected = selectedIds.includes(submission.id);
               return (
                 <tr
                   key={submission.id}
                   data-row
+                  data-index={index}
                   tabIndex={index === focused ? 0 : -1}
                   onKeyDown={(e) => onRowKeyDown(e, submission, index)}
                   onFocus={() => setFocused(index)}
@@ -337,21 +488,30 @@ export function SubmissionsTable({
                   {columns.map((column) => (
                     <td
                       key={column}
-                      className="max-w-xs truncate px-4 py-3 text-xs whitespace-nowrap text-ink-700"
+                      className="truncate px-4 py-3 text-xs whitespace-nowrap text-ink-700"
                     >
                       {truncate(cellText(submission.payload[column]))}
                     </td>
                   ))}
-                  <td className="px-4 py-3 font-mono text-xs whitespace-nowrap text-ink-400">
+                  <td className="truncate px-4 py-3 font-mono text-xs whitespace-nowrap text-ink-400">
                     {submission.ip || "-"}
                   </td>
                 </tr>
               );
             })}
 
-            <tr ref={lastRowRef}>
-              <td colSpan={columns.length + 3} className="border-0 p-0">
-                {isFetchingNextPage && (
+            {paddingBottom > 0 && (
+              <tr aria-hidden>
+                <td
+                  colSpan={columns.length + 3}
+                  style={{ height: paddingBottom, padding: 0, border: 0 }}
+                />
+              </tr>
+            )}
+
+            {isFetchingNextPage && (
+              <tr>
+                <td colSpan={columns.length + 3} className="border-0 p-0">
                   <div className="flex justify-center py-4">
                     <Icon
                       icon={Loading03Icon}
@@ -359,9 +519,9 @@ export function SubmissionsTable({
                       size={22}
                     />
                   </div>
-                )}
-              </td>
-            </tr>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

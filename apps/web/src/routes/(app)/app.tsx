@@ -1,8 +1,9 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Icon, PlanGateProvider } from "@formdrop/ui";
-import { Menu01Icon } from "@hugeicons/core-free-icons";
+import { PlanGateProvider } from "@formdrop/ui";
 import { Sidebar } from "@/components/sidebar";
+import { AppHeader } from "@/components/app-header";
+import { CommandPalette } from "@/components/command-palette";
 import { useIsPro } from "@/hooks/use-is-pro";
 
 export const Route = createFileRoute("/(app)/app")({
@@ -30,56 +31,48 @@ function RouteComponent() {
 
   return (
     <PlanGateProvider isPro={Boolean(isPro)}>
-      {/* The shell sits on the canvas token rather than flat grey, with the
+      {/* Wraps the shell so Cmd+K works from every screen and the header's
+          search button has something to open. */}
+      <CommandPalette>
+        {/* The shell sits on the canvas token rather than flat grey, with the
           same faint rule grid the landing page uses, masked so it fades out
           before it reaches the content. W4 4.1: atmosphere, not decoration. */}
-      <div className="relative isolate flex h-screen gap-2 bg-canvas p-2">
-        <div
-          aria-hidden
-          className="bg-lines pointer-events-none absolute inset-0 -z-10 mask-[radial-gradient(120%_80%_at_0%_0%,black_0%,transparent_70%)]"
-        />
+        <div className="relative isolate flex h-screen gap-2 bg-canvas p-2">
+          <div
+            aria-hidden
+            className="bg-lines pointer-events-none absolute inset-0 -z-10 mask-[radial-gradient(120%_80%_at_0%_0%,black_0%,transparent_70%)]"
+          />
 
-        {/* Dims the page behind the open drawer and gives it a large, obvious
+          {/* Dims the page behind the open drawer and gives it a large, obvious
             target to close against. md:hidden because from md up the sidebar
             is in the flow and there is nothing to dismiss. */}
-        <div
-          aria-hidden
-          onClick={() => setNavOpen(false)}
-          className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden ${
-            navOpen ? "opacity-100" : "pointer-events-none opacity-0"
-          }`}
-        />
+          <div
+            aria-hidden
+            onClick={() => setNavOpen(false)}
+            className={`fixed inset-0 z-40 bg-black/20 backdrop-blur-sm transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden ${
+              navOpen ? "opacity-100" : "pointer-events-none opacity-0"
+            }`}
+          />
 
-        <Sidebar mobileOpen={navOpen} onCloseMobile={() => setNavOpen(false)} />
+          <Sidebar
+            mobileOpen={navOpen}
+            onCloseMobile={() => setNavOpen(false)}
+          />
 
-        <main className="flex w-full flex-col overflow-y-auto rounded-panel border border-ink-200 bg-white">
-          {/* The only way to reach navigation below md. Sticky, so it stays
-              reachable down a long submissions list, and inside the scroll
-              container so it does not need to know the page's padding. */}
-          <div className="sticky top-0 z-30 flex items-center justify-between border-b border-ink-100 bg-white/90 px-4 py-3 backdrop-blur-sm md:hidden">
-            <button
-              type="button"
-              onClick={() => setNavOpen(true)}
-              aria-label="Open menu"
-              aria-expanded={navOpen}
-              className="cursor-pointer rounded-lg p-1.5 text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
-            >
-              <Icon icon={Menu01Icon} size={20} />
-            </button>
-            <img
-              src="/purple_wordmark.png"
-              alt="FormDrop"
-              className="w-24 max-w-none"
-            />
-          </div>
+          <main className="flex w-full flex-col overflow-y-auto rounded-panel border border-ink-200 bg-white">
+            {/* Carries the form switcher on every dashboard screen (4.5) and,
+              below md, the only way to reach navigation. It replaces a bar
+              that was md:hidden and held nothing but the drawer button. */}
+            <AppHeader onOpenNav={() => setNavOpen(true)} />
 
-          {/* px-16 is a desktop measure. On a 375px screen it left nothing
+            {/* px-16 is a desktop measure. On a 375px screen it left nothing
               between the two paddings for the page to occupy. */}
-          <div className="px-4 py-6 sm:px-6 md:px-16 md:py-8">
-            <Outlet />
-          </div>
-        </main>
-      </div>
+            <div className="px-4 py-6 sm:px-6 md:px-16 md:py-8">
+              <Outlet />
+            </div>
+          </main>
+        </div>
+      </CommandPalette>
     </PlanGateProvider>
   );
 }

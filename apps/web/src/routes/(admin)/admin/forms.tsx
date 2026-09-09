@@ -78,7 +78,7 @@ function AdminForms() {
         cell: (info) => (
           <div className="min-w-0">
             <div className="font-medium text-ink-950">{info.getValue()}</div>
-            <div className="mt-0.5 font-mono text-xs text-ink-400">
+            <div className="mt-0.5 font-mono text-xs text-ink-500">
               {info.row.original.id}
             </div>
           </div>

@@ -38,7 +38,7 @@ export function FrontendFrameworks() {
               {FRAMEWORKS.map((name) => (
                 <span
                   key={name}
-                  className="px-10 text-xl font-semibold whitespace-nowrap text-ink-400 lg:text-2xl"
+                  className="px-10 text-xl font-semibold whitespace-nowrap text-ink-500 lg:text-2xl"
                 >
                   {name}
                 </span>

@@ -109,7 +109,7 @@ function AdminSubmissions() {
           // a truncated id cannot be copied or searched for, which is the only
           // reason to show one. Hide it from the Columns menu if it is in the
           // way; that is what the menu is for.
-          <span className="font-mono text-xs text-ink-400">
+          <span className="font-mono text-xs text-ink-500">
             {info.getValue()}
           </span>
         ),

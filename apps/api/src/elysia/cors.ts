@@ -26,4 +26,20 @@ export function isPublicPath(pathname: string): boolean {
  */
 export const scopedCors = cors({
   origin: (request) => isPublicPath(new URL(request.url).pathname),
+
+  /*
+   * Off, and this matters more than it looks.
+   *
+   * A boolean `origin` predicate makes the plugin reflect the caller's origin
+   * rather than answer `*`. Reflecting is fine on its own -- but paired with
+   * the plugin's default `credentials: true` it is strictly more permissive
+   * than the `cors({ origin: "*" })` it replaces, because a wildcard cannot
+   * carry credentials at all: browsers refuse that combination. So the port
+   * had quietly started inviting any page on the internet to POST to a
+   * customer's form with the visitor's cookies attached.
+   *
+   * Nothing here reads a cookie -- authentication is a Bearer API key -- so
+   * there is no reason to allow them, and every reason not to.
+   */
+  credentials: false,
 });

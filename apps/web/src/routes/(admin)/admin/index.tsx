@@ -4,7 +4,7 @@ import {
   File01Icon,
   AnalyticsUpIcon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
@@ -42,7 +42,7 @@ function StatCard({
     <div className="bg-white border border-gray-200 rounded-3xl p-6">
       <div className="flex items-center">
         <div className={`p-3 rounded-xl ${bgClass}`}>
-          <HugeiconsIcon icon={icon} size={24} className={iconClass} />
+          <Icon icon={icon} size={24} className={iconClass} />
         </div>
         <div className="ml-5 w-0 flex-1">
           <dl>

@@ -2,6 +2,7 @@ import { apiRequest } from "./api/request";
 
 import type { AdminStatsGetResponse } from "@/routes/api/admin/stats";
 import type { AdminFormsGetResponse } from "@/routes/api/admin/forms";
+import type { AdminFormsFormidDeleteResponse } from "@/routes/api/admin/forms/$formId";
 import type { AdminSubmissionsGetResponse } from "@/routes/api/admin/submissions";
 import type { AdminUsersUseridGetResponse } from "@/routes/api/admin/users/$userId";
 import type { AdminSettingsClearOldSubmissionsPostResponse } from "@/routes/api/admin/settings/clear-old-submissions";
@@ -22,6 +23,12 @@ export const adminClient = {
   stats: () => apiRequest<AdminStatsGetResponse>("GET", "/api/admin/stats"),
 
   forms: () => apiRequest<AdminFormsGetResponse>("GET", "/api/admin/forms"),
+
+  deleteForm: (formId: string) =>
+    apiRequest<AdminFormsFormidDeleteResponse>(
+      "DELETE",
+      `/api/admin/forms/${formId}`,
+    ),
 
   submissions: () =>
     apiRequest<AdminSubmissionsGetResponse>("GET", "/api/admin/submissions"),

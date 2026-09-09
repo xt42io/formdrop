@@ -9,6 +9,7 @@
  * the rule that lets the docs site use it too.
  */
 export { Button } from "./button";
+export { Icon, type IconProps } from "./icon";
 export { IntegrationCard } from "./integration-card";
 export { Modal, type ModalProps } from "./modal";
 export { PlanGateProvider, usePlanGate } from "./plan-gate";

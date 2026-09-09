@@ -362,6 +362,17 @@ const ROUTES: [RegExp, (m: RegExpMatchArray, cfg: MockConfig) => unknown][] = [
     }),
   ],
   [
+    /^\/api\/admin\/forms\/([^/]+)$/,
+    (m) => {
+      const index = FORMS.findIndex((f) => f.id === m[1]);
+      if (index === -1) return { error: "Form not found" };
+      // Mutates the fixture, so the row is gone after the refetch rather than
+      // reappearing -- which is exactly the failure this endpoint fixes.
+      FORMS.splice(index, 1);
+      return { success: true, alreadyDeleted: false };
+    },
+  ],
+  [
     /^\/api\/admin\/forms$/,
     () => ({
       forms: FORMS.map((f) => ({
@@ -444,6 +455,17 @@ const ROUTES: [RegExp, (m: RegExpMatchArray, cfg: MockConfig) => unknown][] = [
         })),
       },
     }),
+  ],
+  [
+    /^\/api\/admin\/forms\/([^/]+)$/,
+    (m) => {
+      const index = FORMS.findIndex((f) => f.id === m[1]);
+      if (index === -1) return { error: "Form not found" };
+      // Mutates the fixture, so the row is gone after the refetch rather than
+      // reappearing -- which is exactly the failure this endpoint fixes.
+      FORMS.splice(index, 1);
+      return { success: true, alreadyDeleted: false };
+    },
   ],
   [
     /^\/api\/admin\/forms$/,

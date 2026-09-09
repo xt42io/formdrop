@@ -1,6 +1,5 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Add01Icon } from "@hugeicons/core-free-icons";
-import { Button } from "@formdrop/ui";
+import { Button, Icon } from "@formdrop/ui";
 import { CopyButton } from "@/components/copy-button";
 
 /**
@@ -34,7 +33,7 @@ export function FormsEmptyState({ onCreate }: { onCreate: () => void }) {
           onClick={onCreate}
           size="md"
           className="mt-6"
-          icon={<HugeiconsIcon icon={Add01Icon} size={18} />}
+          icon={<Icon icon={Add01Icon} />}
         >
           Create your first form
         </Button>

@@ -1,11 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Tick02Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { GoogleSheetsSection } from "@/components/integrations/google-sheets-section";
 import { useEffect, useState } from "react";
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/forms/$id/integrations")({
   head: () => ({
@@ -112,7 +111,7 @@ function RouteComponent() {
               <div
                 className={`w-12 h-12 bg-tint-green rounded-full flex items-center justify-center mb-5`}
               >
-                <HugeiconsIcon
+                <Icon
                   icon={Tick02Icon}
                   size={24}
                   className="text-tint-green-ink"

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 import { SubmissionFlow } from "./submission-flow";
@@ -46,9 +46,8 @@ export function Hero() {
             className="group flex items-center justify-center gap-1.5 rounded-2xl bg-accent-500 px-7 py-3.5 text-base font-semibold text-white transition-colors hover:bg-accent-600"
           >
             {session ? "Go to dashboard" : "Start for free"}
-            <HugeiconsIcon
+            <Icon
               icon={ArrowRight01Icon}
-              size={18}
               className="transition-transform group-hover:translate-x-0.5"
             />
           </Link>

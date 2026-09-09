@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { palette } from "@formdrop/ui";
 
 /**
  * Design tokens, resolved to values Recharts can use.
@@ -15,9 +16,9 @@ import { useEffect, useState } from "react";
  * charts change colour when the palette does.
  *
  * The fallbacks are only reached before the effect runs -- during SSR, where
- * there is no document. They are the same values the tokens hold, so the first
- * paint is not a different colour; if a token is renamed the fallback goes
- * stale, which is the trade for the charts rendering at all on the server.
+ * there is no document. They come from packages/ui's palette rather than
+ * being typed out, so they cannot go stale when the ramp moves: that module
+ * is generated from tokens.css and a test fails if the two disagree.
  */
 export interface ChartTheme {
   accent: string;
@@ -28,11 +29,11 @@ export interface ChartTheme {
 }
 
 const FALLBACK: ChartTheme = {
-  accent: "#6f63e4",
-  grid: "#efeef1",
-  tick: "#726f7e",
-  surface: "#ffffff",
-  border: "#dedde1",
+  accent: palette["accent-500"],
+  grid: palette["ink-100"],
+  tick: palette["ink-500"],
+  surface: "white",
+  border: palette["ink-200"],
 };
 
 const TOKENS: Record<keyof ChartTheme, string> = {
@@ -58,7 +59,7 @@ export function useChartTheme(): ChartTheme {
       accent: read(TOKENS.accent, FALLBACK.accent),
       grid: read(TOKENS.grid, FALLBACK.grid),
       tick: read(TOKENS.tick, FALLBACK.tick),
-      // --color-white is not a token; the surface is plain white either way.
+      // White is not a token; the surface is plain white either way.
       surface: FALLBACK.surface,
       border: read(TOKENS.border, FALLBACK.border),
     });

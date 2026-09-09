@@ -1,11 +1,10 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Mail01Icon,
   ReloadIcon,
   Delete02Icon,
 } from "@hugeicons/core-free-icons";
 
-import { Button, Toggle, Tooltip } from "@formdrop/ui";
+import { Button, Icon, Toggle, Tooltip } from "@formdrop/ui";
 
 /**
  * A view model rather than a database row, so it is declared rather than
@@ -59,7 +58,7 @@ export function RecipientItem({
     <div className="flex items-center justify-between gap-3 p-4 transition-colors hover:bg-ink-50">
       <div className="flex min-w-0 items-center gap-3">
         <div className="h-8 w-8 rounded-full bg-ink-100 flex items-center justify-center text-ink-500">
-          <HugeiconsIcon icon={Mail01Icon} size={16} />
+          <Icon icon={Mail01Icon} size={16} />
         </div>
         {/* Wraps: the badge drops under the address rather than stealing its
             width, which matters most for "Invitation Expired" -- the longest
@@ -109,7 +108,7 @@ export function RecipientItem({
                   variant="ghost"
                   size="sm"
                   className="text-tint-rose-ink hover:text-tint-rose-ink hover:bg-tint-rose p-1 h-auto rounded"
-                  icon={<HugeiconsIcon icon={ReloadIcon} size={14} />}
+                  icon={<Icon icon={ReloadIcon} size={14} />}
                 />
               </div>
             </Tooltip>
@@ -149,7 +148,7 @@ export function RecipientItem({
           variant="ghost"
           size="sm"
           className="hover:text-tint-rose-ink hover:bg-tint-rose p-2 h-auto"
-          icon={<HugeiconsIcon icon={Delete02Icon} size={16} />}
+          icon={<Icon icon={Delete02Icon} size={16} />}
         />
       </div>
     </div>

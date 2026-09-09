@@ -74,6 +74,7 @@ function AdminForms() {
     () => [
       columnHelper.accessor("name", {
         header: "Form",
+        size: 260,
         cell: (info) => (
           <div className="min-w-0">
             <div className="font-medium text-ink-950">{info.getValue()}</div>
@@ -85,6 +86,7 @@ function AdminForms() {
       }),
       columnHelper.accessor("userName", {
         header: "Owner",
+        size: 170,
         cell: (info) => (
           // Stops the row handler underneath: the row opens the form, this
           // opens the account that owns it, and they are different places.
@@ -101,6 +103,7 @@ function AdminForms() {
       }),
       columnHelper.accessor("submissionCount", {
         header: "Submissions",
+        size: 130,
         cell: (info) => (
           // A count is a number, not a status, so it reads as one -- the pill
           // this replaces implied a state the value does not have.
@@ -111,6 +114,7 @@ function AdminForms() {
       }),
       columnHelper.accessor("createdAt", {
         header: "Created",
+        size: 130,
         cell: (info) => (
           <span className="whitespace-nowrap text-ink-500 tabular-nums">
             {moment(info.getValue()).format("MMM D, YYYY")}
@@ -120,6 +124,7 @@ function AdminForms() {
       columnHelper.display({
         id: "actions",
         header: "",
+        size: 96,
         cell: (info) => {
           const form = info.row.original;
           return (
@@ -166,6 +171,11 @@ function AdminForms() {
       <AdminTable
         tableId="admin-forms"
         data={forms ?? []}
+        getRowId={(form) => form.id}
+        // Every row here stacks a name over an id, so they are taller than the
+        // single-line default. The virtualizer takes this as fact, not as a
+        // starting guess, so it decides how tall the scrollbar is.
+        rowHeight={65}
         columns={columns}
         isLoading={isLoading}
         searchPlaceholder="Search by form or owner"

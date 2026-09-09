@@ -252,7 +252,7 @@ function RouteComponent() {
                 params={{ id: form.id }}
                 className="group flex items-center gap-4 px-6 py-3.5 transition-colors hover:bg-accent-500/4 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-inset"
               >
-                <span className="w-4 shrink-0 text-sm font-semibold text-ink-400 tabular-nums">
+                <span className="w-4 shrink-0 text-sm font-semibold text-ink-500 tabular-nums">
                   {index + 1}
                 </span>
 

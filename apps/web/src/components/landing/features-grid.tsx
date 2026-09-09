@@ -1,4 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   CheckmarkCircle02Icon,
   DiscordIcon,
@@ -250,7 +250,7 @@ function AlertsVisual() {
           }`}
         >
           <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ink-100 text-ink-700">
-            <HugeiconsIcon icon={row.icon} size={14} />
+            <Icon icon={row.icon} size={14} />
           </span>
           <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink-900">
             {row.label}
@@ -290,7 +290,7 @@ function IntegrationsVisual() {
               {node.image ? (
                 <img src={node.image} alt="" className="h-4 w-4" />
               ) : (
-                <HugeiconsIcon icon={node.icon!} size={16} />
+                <Icon icon={node.icon!} size={16} />
               )}
             </span>
           </Float>
@@ -304,7 +304,7 @@ function SecurityVisual() {
   return (
     <div className="flex w-full max-w-sm flex-col gap-2.5">
       <Float className="flex items-center gap-2.5 px-3.5 py-3">
-        <HugeiconsIcon
+        <Icon
           icon={CheckmarkCircle02Icon}
           size={16}
           className="shrink-0 text-accent-600"
@@ -316,21 +316,13 @@ function SecurityVisual() {
       </Float>
 
       <Float className="ml-5 flex items-center gap-2.5 px-3.5 py-3">
-        <HugeiconsIcon
-          icon={LockKeyIcon}
-          size={16}
-          className="shrink-0 text-ink-500"
-        />
+        <Icon icon={LockKeyIcon} size={16} className="shrink-0 text-ink-500" />
         <span className="text-xs font-medium text-ink-900">yoursite.com</span>
         <span className="ml-auto text-[10px] text-ink-400">Allowed</span>
       </Float>
 
       <Float className="ml-2 flex items-center gap-2.5 px-3.5 py-3">
-        <HugeiconsIcon
-          icon={Key01Icon}
-          size={16}
-          className="shrink-0 text-ink-500"
-        />
+        <Icon icon={Key01Icon} size={16} className="shrink-0 text-ink-500" />
         <span className="font-mono text-[11px] text-ink-700">
           fd_sk_••••4f9c
         </span>

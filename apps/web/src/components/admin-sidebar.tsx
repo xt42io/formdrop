@@ -78,11 +78,14 @@ export function AdminSidebar() {
                     }}
                   />
                 )}
+                {/* The active colour is a class, not a prop. Hugeicons draws
+                    with currentColor, so the link's own text colour reaches
+                    the icon -- which is what the accent hex here was fighting
+                    against. */}
                 <Icon
                   icon={link.icon}
                   size={20}
-                  className="relative z-10"
-                  color={isActive ? "#6f63e4" : undefined}
+                  className={`relative z-10 ${isActive ? "text-accent-500" : ""}`}
                 />
                 <span className={`text-sm font-medium relative z-10`}>
                   {link.name}

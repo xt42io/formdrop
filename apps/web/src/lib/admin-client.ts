@@ -5,7 +5,10 @@ import type { AdminFormsGetResponse } from "@/routes/api/admin/forms";
 import type { AdminFormsFormidDeleteResponse } from "@/routes/api/admin/forms/$formId";
 import type { AdminSubmissionsGetResponse } from "@/routes/api/admin/submissions";
 import type { AdminUsersUseridGetResponse } from "@/routes/api/admin/users/$userId";
-import type { AdminSettingsClearOldSubmissionsPostResponse } from "@/routes/api/admin/settings/clear-old-submissions";
+import type {
+  AdminSettingsClearOldSubmissionsGetResponse,
+  AdminSettingsClearOldSubmissionsPostResponse,
+} from "@/routes/api/admin/settings/clear-old-submissions";
 
 /**
  * The admin surface's client.
@@ -37,6 +40,13 @@ export const adminClient = {
     apiRequest<AdminUsersUseridGetResponse>(
       "GET",
       `/api/admin/users/${userId}`,
+    ),
+
+  /** How many rows the retention tool would remove, and from when. */
+  oldSubmissions: () =>
+    apiRequest<AdminSettingsClearOldSubmissionsGetResponse>(
+      "GET",
+      "/api/admin/settings/clear-old-submissions",
     ),
 
   clearOldSubmissions: () =>

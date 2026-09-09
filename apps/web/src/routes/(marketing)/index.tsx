@@ -24,12 +24,17 @@ function RouteComponent() {
     <div className="relative isolate min-h-screen bg-white">
       <HeroBackdrop />
       <Navbar />
-      <Hero />
-      <CodePreview />
-      <FeaturesGrid />
-      <FrontendFrameworks />
-      <Integrations />
-      <CTA />
+      {/* The page had no main landmark, so "skip to content" had nothing to
+          skip to and a screen reader could not jump past the nav. The nav and
+          the footer stay outside it -- they are not the page's content. */}
+      <main>
+        <Hero />
+        <CodePreview />
+        <FeaturesGrid />
+        <FrontendFrameworks />
+        <Integrations />
+        <CTA />
+      </main>
       <Footer />
     </div>
   );

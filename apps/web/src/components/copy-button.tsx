@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { Copy01Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 
 interface CopyButtonProps {
@@ -29,9 +29,9 @@ export function CopyButton({ text, className }: CopyButtonProps) {
       aria-label={copied ? "Copied!" : "Copy to clipboard"}
     >
       {copied ? (
-        <HugeiconsIcon icon={Tick02Icon} className="text-green-600" size={20} />
+        <Icon icon={Tick02Icon} className="text-green-600" size={20} />
       ) : (
-        <HugeiconsIcon icon={Copy01Icon} className="text-gray-600" size={20} />
+        <Icon icon={Copy01Icon} className="text-gray-600" size={20} />
       )}
     </button>
   );

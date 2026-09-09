@@ -37,6 +37,7 @@ export {
   countAllForms,
   countAllSubmissions,
   countAllUsers,
+  countSubmissionsOlderThan,
   deleteSubmissionsOlderThan,
   findUserDetail,
   listAllFormsWithOwners,

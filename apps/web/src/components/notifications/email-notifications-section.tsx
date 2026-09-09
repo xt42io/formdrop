@@ -1,6 +1,5 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { Notification01Icon } from "@hugeicons/core-free-icons";
-import { IntegrationCard } from "@formdrop/ui";
+import { Icon, IntegrationCard } from "@formdrop/ui";
 import { useFormUpdate } from "@/hooks/use-form-mutations";
 
 interface EmailNotificationsSectionProps {
@@ -17,7 +16,7 @@ export function EmailNotificationsSection({
   return (
     <IntegrationCard
       className="mb-8"
-      icon={<HugeiconsIcon icon={Notification01Icon} size={20} />}
+      icon={<Icon icon={Notification01Icon} size={20} />}
       title="Email Notifications"
       description="Receive an email whenever a new submission is received."
       isEnabled={Boolean(isEnabled)}

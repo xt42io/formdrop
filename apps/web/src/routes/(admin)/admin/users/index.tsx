@@ -193,6 +193,7 @@ function AdminUsers() {
       </div>
 
       <AdminTable
+        tableId="admin-users"
         data={users ?? []}
         columns={columns}
         isLoading={isLoading}

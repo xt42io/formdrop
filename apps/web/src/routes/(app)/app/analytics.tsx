@@ -14,7 +14,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 export const Route = createFileRoute("/(app)/app/analytics")({
@@ -275,7 +275,7 @@ function RouteComponent() {
                 <span className="shrink-0 text-sm font-semibold text-ink-950 tabular-nums">
                   {form.submissionCount.toLocaleString()}
                 </span>
-                <HugeiconsIcon
+                <Icon
                   icon={ArrowRight01Icon}
                   size={16}
                   className="shrink-0 text-ink-300 transition-colors group-hover:text-accent-600"

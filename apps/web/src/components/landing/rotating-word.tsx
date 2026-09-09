@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   Login03Icon,
   Mail01Icon,
@@ -82,7 +82,7 @@ export function RotatingWord() {
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className={`absolute inset-y-0 left-0 flex items-center gap-[0.18em] rounded-[0.26em] px-[0.22em] whitespace-nowrap ${word.fill}`}
         >
-          <HugeiconsIcon
+          <Icon
             aria-hidden="true"
             icon={word.icon}
             className="h-[0.62em] w-[0.62em] shrink-0 text-ink-950"

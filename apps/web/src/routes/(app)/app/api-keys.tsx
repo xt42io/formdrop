@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient, type ApiKey } from "@/lib/app-client";
 import { useEffect, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
   AlertCircleIcon,
@@ -12,7 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import moment from "moment";
 import { CopyButton } from "@/components/copy-button";
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 
 export const Route = createFileRoute("/(app)/app/api-keys")({
   head: () => ({
@@ -37,7 +36,10 @@ function ApiKeysPage() {
       if ("error" in response) {
         throw new Error(response.error);
       }
-      return response.keys as unknown as ApiKey[];
+      // No cast. The response type comes from the handler now, so this is
+      // already the row shape -- and an `as unknown as` here would have gone
+      // on quietly agreeing with the page after the handler renamed the key.
+      return response.keys;
     },
   });
 
@@ -112,7 +114,7 @@ function ApiKeysPage() {
         </div>
         <Button
           onClick={() => setIsCreating(true)}
-          icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
+          icon={<Icon icon={Add01Icon} size={16} />}
         >
           Create key
         </Button>
@@ -130,7 +132,7 @@ function ApiKeysPage() {
             <Button
               onClick={() => setIsCreating(true)}
               className="mt-6"
-              icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
+              icon={<Icon icon={Add01Icon} size={16} />}
             >
               Create your first key
             </Button>
@@ -151,9 +153,8 @@ function ApiKeysPage() {
       )}
 
       <div className="mt-6 flex gap-3 rounded-panel border border-tint-amber bg-tint-amber/40 p-4">
-        <HugeiconsIcon
+        <Icon
           icon={AlertCircleIcon}
-          size={18}
           className="mt-0.5 shrink-0 text-tint-amber-ink"
         />
         <p className="text-sm leading-relaxed text-tint-amber-ink">
@@ -214,7 +215,7 @@ function ApiKeysPage() {
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 bg-tint-rose rounded-full">
-              <HugeiconsIcon
+              <Icon
                 icon={AlertCircleIcon}
                 className="text-tint-rose-ink"
                 size={24}
@@ -313,9 +314,7 @@ function ApiKeyRow({
           size="sm"
           onClick={() => setRevealed((r) => !r)}
           aria-pressed={revealed}
-          icon={
-            <HugeiconsIcon icon={revealed ? ViewOffIcon : ViewIcon} size={15} />
-          }
+          icon={<Icon icon={revealed ? ViewOffIcon : ViewIcon} size={15} />}
         >
           {revealed ? "Hide" : "Reveal"}
         </Button>
@@ -325,7 +324,7 @@ function ApiKeyRow({
           size="sm"
           className="text-tint-rose-ink hover:bg-tint-rose"
           onClick={onRevoke}
-          icon={<HugeiconsIcon icon={Delete02Icon} size={15} />}
+          icon={<Icon icon={Delete02Icon} size={15} />}
         >
           Revoke
         </Button>

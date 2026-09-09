@@ -14,5 +14,6 @@ export { IntegrationCard } from "./integration-card";
 export { Modal, type ModalProps } from "./modal";
 export { brand, palette, type ColorToken } from "./palette";
 export { PlanGateProvider, usePlanGate } from "./plan-gate";
+export { Select, type SelectOption, type SelectProps } from "./select";
 export { Toggle } from "./toggle";
 export { Tooltip } from "./tooltip";

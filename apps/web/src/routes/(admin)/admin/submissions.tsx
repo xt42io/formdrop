@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 // Derived from the query the handler calls. The local copy this replaces
 // typed payload as `any` and createdAt as a Date.
 import type { AdminSubmission } from "@/lib/app-client";
-import axios from "axios";
 import {
   createColumnHelper,
   flexRender,
@@ -18,6 +17,7 @@ import {
 import { Button, Icon } from "@formdrop/ui";
 import { ArrowUp01Icon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import { useState, useEffect } from "react";
+import { adminClient } from "@/lib/admin-client";
 
 export const Route = createFileRoute("/(admin)/admin/submissions")({
   component: AdminSubmissions,
@@ -89,8 +89,9 @@ function AdminSubmissions() {
   const { data: submissions, isLoading } = useQuery({
     queryKey: ["admin", "submissions"],
     queryFn: async () => {
-      const res = await axios.get("/api/admin/submissions");
-      return res.data.submissions as AdminSubmission[];
+      const response = await adminClient.submissions();
+      if ("error" in response) throw new Error(response.error);
+      return response.submissions;
     },
   });
 

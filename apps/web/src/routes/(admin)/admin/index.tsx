@@ -215,6 +215,7 @@ function AdminDashboard() {
                   cursor={{ stroke: theme.accent, strokeWidth: 1 }}
                 />
                 <Area
+                  isAnimationActive={false}
                   type="monotone"
                   dataKey="count"
                   stroke={theme.accent}
@@ -286,6 +287,7 @@ function AdminDashboard() {
                   cursor={{ stroke: SERIES_TWO, strokeWidth: 1 }}
                 />
                 <Area
+                  isAnimationActive={false}
                   type="monotone"
                   dataKey="count"
                   stroke={SERIES_TWO}
@@ -336,6 +338,7 @@ function AdminDashboard() {
                 cursor={{ fill: palette["ink-50"] }}
               />
               <Bar
+                isAnimationActive={false}
                 dataKey="count"
                 fill={theme.accent}
                 name="Submissions"

@@ -1,7 +1,6 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { LinkSquare02Icon } from "@hugeicons/core-free-icons";
 import { Slack } from "@ridemountainpig/svgl-react";
-import { IntegrationCard } from "@formdrop/ui";
+import { Icon, IntegrationCard } from "@formdrop/ui";
 import { useFormUpdate, useDisconnectSlack } from "@/hooks/use-form-mutations";
 
 interface SlackNotificationsSectionProps {
@@ -45,7 +44,7 @@ export function SlackNotificationsSection({
         window.location.href = `/api/integrations/slack/authorize?formId=${formId}`;
       }}
       connectLabel="Connect Slack"
-      connectIcon={<HugeiconsIcon icon={LinkSquare02Icon} size={16} />}
+      connectIcon={<Icon icon={LinkSquare02Icon} size={16} />}
       connectClassName="bg-purple-600 hover:bg-purple-700"
       connectRequiresPro
     />

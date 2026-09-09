@@ -1,4 +1,5 @@
 import { installMockData } from "./mock-data";
+import { apiRequest, type Serialized } from "./api/request";
 
 // Type-only imports, so nothing from packages/core/data (and therefore nothing
 // from pg) reaches the browser bundle. These are erased at compile time.
@@ -52,23 +53,6 @@ import type {
 } from "@/routes/api/api-keys";
 import type { AnalyticsGetResponse } from "@/routes/api/analytics";
 import type { SubscriptionGetResponse } from "@/routes/api/subscription";
-
-/**
- * What a value looks like after Response.json() and back.
- *
- * This matters: the handlers serialise Drizzle rows to JSON, so every Date
- * arrives as an ISO string. The hand-written types this file used to carry
- * declared them as `Date`, which was never true at runtime — the values were
- * always strings, and any caller that trusted the annotation and called a Date
- * method on one would have failed.
- */
-type Serialized<T> = T extends Date
-  ? string
-  : T extends (infer U)[]
-    ? Serialized<U>[]
-    : T extends object
-      ? { [K in keyof T]: Serialized<T[K]> }
-      : T;
 
 /** The awaited row type of a packages/core data function, as JSON. */
 type Rows<T extends (...args: never[]) => unknown> = Serialized<
@@ -134,116 +118,70 @@ interface DeleteApiKeyParams {
   id: string;
 }
 
-/**
- * The whole transport, on fetch.
- *
- * What this replaces was an axios instance plus a wrapper that hand-rolled the
- * same thing. `Serialized<T>` is applied here rather than inside each handler's
- * type because the Date-to-string conversion happens in transit, not in the
- * handler -- the handler really does hold Dates, and the client really does
- * receive strings.
- *
- * A non-2xx response is not thrown. Every handler answers errors as
- * `{ error }`, callers already narrow with `"error" in response`, and turning
- * half of a documented contract into an exception would mean rewriting all of
- * them for no gain.
- */
-async function request<T>(
-  method: "GET" | "POST" | "PATCH" | "DELETE",
-  path: string,
-  options?: { params?: Record<string, string | number>; body?: unknown },
-): Promise<Serialized<T>> {
-  const url = new URL(path, window.location.origin);
-  for (const [key, value] of Object.entries(options?.params ?? {})) {
-    url.searchParams.set(key, String(value));
-  }
-
-  try {
-    const response = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      // DELETE with a body is how the bulk endpoints are addressed; fetch
-      // allows it, and the handlers read it.
-      body:
-        options?.body === undefined ? undefined : JSON.stringify(options.body),
-    });
-
-    // A handler that fell over before it could answer JSON -- a 502 from a
-    // proxy, say -- would otherwise surface as an unreadable parse error.
-    const text = await response.text();
-    if (!text) {
-      return { error: `Request failed (${response.status})` } as Serialized<T>;
-    }
-    return JSON.parse(text) as Serialized<T>;
-  } catch {
-    return { error: "An unexpected error occurred" } as Serialized<T>;
-  }
-}
-
 // TEMPORARY, and the only two lines outside mock-data.ts that know about it.
 // No-ops unless VITE_MOCK_DATA=1. Delete these and that file to remove it.
 installMockData();
 
 export const appClient = {
   forms: {
-    list: () => request<FormsListResponse>("GET", "/api/forms"),
+    list: () => apiRequest<FormsListResponse>("GET", "/api/forms"),
 
     create: (params: CreateFormParams) =>
-      request<FormsCreateResponse>("POST", "/api/forms", { body: params }),
+      apiRequest<FormsCreateResponse>("POST", "/api/forms", { body: params }),
 
     get: (formId: string) =>
-      request<FormsFormidGetResponse>("GET", `/api/forms/${formId}`),
+      apiRequest<FormsFormidGetResponse>("GET", `/api/forms/${formId}`),
 
     update: (formId: string, params: UpdateFormParams) =>
-      request<FormsFormidPatchResponse>("PATCH", `/api/forms/${formId}`, {
+      apiRequest<FormsFormidPatchResponse>("PATCH", `/api/forms/${formId}`, {
         body: params,
       }),
 
     delete: (formId: string) =>
-      request<FormsFormidDeleteResponse>("DELETE", `/api/forms/${formId}`),
+      apiRequest<FormsFormidDeleteResponse>("DELETE", `/api/forms/${formId}`),
   },
 
   recipients: {
     list: (formId: string) =>
-      request<FormsFormidRecipientsGetResponse>(
+      apiRequest<FormsFormidRecipientsGetResponse>(
         "GET",
         `/api/forms/${formId}/recipients`,
       ),
 
     add: (formId: string, email: string) =>
-      request<FormsFormidRecipientsPostResponse>(
+      apiRequest<FormsFormidRecipientsPostResponse>(
         "POST",
         `/api/forms/${formId}/recipients`,
         { body: { email } },
       ),
 
     remove: (formId: string, recipientId: string) =>
-      request<FormsFormidRecipientsRecipientidDeleteResponse>(
+      apiRequest<FormsFormidRecipientsRecipientidDeleteResponse>(
         "DELETE",
         `/api/forms/${formId}/recipients/${recipientId}`,
       ),
 
     update: (formId: string, recipientId: string, enabled: boolean) =>
-      request<FormsFormidRecipientsRecipientidPatchResponse>(
+      apiRequest<FormsFormidRecipientsRecipientidPatchResponse>(
         "PATCH",
         `/api/forms/${formId}/recipients/${recipientId}`,
         { body: { enabled } },
       ),
 
     resendVerification: (formId: string, recipientId: string) =>
-      request<FormsFormidRecipientsRecipientidResendVerificationPostResponse>(
+      apiRequest<FormsFormidRecipientsRecipientidResendVerificationPostResponse>(
         "POST",
         `/api/forms/${formId}/recipients/${recipientId}/resend-verification`,
       ),
 
     disconnectSlack: (formId: string) =>
-      request<FormsFormidDisconnectSlackDeleteResponse>(
+      apiRequest<FormsFormidDisconnectSlackDeleteResponse>(
         "DELETE",
         `/api/forms/${formId}/disconnect-slack`,
       ),
 
     disconnectDiscord: (formId: string) =>
-      request<FormsFormidDisconnectDiscordDeleteResponse>(
+      apiRequest<FormsFormidDisconnectDiscordDeleteResponse>(
         "DELETE",
         `/api/forms/${formId}/disconnect-discord`,
       ),
@@ -251,55 +189,57 @@ export const appClient = {
 
   submissions: {
     list: (formId: string, page = 1, limit = 50) =>
-      request<FormsFormidSubmissionsGetResponse>(
+      apiRequest<FormsFormidSubmissionsGetResponse>(
         "GET",
         `/api/forms/${formId}/submissions`,
         { params: { page, limit } },
       ),
 
     get: (formId: string, submissionId: string) =>
-      request<FormsFormidSubmissionsSubmissionidGetResponse>(
+      apiRequest<FormsFormidSubmissionsSubmissionidGetResponse>(
         "GET",
         `/api/forms/${formId}/submissions/${submissionId}`,
       ),
 
     delete: (formId: string, submissionId: string) =>
-      request<FormsFormidSubmissionsSubmissionidDeleteResponse>(
+      apiRequest<FormsFormidSubmissionsSubmissionidDeleteResponse>(
         "DELETE",
         `/api/forms/${formId}/submissions/${submissionId}`,
       ),
 
     bulkDelete: (formId: string, submissionIds: string[]) =>
-      request<FormsFormidSubmissionsDeleteResponse>(
+      apiRequest<FormsFormidSubmissionsDeleteResponse>(
         "DELETE",
         `/api/forms/${formId}/submissions`,
         { body: { submissionIds } },
       ),
 
     analytics: (formId: string) =>
-      request<FormsFormidAnalyticsGetResponse>(
+      apiRequest<FormsFormidAnalyticsGetResponse>(
         "GET",
         `/api/forms/${formId}/analytics`,
       ),
   },
 
   apiKeys: {
-    list: () => request<ApiKeysGetResponse>("GET", "/api/api-keys"),
+    list: () => apiRequest<ApiKeysGetResponse>("GET", "/api/api-keys"),
 
     create: (params: CreateApiKeyParams) =>
-      request<ApiKeysPostResponse>("POST", "/api/api-keys", { body: params }),
+      apiRequest<ApiKeysPostResponse>("POST", "/api/api-keys", {
+        body: params,
+      }),
 
     delete: (params: DeleteApiKeyParams) =>
-      request<ApiKeysDeleteResponse>("DELETE", "/api/api-keys", {
+      apiRequest<ApiKeysDeleteResponse>("DELETE", "/api/api-keys", {
         body: params,
       }),
   },
 
   analytics: {
-    get: () => request<AnalyticsGetResponse>("GET", "/api/analytics"),
+    get: () => apiRequest<AnalyticsGetResponse>("GET", "/api/analytics"),
   },
 
   subscription: {
-    get: () => request<SubscriptionGetResponse>("GET", "/api/subscription"),
+    get: () => apiRequest<SubscriptionGetResponse>("GET", "/api/subscription"),
   },
 };

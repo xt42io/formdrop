@@ -71,6 +71,7 @@ function AdminSubmissions() {
     () => [
       columnHelper.accessor("formName", {
         header: "Form",
+        size: 200,
         cell: (info) => (
           <span className="font-medium text-ink-950">
             {info.getValue() || "Unknown form"}
@@ -79,6 +80,7 @@ function AdminSubmissions() {
       }),
       columnHelper.accessor("createdAt", {
         header: "Received",
+        size: 150,
         cell: (info) => (
           <span className="whitespace-nowrap text-ink-700 tabular-nums">
             {moment(info.getValue()).format("MMM D, h:mm A")}
@@ -88,6 +90,7 @@ function AdminSubmissions() {
       columnHelper.display({
         id: "preview",
         header: "Payload",
+        size: 320,
         cell: (info) => (
           // A fixed ceiling rather than max-w-xs on an unbounded cell: the
           // table's columns are content-sized, so a long payload would
@@ -100,6 +103,7 @@ function AdminSubmissions() {
       }),
       columnHelper.accessor("id", {
         header: "ID",
+        size: 280,
         cell: (info) => (
           // The whole id, not the first eight characters and an ellipsis --
           // a truncated id cannot be copied or searched for, which is the only
@@ -129,6 +133,7 @@ function AdminSubmissions() {
       <AdminTable
         tableId="admin-submissions"
         data={submissions ?? []}
+        getRowId={(submission) => submission.id}
         columns={columns}
         isLoading={isLoading}
         searchPlaceholder="Search by form or payload"

@@ -1,4 +1,3 @@
-import { installMockData } from "./mock-data";
 import { apiRequest, type Serialized } from "./api/request";
 
 // Type-only imports, so nothing from packages/core/data (and therefore nothing
@@ -117,10 +116,6 @@ interface CreateApiKeyParams {
 interface DeleteApiKeyParams {
   id: string;
 }
-
-// TEMPORARY, and the only two lines outside mock-data.ts that know about it.
-// No-ops unless VITE_MOCK_DATA=1. Delete these and that file to remove it.
-installMockData();
 
 export const appClient = {
   forms: {

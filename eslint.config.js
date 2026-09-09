@@ -66,6 +66,25 @@ export default tseslint.config(
     },
   },
 
+  // W4 acceptance: "Zero raw hex values outside packages/ui tokens." Getting
+  // there took a sweep of 68 of them; this is what stops the 69th. A colour
+  // belongs in tokens.css, applied as a class -- and where a class genuinely
+  // cannot reach (Recharts props, email inline styles, an SVG logo's fill),
+  // packages/ui exports the values as `palette` and `brand`.
+  {
+    files: ["apps/web/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "Literal[value=/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3}([0-9a-fA-F]{2})?)?$/]",
+          message:
+            "Raw hex colour. Use a token class, or import { palette } / { brand } from @formdrop/ui where a class cannot reach (PRD W4 acceptance).",
+        },
+      ],
+    },
+  },
+
   // The wrapper itself. Somewhere has to import HugeiconsIcon, and this is
   // the one file allowed to -- that is the whole point of the rule above.
   {

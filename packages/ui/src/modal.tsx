@@ -42,6 +42,15 @@ export interface ModalProps {
   radius?: string;
   /** Names the dialog for assistive tech when the body has no heading. */
   label?: string;
+  /**
+   * Where the panel sits in the viewport.
+   *
+   * "top" is for a dialog whose height changes while it is open -- a command
+   * palette's result list grows and shrinks as you type, and centred it would
+   * shift under the cursor on every keystroke. Anchoring it near the top keeps
+   * the input still and lets the list grow downward.
+   */
+  align?: "center" | "top";
   className?: string;
   children: React.ReactNode;
 }
@@ -53,6 +62,7 @@ export function Modal({
   scrim = DEFAULT_SCRIM,
   radius = "rounded-3xl",
   label,
+  align = "center",
   className = "",
   children,
 }: ModalProps) {
@@ -83,7 +93,11 @@ export function Modal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className={`fixed inset-0 z-50 flex justify-center p-4 ${
+            align === "top" ? "items-start pt-[12vh]" : "items-center"
+          }`}
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   LinkSquare02Icon,
   ArrowUpRight01Icon,
@@ -12,7 +11,7 @@ import {
 import { useIntegrationsStore } from "@/stores/integrations-store";
 import { motion, AnimatePresence } from "motion/react";
 import { useFlag } from "@flagswift/react-client";
-import { Button, Toggle } from "@formdrop/ui";
+import { Button, Icon, Toggle } from "@formdrop/ui";
 
 interface GoogleSheetsSectionProps {
   formId: string;
@@ -105,7 +104,7 @@ export function GoogleSheetsSection({
                         rel="noopener noreferrer"
                         className="px-3 py-2 text-xs font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors inline-flex items-center gap-1"
                       >
-                        <HugeiconsIcon icon={ArrowUpRight01Icon} size={14} />
+                        <Icon icon={ArrowUpRight01Icon} size={14} />
                         Open
                       </a>
                     )}
@@ -138,7 +137,7 @@ export function GoogleSheetsSection({
                       variant="ghost"
                       size="sm"
                       className="text-tint-green-ink hover:bg-tint-green p-2 h-auto"
-                      icon={<HugeiconsIcon icon={Tick02Icon} size={16} />}
+                      icon={<Icon icon={Tick02Icon} size={16} />}
                     />
                     <Button
                       onClick={handleCancelDisconnect}
@@ -146,7 +145,7 @@ export function GoogleSheetsSection({
                       variant="ghost"
                       size="sm"
                       className="hover:text-ink-950 hover:bg-ink-100 p-2 h-auto"
-                      icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
+                      icon={<Icon icon={Cancel01Icon} size={16} />}
                     />
                   </motion.div>
                 )}
@@ -158,7 +157,7 @@ export function GoogleSheetsSection({
                 }
                 requiresPro
                 className="rounded-3xl py-3"
-                icon={<HugeiconsIcon icon={LinkSquare02Icon} size={16} />}
+                icon={<Icon icon={LinkSquare02Icon} size={16} />}
               >
                 Connect
               </Button>

@@ -1,7 +1,6 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import { GameIcon } from "@hugeicons/core-free-icons";
 import { Discord } from "@ridemountainpig/svgl-react";
-import { IntegrationCard } from "@formdrop/ui";
+import { Icon, IntegrationCard } from "@formdrop/ui";
 import {
   useFormUpdate,
   useDisconnectDiscord,
@@ -48,7 +47,7 @@ export function DiscordNotificationsSection({
         window.location.href = `/api/integrations/discord/authorize?formId=${formId}`;
       }}
       connectLabel="Connect Discord"
-      connectIcon={<HugeiconsIcon icon={GameIcon} size={16} />}
+      connectIcon={<Icon icon={GameIcon} size={16} />}
       connectClassName="bg-indigo-600 hover:bg-indigo-700"
       connectRequiresPro
     />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   Cancel01Icon,
   Loading03Icon,
@@ -97,7 +97,7 @@ function RoundCheckbox({
             : "border-ink-300 bg-white"
         }`}
       >
-        {checked && <HugeiconsIcon icon={Tick02Icon} size={10} />}
+        {checked && <Icon icon={Tick02Icon} size={10} />}
       </span>
     </label>
   );
@@ -142,7 +142,7 @@ function ColumnsMenu({
         aria-haspopup="true"
         className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-ink-200 px-3 py-1.5 text-xs font-medium text-ink-600 transition-colors hover:bg-ink-50 hover:text-ink-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
       >
-        <HugeiconsIcon icon={ViewIcon} size={14} />
+        <Icon icon={ViewIcon} size={14} />
         Columns
         {hidden.length > 0 && (
           <span className="rounded-full bg-accent-500/12 px-1.5 text-[11px] font-semibold text-accent-600 tabular-nums">
@@ -172,7 +172,7 @@ function ColumnsMenu({
                       : "border-ink-300"
                   }`}
                 >
-                  {visible && <HugeiconsIcon icon={Tick02Icon} size={11} />}
+                  {visible && <Icon icon={Tick02Icon} size={11} />}
                 </span>
                 <span className="truncate font-mono text-xs">{column}</span>
               </button>
@@ -353,7 +353,7 @@ export function SubmissionsTable({
               <td colSpan={columns.length + 3} className="border-0 p-0">
                 {isFetchingNextPage && (
                   <div className="flex justify-center py-4">
-                    <HugeiconsIcon
+                    <Icon
                       icon={Loading03Icon}
                       className="animate-spin text-ink-400"
                       size={22}
@@ -368,7 +368,7 @@ export function SubmissionsTable({
 
       {hidden.length > 0 && (
         <div className="flex items-center gap-2 border-t border-ink-100 bg-ink-50/60 px-4 py-2 text-xs text-ink-500">
-          <HugeiconsIcon icon={Cancel01Icon} size={12} />
+          <Icon icon={Cancel01Icon} size={12} />
           {hidden.length} column{hidden.length === 1 ? "" : "s"} hidden
         </div>
       )}

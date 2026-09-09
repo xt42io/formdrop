@@ -6,7 +6,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Icon } from "@formdrop/ui";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import {
   Area,
   AreaChart,
@@ -18,6 +17,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { palette } from "@formdrop/ui";
+import { useChartTheme } from "@/lib/chart-theme";
+import { adminClient } from "@/lib/admin-client";
+
+/*
+ * The second chart's series, kept visually distinct from the first without
+ * reaching for emerald-500. Recharts takes colour strings, so this is a value
+ * rather than a class -- see packages/ui/src/palette.ts.
+ */
+const SERIES_TWO = palette["tint-green-ink"];
 
 export const Route = createFileRoute("/(admin)/admin/")({
   component: AdminDashboard,
@@ -85,11 +94,13 @@ function ChartSkeleton() {
 }
 
 function AdminDashboard() {
+  const theme = useChartTheme();
   const { data: stats, isLoading } = useQuery({
     queryKey: ["admin", "stats"],
     queryFn: async () => {
-      const res = await axios.get("/api/admin/stats");
-      return res.data;
+      const response = await adminClient.stats();
+      if ("error" in response) throw new Error(response.error);
+      return response;
     },
   });
 
@@ -158,20 +169,28 @@ function AdminDashboard() {
               <AreaChart data={stats?.charts?.usersOverTime || []}>
                 <defs>
                   <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    <stop
+                      offset="5%"
+                      stopColor={theme.accent}
+                      stopOpacity={0.1}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={theme.accent}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#f3f4f6"
+                  stroke={theme.grid}
                 />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  tick={{ fill: theme.tick, fontSize: 12 }}
                   dy={10}
                   tickFormatter={(value) =>
                     new Date(value).toLocaleDateString("en-US", {
@@ -183,22 +202,22 @@ function AdminDashboard() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  tick={{ fill: theme.tick, fontSize: 12 }}
                   dx={-10}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#fff",
+                    backgroundColor: theme.surface,
                     borderRadius: "12px",
-                    border: "1px solid #e5e7eb",
+                    border: `1px solid ${theme.border}`,
                     boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                   }}
-                  cursor={{ stroke: "#3b82f6", strokeWidth: 1 }}
+                  cursor={{ stroke: theme.accent, strokeWidth: 1 }}
                 />
                 <Area
                   type="monotone"
                   dataKey="count"
-                  stroke="#3b82f6"
+                  stroke={theme.accent}
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorUsers)"
@@ -225,20 +244,24 @@ function AdminDashboard() {
                     x2="0"
                     y2="1"
                   >
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop
+                      offset="5%"
+                      stopColor={SERIES_TWO}
+                      stopOpacity={0.1}
+                    />
+                    <stop offset="95%" stopColor={SERIES_TWO} stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#f3f4f6"
+                  stroke={theme.grid}
                 />
                 <XAxis
                   dataKey="date"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  tick={{ fill: theme.tick, fontSize: 12 }}
                   dy={10}
                   tickFormatter={(value) =>
                     new Date(value).toLocaleDateString("en-US", {
@@ -250,22 +273,22 @@ function AdminDashboard() {
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  tick={{ fill: theme.tick, fontSize: 12 }}
                   dx={-10}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#fff",
+                    backgroundColor: theme.surface,
                     borderRadius: "12px",
-                    border: "1px solid #e5e7eb",
+                    border: `1px solid ${theme.border}`,
                     boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                   }}
-                  cursor={{ stroke: "#10b981", strokeWidth: 1 }}
+                  cursor={{ stroke: SERIES_TWO, strokeWidth: 1 }}
                 />
                 <Area
                   type="monotone"
                   dataKey="count"
-                  stroke="#10b981"
+                  stroke={SERIES_TWO}
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorSubmissions)"
@@ -288,33 +311,33 @@ function AdminDashboard() {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f3f4f6"
+                stroke={theme.grid}
               />
               <XAxis
                 dataKey="formName"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6b7280", fontSize: 12 }}
+                tick={{ fill: theme.tick, fontSize: 12 }}
                 dy={10}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: "#6b7280", fontSize: 12 }}
+                tick={{ fill: theme.tick, fontSize: 12 }}
                 dx={-10}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "#fff",
+                  backgroundColor: theme.surface,
                   borderRadius: "12px",
-                  border: "1px solid #e5e7eb",
+                  border: `1px solid ${theme.border}`,
                   boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                 }}
-                cursor={{ fill: "#f9fafb" }}
+                cursor={{ fill: palette["ink-50"] }}
               />
               <Bar
                 dataKey="count"
-                fill="#6f63e4"
+                fill={theme.accent}
                 name="Submissions"
                 radius={[8, 8, 0, 0]}
               />

@@ -1,137 +1,41 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
+import { Button, Icon, Modal } from "@formdrop/ui";
+import { Delete02Icon, ViewIcon } from "@hugeicons/core-free-icons";
+import moment from "moment";
 // Derived from the query the handler calls. The local copy this replaces
 // declared createdAt as a Date, which JSON never delivers.
 import type { AdminForm } from "@/lib/app-client";
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getSortedRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
-import { Button, Icon } from "@formdrop/ui";
-import {
-  ViewIcon,
-  Delete02Icon,
-  ArrowUp01Icon,
-  ArrowDown01Icon,
-} from "@hugeicons/core-free-icons";
-import { useState, useEffect } from "react";
 import { adminClient } from "@/lib/admin-client";
+import { AdminTable } from "@/components/admin/admin-table";
 
+/**
+ * The cross-tenant forms table (PRD 4.6).
+ *
+ * The table itself is AdminTable, shared with the users screen -- the toolbar,
+ * the sticky header, the sorting and the pagination are the same code, not a
+ * second copy of it. What lives here is the columns and the delete flow.
+ */
 export const Route = createFileRoute("/(admin)/admin/forms")({
   component: AdminForms,
-  validateSearch: (search: Record<string, unknown>) => {
-    return {
-      page: Number(search?.page ?? 1),
-      pageSize: Number(search?.pageSize ?? 10),
-      sortBy: (search?.sortBy as string) ?? "createdAt",
-      sortOrder: (search?.sortOrder as "asc" | "desc") ?? "desc",
-      search: (search?.search as string) ?? "",
-    };
-  },
+  validateSearch: (search: Record<string, unknown>) => ({
+    page: Number(search?.page ?? 1),
+    pageSize: Number(search?.pageSize ?? 10),
+    sortBy: (search?.sortBy as string) ?? "createdAt",
+    sortOrder: (search?.sortOrder as "asc" | "desc") ?? "desc",
+    search: (search?.search as string) ?? "",
+  }),
 });
 
 const columnHelper = createColumnHelper<AdminForm>();
 
-const createColumns = () => [
-  columnHelper.accessor("name", {
-    header: "Form Name",
-    cell: (info) => (
-      <div className="font-medium text-gray-900">{info.getValue()}</div>
-    ),
-    enableSorting: true,
-  }),
-  columnHelper.accessor("userName", {
-    header: "Owner",
-    cell: (info) => (
-      <Link
-        to="/admin/users/$userId"
-        params={{ userId: info.row.original.userId }}
-      >
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors cursor-pointer">
-          {info.getValue()}
-        </span>
-      </Link>
-    ),
-    enableSorting: true,
-  }),
-  columnHelper.accessor("submissionCount", {
-    header: "Submissions",
-    cell: (info) => (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-        {info.getValue()?.toLocaleString() || 0}
-      </span>
-    ),
-    enableSorting: true,
-  }),
-  columnHelper.accessor("createdAt", {
-    header: "Created",
-    cell: (info) => (
-      <div className="text-gray-500">
-        {new Date(info.getValue()).toLocaleDateString()}
-      </div>
-    ),
-    enableSorting: true,
-  }),
-  columnHelper.display({
-    id: "actions",
-    header: "Actions",
-    cell: (info) => (
-      <div className="flex space-x-2">
-        <Link to="/app/forms/$id" params={{ id: info.row.original.id }}>
-          <Button variant="outline" size="sm" title="View Form">
-            <Icon icon={ViewIcon} size={16} />
-          </Button>
-        </Link>
-        <Button
-          variant="danger"
-          size="sm"
-          onClick={() => handleDeleteForm(info.row.original.id)}
-          title="Delete Form"
-        >
-          <Icon icon={Delete02Icon} size={16} />
-        </Button>
-      </div>
-    ),
-    enableSorting: false,
-  }),
-];
-
-async function handleDeleteForm(formId: string) {
-  if (
-    !confirm(
-      "Are you sure you want to delete this form? This action cannot be undone.",
-    )
-  ) {
-    return;
-  }
-
-  try {
-    // NOTE: there is no handler for DELETE /api/admin/forms/:formId. Only
-    // GET /api/admin/forms exists, so this request cannot delete anything --
-    // a pre-existing gap, left as-is because building the endpoint is admin
-    // feature work rather than part of moving this page off axios.
-    await fetch(`/api/admin/forms/${formId}`, { method: "DELETE" });
-    window.location.reload();
-  } catch {
-    alert("Failed to delete form");
-  }
-}
-
 function AdminForms() {
   const navigate = useNavigate({ from: Route.fullPath });
   const searchParams = Route.useSearch();
-  const [globalFilter, setGlobalFilter] = useState(searchParams.search);
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: searchParams.sortBy, desc: searchParams.sortOrder === "desc" },
-  ]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [deleting, setDeleting] = useState<AdminForm | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { data: forms, isLoading } = useQuery({
     queryKey: ["admin", "forms"],
@@ -143,264 +47,163 @@ function AdminForms() {
     },
   });
 
-  const table = useReactTable({
-    data: forms || [],
-    columns: createColumns(),
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-      globalFilter,
-      pagination: {
-        pageIndex: searchParams.page - 1,
-        pageSize: searchParams.pageSize,
-      },
-    },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function"
-          ? updater({
-              pageIndex: searchParams.page - 1,
-              pageSize: searchParams.pageSize,
-            })
-          : updater;
-
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          page: newPagination.pageIndex + 1,
-          pageSize: newPagination.pageSize,
-        }),
-      });
-    },
-  });
-
-  // Update URL when sorting changes
-  useEffect(() => {
-    if (sorting.length > 0) {
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          sortBy: sorting[0].id,
-          sortOrder: sorting[0].desc ? "desc" : "asc",
-        }),
-      });
+  const confirmDelete = async () => {
+    if (!deleting) return;
+    setIsDeleting(true);
+    try {
+      // NOTE: there is no handler for DELETE /api/admin/forms/:formId. Only
+      // GET /api/admin/forms exists, so this request cannot delete anything.
+      // Pre-existing, and building the endpoint is admin feature work rather
+      // than part of the redesign -- but the dialog now at least states what
+      // it intends to do, where window.confirm could not even name the form.
+      await fetch(`/api/admin/forms/${deleting.id}`, { method: "DELETE" });
+      window.location.reload();
+    } finally {
+      setIsDeleting(false);
     }
-  }, [sorting, navigate]);
+  };
 
-  // Update URL when search changes
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          search: globalFilter,
-          page: 1, // Reset to first page on search
-        }),
-      });
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [globalFilter, navigate]);
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <div className="h-8 w-32 bg-gray-100 rounded-lg animate-pulse mb-2"></div>
-          <div className="h-4 w-64 bg-gray-100 rounded animate-pulse"></div>
-        </div>
-        <div className="bg-white border border-gray-200 rounded-3xl p-6">
-          <div className="space-y-4">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center space-x-4">
-                <div className="flex-1 space-y-2">
-                  <div className="h-4 w-48 bg-gray-100 rounded animate-pulse"></div>
-                  <div className="h-3 w-32 bg-gray-100 rounded animate-pulse"></div>
-                </div>
-                <div className="h-8 w-24 bg-gray-100 rounded-lg animate-pulse"></div>
-              </div>
-            ))}
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("name", {
+        header: "Form",
+        cell: (info) => (
+          <div className="min-w-0">
+            <div className="font-medium text-ink-950">{info.getValue()}</div>
+            <div className="mt-0.5 font-mono text-xs text-ink-400">
+              {info.row.original.id}
+            </div>
           </div>
-        </div>
-      </div>
-    );
-  }
+        ),
+      }),
+      columnHelper.accessor("userName", {
+        header: "Owner",
+        cell: (info) => (
+          // Stops the row handler underneath: the row opens the form, this
+          // opens the account that owns it, and they are different places.
+          <span onClick={(e) => e.stopPropagation()}>
+            <Link
+              to="/admin/users/$userId"
+              params={{ userId: info.row.original.userId }}
+              className="text-ink-600 underline decoration-ink-300 underline-offset-2 transition-colors hover:text-accent-600 hover:decoration-accent-500"
+            >
+              {info.getValue() || "Unknown"}
+            </Link>
+          </span>
+        ),
+      }),
+      columnHelper.accessor("submissionCount", {
+        header: "Submissions",
+        cell: (info) => (
+          // A count is a number, not a status, so it reads as one -- the pill
+          // this replaces implied a state the value does not have.
+          <span className="font-medium text-ink-950 tabular-nums">
+            {(info.getValue() ?? 0).toLocaleString()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor("createdAt", {
+        header: "Created",
+        cell: (info) => (
+          <span className="whitespace-nowrap text-ink-500 tabular-nums">
+            {moment(info.getValue()).format("MMM D, YYYY")}
+          </span>
+        ),
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "",
+        cell: (info) => {
+          const form = info.row.original;
+          return (
+            <div
+              className="flex items-center justify-end gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Link to="/app/forms/$id" params={{ id: form.id }}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  aria-label={`Open ${form.name}`}
+                  icon={<Icon icon={ViewIcon} size={15} />}
+                />
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-tint-rose-ink hover:bg-tint-rose"
+                onClick={() => setDeleting(form)}
+                aria-label={`Delete ${form.name}`}
+                icon={<Icon icon={Delete02Icon} size={15} />}
+              />
+            </div>
+          );
+        },
+        enableSorting: false,
+      }),
+    ],
+    [],
+  );
 
   return (
-    <div className="space-y-6">
-      <div className="sm:flex sm:items-center justify-between">
-        <div className="sm:flex-auto">
-          <h2 className="text-2xl font-bold text-gray-900">Forms</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            View and manage all forms created by users.
+    <div>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink-950">
+          Forms
+        </h1>
+        <p className="mt-1 text-sm text-ink-600">
+          Every form on the platform, and who owns it.
+        </p>
+      </div>
+
+      <AdminTable
+        data={forms ?? []}
+        columns={columns}
+        isLoading={isLoading}
+        searchPlaceholder="Search by form or owner"
+        searchLabel="Search forms"
+        emptyMessage={(query) =>
+          query ? `No form matches "${query}".` : "No forms yet."
+        }
+        searchParams={searchParams}
+        onSearchParamsChange={(next) =>
+          navigate({ search: (prev) => ({ ...prev, ...next }) })
+        }
+        onRowClick={(form) => navigate({ to: "/app/forms/$id", params: { id: form.id } })}
+        rowLabel={(form) => `Open ${form.name}`}
+      />
+
+      <Modal
+        isOpen={deleting !== null}
+        onClose={() => setDeleting(null)}
+        label="Delete this form?"
+      >
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-ink-950">
+            Delete this form?
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            <span className="font-medium text-ink-950">{deleting?.name}</span>{" "}
+            and its{" "}
+            {(deleting?.submissionCount ?? 0).toLocaleString()} submission
+            {deleting?.submissionCount === 1 ? "" : "s"} belong to{" "}
+            {deleting?.userName || "another account"}. Its endpoint stops
+            accepting posts and this cannot be undone.
           </p>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="bg-white border border-gray-200 rounded-2xl p-4">
-        <div className="flex items-center justify-between gap-4">
-          <input
-            type="text"
-            placeholder="Search forms..."
-            value={globalFilter ?? ""}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <select
-            value={searchParams.pageSize}
-            onChange={(e) => {
-              navigate({
-                search: (prev) => ({
-                  ...prev,
-                  pageSize: Number(e.target.value),
-                  page: 1,
-                }),
-              });
-            }}
-            className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value={10}>10 per page</option>
-            <option value={25}>25 per page</option>
-            <option value={50}>50 per page</option>
-            <option value={100}>100 per page</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-3xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      scope="col"
-                      className="py-3.5 pl-4 pr-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500 sm:pl-6"
-                    >
-                      {header.isPlaceholder ? null : (
-                        <div
-                          className={
-                            header.column.getCanSort()
-                              ? "flex items-center space-x-1 cursor-pointer select-none hover:text-gray-700"
-                              : ""
-                          }
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          <span>
-                            {flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                          </span>
-                          {header.column.getCanSort() && (
-                            <span className="ml-1">
-                              {header.column.getIsSorted() === "asc" ? (
-                                <Icon icon={ArrowUp01Icon} size={14} />
-                              ) : header.column.getIsSorted() === "desc" ? (
-                                <Icon icon={ArrowDown01Icon} size={14} />
-                              ) : (
-                                <span className="text-gray-300">⇅</span>
-                              )}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {table.getRowModel().rows.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-12 text-center text-gray-500">
-                    No forms found
-                  </td>
-                </tr>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        key={cell.id}
-                        className="whitespace-nowrap py-4 pl-4 pr-3 text-sm sm:pl-6"
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 sm:px-6">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing{" "}
-              <span className="font-medium">
-                {table.getRowModel().rows.length === 0
-                  ? 0
-                  : table.getState().pagination.pageIndex *
-                      table.getState().pagination.pageSize +
-                    1}
-              </span>{" "}
-              to{" "}
-              <span className="font-medium">
-                {Math.min(
-                  (table.getState().pagination.pageIndex + 1) *
-                    table.getState().pagination.pageSize,
-                  table.getFilteredRowModel().rows.length,
-                )}
-              </span>{" "}
-              of{" "}
-              <span className="font-medium">
-                {table.getFilteredRowModel().rows.length}
-              </span>{" "}
-              results
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <span className="text-sm text-gray-700">
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
-            </div>
+          <div className="mt-6 flex justify-end gap-3">
+            <Button variant="ghost" onClick={() => setDeleting(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={confirmDelete}
+              isLoading={isDeleting}
+            >
+              Delete form
+            </Button>
           </div>
         </div>
-      </div>
+      </Modal>
     </div>
   );
 }

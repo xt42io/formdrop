@@ -1,7 +1,6 @@
 import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { PlanGateProvider } from "@formdrop/ui";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon, PlanGateProvider } from "@formdrop/ui";
 import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { Sidebar } from "@/components/sidebar";
 import { useIsPro } from "@/hooks/use-is-pro";
@@ -65,7 +64,7 @@ function RouteComponent() {
               aria-expanded={navOpen}
               className="cursor-pointer rounded-lg p-1.5 text-ink-600 transition-colors hover:bg-ink-100 hover:text-ink-950 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
             >
-              <HugeiconsIcon icon={Menu01Icon} size={20} />
+              <Icon icon={Menu01Icon} size={20} />
             </button>
             <img
               src="/purple_wordmark.png"

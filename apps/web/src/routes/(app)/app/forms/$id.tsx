@@ -8,10 +8,9 @@ import { motion } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
-import { Button } from "@formdrop/ui";
+import { Button, Icon } from "@formdrop/ui";
 import { IntegrationExamplesModal } from "@/components/integration-examples-modal";
 import { CodeIcon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 
 export const Route = createFileRoute("/(app)/app/forms/$id")({
   component: RouteComponent,
@@ -72,7 +71,7 @@ function RouteComponent() {
               onClick={() => setShowIntegrationModal(true)}
               variant="outline"
               size="sm"
-              icon={<HugeiconsIcon icon={CodeIcon} size={16} />}
+              icon={<Icon icon={CodeIcon} size={16} />}
             >
               Integration Guide
             </Button>

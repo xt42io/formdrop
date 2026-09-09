@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { authClient } from "@/lib/auth-client";
 
@@ -38,7 +38,7 @@ export function CTA() {
             className="group mt-8 inline-flex items-center gap-1.5 rounded-lg bg-accent-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-600"
           >
             {session ? "Go to Dashboard" : "Create Free Account"}
-            <HugeiconsIcon
+            <Icon
               icon={ArrowRight01Icon}
               size={16}
               className="transition-transform group-hover:translate-x-0.5"

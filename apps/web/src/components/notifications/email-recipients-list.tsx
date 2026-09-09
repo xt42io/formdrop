@@ -76,7 +76,7 @@ export function EmailRecipientsList({
               </div>
             </div>
           </div>
-          <div className="text-xs text-ink-400 italic px-3">Always enabled</div>
+          <div className="text-xs text-ink-500 italic px-3">Always enabled</div>
         </div>
 
         {/* Other Recipients */}

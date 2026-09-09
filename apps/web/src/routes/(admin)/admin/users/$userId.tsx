@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Button } from "@formdrop/ui";
+import { Button, Icon } from "@formdrop/ui";
 import {
   ArrowLeft01Icon,
   UserIcon,
@@ -10,7 +10,6 @@ import {
   CheckmarkCircle02Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   createColumnHelper,
   flexRender,
@@ -167,7 +166,7 @@ function AdminUserDetail() {
           }}
         >
           <Button variant="outline" size="sm">
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
+            <Icon icon={ArrowLeft01Icon} size={16} />
             Back to Users
           </Button>
         </Link>
@@ -192,7 +191,7 @@ function AdminUserDetail() {
           }}
         >
           <Button variant="outline" size="sm">
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={16} />
+            <Icon icon={ArrowLeft01Icon} size={16} />
             Back to Users
           </Button>
         </Link>
@@ -203,7 +202,7 @@ function AdminUserDetail() {
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-              <HugeiconsIcon icon={UserIcon} size={32} className="text-white" />
+              <Icon icon={UserIcon} size={32} className="text-white" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
@@ -219,11 +218,7 @@ function AdminUserDetail() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-2xl">
-            <HugeiconsIcon
-              icon={Mail01Icon}
-              size={20}
-              className="text-gray-400"
-            />
+            <Icon icon={Mail01Icon} size={20} className="text-gray-400" />
             <div>
               <div className="text-xs text-gray-500 uppercase tracking-wide">
                 Email
@@ -233,7 +228,7 @@ function AdminUserDetail() {
           </div>
 
           <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-2xl">
-            <HugeiconsIcon
+            <Icon
               icon={user.emailVerified ? CheckmarkCircle02Icon : Cancel01Icon}
               size={20}
               className={
@@ -251,11 +246,7 @@ function AdminUserDetail() {
           </div>
 
           <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-2xl">
-            <HugeiconsIcon
-              icon={Calendar03Icon}
-              size={20}
-              className="text-gray-400"
-            />
+            <Icon icon={Calendar03Icon} size={20} className="text-gray-400" />
             <div>
               <div className="text-xs text-gray-500 uppercase tracking-wide">
                 Joined
@@ -267,7 +258,7 @@ function AdminUserDetail() {
           </div>
 
           <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-2xl">
-            <HugeiconsIcon
+            <Icon
               icon={user.banned ? Cancel01Icon : CheckmarkCircle02Icon}
               size={20}
               className={user.banned ? "text-red-500" : "text-green-500"}

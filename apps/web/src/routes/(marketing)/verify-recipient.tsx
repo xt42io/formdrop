@@ -5,7 +5,7 @@ import {
   useSearch,
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   Tick02Icon,
   AlertCircleIcon,
@@ -125,7 +125,7 @@ function RouteComponent() {
         <span
           className={`inline-flex h-14 w-14 items-center justify-center rounded-2xl ${state.tint}`}
         >
-          <HugeiconsIcon
+          <Icon
             icon={state.icon}
             size={26}
             className={status === "loading" ? "animate-spin" : undefined}

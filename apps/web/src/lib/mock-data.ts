@@ -415,6 +415,18 @@ const ROUTES: [RegExp, (m: RegExpMatchArray, cfg: MockConfig) => unknown][] = [
     },
   ],
   [/^\/api\/admin\/users$/, () => ({ users: ADMIN_USERS })],
+  [
+    /^\/api\/admin\/settings\/clear-old-submissions$/,
+    // Serves the GET's shape. The POST goes through the same route table, so
+    // it gets this too -- harmless, since the page reads deletedCount from a
+    // separate call and the fixture has no rows to remove.
+    () => ({
+      retentionDays: 90,
+      cutoff: daysAgo(90),
+      count: 128,
+      deletedCount: 128,
+    }),
+  ],
   [/^\/api\/forms$/, () => ({ forms: FORMS })],
   [/^\/api\/api-keys$/, () => ({ keys: API_KEYS })],
   [/^\/api\/subscription$/, () => ({ subscription: SUBSCRIPTION })],

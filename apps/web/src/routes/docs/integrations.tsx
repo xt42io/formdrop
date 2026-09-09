@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import { ArtTile } from "@/components/docs/docs-art";
 import {
   Message01Icon,
@@ -43,7 +43,7 @@ function IntegrationsDocs() {
           <div className="rounded-2xl border border-ink-200 p-6 transition-colors hover:border-accent-300 hover:bg-accent-50/30">
             <div className="flex items-center gap-4 mb-4">
               <ArtTile>
-                <HugeiconsIcon icon={Notification01Icon} size={18} />
+                <Icon icon={Notification01Icon} />
               </ArtTile>
               <h3 className="font-semibold text-lg">Email Notifications</h3>
             </div>
@@ -56,7 +56,7 @@ function IntegrationsDocs() {
           <div className="rounded-2xl border border-ink-200 p-6 transition-colors hover:border-accent-300 hover:bg-accent-50/30">
             <div className="flex items-center gap-4 mb-4">
               <ArtTile>
-                <HugeiconsIcon icon={Message01Icon} size={18} />
+                <Icon icon={Message01Icon} />
               </ArtTile>
               <h3 className="font-semibold text-lg">Slack & Discord</h3>
             </div>
@@ -78,7 +78,7 @@ function IntegrationsDocs() {
           <div className="rounded-2xl border border-ink-200 p-6 transition-colors hover:border-accent-300 hover:bg-accent-50/30">
             <div className="flex items-center gap-4 mb-4">
               <ArtTile>
-                <HugeiconsIcon icon={TableIcon} size={18} />
+                <Icon icon={TableIcon} />
               </ArtTile>
               <h3 className="font-semibold text-lg">Google Sheets</h3>
             </div>
@@ -94,7 +94,7 @@ function IntegrationsDocs() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <ArtTile>
-                  <HugeiconsIcon icon={WebhookIcon} size={18} />
+                  <Icon icon={WebhookIcon} />
                 </ArtTile>
                 <h3 className="text-base font-semibold text-ink-500">
                   Webhooks
@@ -114,7 +114,7 @@ function IntegrationsDocs() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <ArtTile>
-                  <HugeiconsIcon icon={TableIcon} size={18} />
+                  <Icon icon={TableIcon} />
                 </ArtTile>
                 <h3 className="text-base font-semibold text-ink-500">
                   Airtable

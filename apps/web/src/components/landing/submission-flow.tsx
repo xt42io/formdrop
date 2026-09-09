@@ -62,7 +62,7 @@ export function SubmissionFlow() {
           <div className="flex flex-col rounded-card border border-ink-100 bg-canvas p-6 sm:col-span-2">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-ink-300" />
-              <span className="text-xs font-medium text-ink-400">
+              <span className="text-xs font-medium text-ink-500">
                 your-site.com/contact
               </span>
             </div>
@@ -85,7 +85,7 @@ export function SubmissionFlow() {
                 className={`mt-1 flex items-center justify-center rounded-xl py-2.5 text-sm font-semibold transition-colors ${
                   filled
                     ? "bg-accent-500 text-white"
-                    : "bg-ink-200 text-ink-400"
+                    : "bg-ink-200 text-ink-600"
                 }`}
               >
                 Send message
@@ -94,7 +94,7 @@ export function SubmissionFlow() {
               {/* the one line of integration, filling what would otherwise be
                   dead space next to the taller table */}
               <div className="mt-auto pt-5">
-                <p className="mb-2 text-[11px] font-medium tracking-wide text-ink-400 uppercase">
+                <p className="mb-2 text-[11px] font-medium tracking-wide text-ink-500 uppercase">
                   Form action
                 </p>
                 <code className="block overflow-x-auto rounded-lg border border-ink-100 bg-white px-3 py-2 text-[11px] whitespace-nowrap text-ink-600">
@@ -111,7 +111,7 @@ export function SubmissionFlow() {
                 <p className="text-sm font-semibold text-ink-900">
                   Contact form
                 </p>
-                <p className="text-xs text-ink-400">Submissions</p>
+                <p className="text-xs text-ink-500">Submissions</p>
               </div>
               <span className="rounded-full bg-accent-50 px-2.5 py-1 text-xs font-medium text-accent-700">
                 {landed ? "7 today" : "6 today"}
@@ -200,7 +200,7 @@ function Field({
 }) {
   return (
     <div>
-      <p className="mb-1.5 text-[11px] font-medium tracking-wide text-ink-400 uppercase">
+      <p className="mb-1.5 text-[11px] font-medium tracking-wide text-ink-500 uppercase">
         {label}
       </p>
       <div
@@ -246,10 +246,10 @@ function Row({
         </span>
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-ink-900">{name}</p>
-          <p className="truncate text-xs text-ink-400">{email}</p>
+          <p className="truncate text-xs text-ink-500">{email}</p>
         </div>
       </div>
-      <span className="shrink-0 text-xs text-ink-400">{time}</span>
+      <span className="shrink-0 text-xs text-ink-500">{time}</span>
     </div>
   );
 }
@@ -264,7 +264,7 @@ function Caption({
   return (
     <span
       className={`transition-colors duration-300 ${
-        active ? "font-medium text-ink-800" : "text-ink-400"
+        active ? "font-medium text-ink-800" : "text-ink-500"
       }`}
     >
       {children}

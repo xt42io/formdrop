@@ -100,6 +100,7 @@ function AdminUsers() {
     () => [
       columnHelper.accessor("name", {
         header: "Name",
+        size: 180,
         cell: (info) => (
           <span className="font-medium text-ink-950">
             {info.getValue() || "Unnamed"}
@@ -108,10 +109,12 @@ function AdminUsers() {
       }),
       columnHelper.accessor("email", {
         header: "Email",
+        size: 220,
         cell: (info) => <span className="text-ink-600">{info.getValue()}</span>,
       }),
       columnHelper.accessor("role", {
         header: "Role",
+        size: 100,
         cell: (info) => (
           <Pill tone={info.getValue() === "admin" ? "accent" : "neutral"}>
             {info.getValue() || "user"}
@@ -120,6 +123,7 @@ function AdminUsers() {
       }),
       columnHelper.accessor("banned", {
         header: "Status",
+        size: 110,
         cell: (info) => (
           <Pill tone={info.getValue() ? "bad" : "good"}>
             {info.getValue() ? "Banned" : "Active"}
@@ -128,6 +132,7 @@ function AdminUsers() {
       }),
       columnHelper.accessor("createdAt", {
         header: "Joined",
+        size: 120,
         cell: (info) => (
           <span className="whitespace-nowrap text-ink-500 tabular-nums">
             {moment(info.getValue()).format("MMM D, YYYY")}
@@ -137,6 +142,7 @@ function AdminUsers() {
       columnHelper.display({
         id: "actions",
         header: "",
+        size: 100,
         cell: (info) => {
           const user = info.row.original;
           return (
@@ -194,6 +200,7 @@ function AdminUsers() {
 
       <AdminTable
         tableId="admin-users"
+        getRowId={(user) => user.id}
         data={users ?? []}
         columns={columns}
         isLoading={isLoading}

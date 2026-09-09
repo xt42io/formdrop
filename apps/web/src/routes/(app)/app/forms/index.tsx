@@ -1,10 +1,9 @@
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 import { FormsTable } from "@/components/forms-table";
 import { FormsEmptyState } from "@/components/forms-empty-state";
 import { StatStrip } from "@/components/stat-strip";
@@ -77,7 +76,7 @@ function RouteComponent() {
       </div>
       <Button
         onClick={() => setIsCreateModalOpen(true)}
-        icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
+        icon={<Icon icon={Add01Icon} size={16} />}
       >
         Create Form
       </Button>

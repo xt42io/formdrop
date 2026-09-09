@@ -229,6 +229,66 @@ const TOTAL_SUBMISSIONS = FORMS.reduce(
 type MockConfig = { url?: string; params?: Record<string, unknown> };
 
 /** Checked in order, so the more specific patterns come first. */
+/*
+ * A signed-in admin, so the admin surface can be opened without a database.
+ *
+ * (admin)/admin.tsx redirects anyone whose session role is not "admin", and
+ * with no database there is no session at all -- so the screens were
+ * unreachable even to look at. This is the same temporary scaffolding as the
+ * rest of this file and disappears with it.
+ */
+const MOCK_USER = {
+  id: "mock-user",
+  name: "Ada Lovelace",
+  email: "ada@formdrop.co",
+  emailVerified: true,
+  image: null,
+  role: "admin",
+  banned: false,
+  banReason: null,
+  banExpires: null,
+  createdAt: daysAgo(400),
+  updatedAt: daysAgo(2),
+};
+
+const MOCK_SESSION = {
+  session: {
+    id: "mock-session",
+    token: "mock",
+    userId: MOCK_USER.id,
+    expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
+    createdAt: daysAgo(1),
+    updatedAt: daysAgo(1),
+    ipAddress: "127.0.0.1",
+    userAgent: "mock",
+  },
+  user: MOCK_USER,
+};
+
+const ADMIN_USERS = [
+  { ...MOCK_USER, formCount: 4, submissionCount: 1811 },
+  {
+    ...MOCK_USER,
+    id: "u2",
+    name: "Grace Hopper",
+    email: "grace@example.com",
+    role: "user",
+    formCount: 2,
+    submissionCount: 318,
+  },
+  {
+    ...MOCK_USER,
+    id: "u3",
+    name: "Alan Turing",
+    email: "alan@example.com",
+    role: "user",
+    banned: true,
+    banReason: "Spam",
+    formCount: 1,
+    submissionCount: 12,
+  },
+];
+
 const ROUTES: [RegExp, (m: RegExpMatchArray, cfg: MockConfig) => unknown][] = [
   [
     /^\/api\/forms\/([^/]+)\/submissions$/,
@@ -273,6 +333,77 @@ const ROUTES: [RegExp, (m: RegExpMatchArray, cfg: MockConfig) => unknown][] = [
         FORMS[0]) as unknown as FormDetail,
     }),
   ],
+  [
+    /^\/api\/admin\/stats$/,
+    // Shaped like the handler: totals and charts, not a flat object. The
+    // chart rows use { date, count } and { formName, count }, which is what
+    // packages/core/data/admin.ts selects.
+    () => ({
+      totals: {
+        users: ADMIN_USERS.length,
+        forms: FORMS.length,
+        submissions: FORMS.reduce((n, f) => n + f.submissionCount, 0),
+      },
+      charts: {
+        usersOverTime: series(30, 2).map((d) => ({
+          date: d.date,
+          count: d.submissions,
+        })),
+        submissionsOverTime: series(30, 40).map((d) => ({
+          date: d.date,
+          count: d.submissions,
+        })),
+        topForms: FORMS.slice(0, 5).map((f) => ({
+          formId: f.id,
+          formName: f.name,
+          count: f.submissionCount,
+        })),
+      },
+    }),
+  ],
+  [
+    /^\/api\/admin\/forms$/,
+    () => ({
+      forms: FORMS.map((f) => ({
+        ...f,
+        userName: MOCK_USER.name,
+        userEmail: MOCK_USER.email,
+      })),
+    }),
+  ],
+  [
+    /^\/api\/admin\/submissions$/,
+    () => ({
+      submissions: submissionsFor(FORMS[0].id, 40).map((row) => ({
+        ...row,
+        formName: FORMS[0].name,
+      })),
+    }),
+  ],
+  [
+    /^\/api\/admin\/users\/([^/]+)$/,
+    (m) => {
+      const user = ADMIN_USERS.find((u) => u.id === m[1]) ?? ADMIN_USERS[0];
+      return {
+        user: {
+          ...user,
+          forms: FORMS.slice(0, 2).map((f) => ({
+            id: f.id,
+            name: f.name,
+            createdAt: f.createdAt,
+            submissionCount: f.submissionCount,
+          })),
+          recentSubmissions: submissionsFor(FORMS[0].id, 5).map((row) => ({
+            id: row.id,
+            formId: FORMS[0].id,
+            formName: FORMS[0].name,
+            createdAt: row.createdAt,
+          })),
+        },
+      };
+    },
+  ],
+  [/^\/api\/admin\/users$/, () => ({ users: ADMIN_USERS })],
   [/^\/api\/forms$/, () => ({ forms: FORMS })],
   [/^\/api\/api-keys$/, () => ({ keys: API_KEYS })],
   [/^\/api\/subscription$/, () => ({ subscription: SUBSCRIPTION })],
@@ -380,6 +511,18 @@ export function installMockData(): void {
           : input.url;
     const path = new URL(raw, window.location.origin).pathname;
 
+    // Better Auth's session lookup is the one auth route that gets answered:
+    // without it useSession() is empty, and the admin layout redirects to /
+    // before any of these fixtures are ever reached. Every other /api/auth
+    // path -- sign-in, callbacks -- still goes to the real handler.
+    if (path === "/api/auth/get-session") {
+      await new Promise((resolve) => setTimeout(resolve, 60));
+      return new Response(JSON.stringify(MOCK_SESSION), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     if (!path.startsWith("/api/") || path.startsWith("/api/auth")) {
       return real(input, init);
     }
@@ -399,3 +542,14 @@ export function installMockData(): void {
       "fixtures, not the database.",
   );
 }
+
+/*
+ * Installed on import, not by a call the importer has to remember to make.
+ *
+ * ES module bodies run in import order, and a call placed after
+ * `import { routeTree }` runs after every route module -- including the one
+ * that constructs the Better Auth client, which fetches the session as it
+ * initialises. The patch has to exist before that, so it goes here and
+ * router.tsx imports this module first.
+ */
+installMockData();

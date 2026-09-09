@@ -15,9 +15,8 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import { Button } from "@formdrop/ui";
+import { Button, Icon } from "@formdrop/ui";
 import { ArrowUp01Icon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/(admin)/admin/submissions")({
@@ -255,12 +254,9 @@ function AdminSubmissions() {
                           {header.column.getCanSort() && (
                             <span className="ml-1">
                               {header.column.getIsSorted() === "asc" ? (
-                                <HugeiconsIcon icon={ArrowUp01Icon} size={14} />
+                                <Icon icon={ArrowUp01Icon} size={14} />
                               ) : header.column.getIsSorted() === "desc" ? (
-                                <HugeiconsIcon
-                                  icon={ArrowDown01Icon}
-                                  size={14}
-                                />
+                                <Icon icon={ArrowDown01Icon} size={14} />
                               ) : (
                                 <span className="text-gray-300">⇅</span>
                               )}

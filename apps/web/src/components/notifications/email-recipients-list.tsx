@@ -1,4 +1,3 @@
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Mail01Icon,
   Add01Icon,
@@ -15,7 +14,7 @@ import {
   useResendVerification,
 } from "@/hooks/use-recipient-mutations";
 
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 // Derived from the query that produces it. The local copy this replaces
 // declared the two timestamps as Date, which they are not after JSON.
 import type { Recipient } from "@/lib/app-client";
@@ -64,7 +63,7 @@ export function EmailRecipientsList({
         <div className="p-4 flex items-center justify-between bg-ink-50/50">
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-ink-100 flex items-center justify-center text-ink-500">
-              <HugeiconsIcon icon={Mail01Icon} size={16} />
+              <Icon icon={Mail01Icon} size={16} />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -129,7 +128,7 @@ export function EmailRecipientsList({
                   className="overflow-hidden"
                 >
                   <div className="flex items-center gap-2 px-3 py-2 bg-tint-rose text-tint-rose-ink rounded-xl text-xs font-medium border border-tint-rose">
-                    <HugeiconsIcon icon={Alert01Icon} size={16} />
+                    <Icon icon={Alert01Icon} size={16} />
                     <p>{addRecipientMutation.error.message}</p>
                   </div>
                 </motion.div>
@@ -142,7 +141,7 @@ export function EmailRecipientsList({
             variant="secondary"
             size="md"
             className="rounded-3xl"
-            icon={<HugeiconsIcon icon={Add01Icon} size={16} />}
+            icon={<Icon icon={Add01Icon} size={16} />}
             requiresPro={recipients.length >= 2}
           >
             Add Recipient
@@ -160,7 +159,7 @@ export function EmailRecipientsList({
         <div className="p-6">
           <div className="mb-4 flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-tint-rose text-tint-rose-ink">
-              <HugeiconsIcon icon={AlertCircleIcon} size={20} />
+              <Icon icon={AlertCircleIcon} size={20} />
             </div>
             <h3 className="text-lg font-semibold text-ink-950">
               Remove recipient?

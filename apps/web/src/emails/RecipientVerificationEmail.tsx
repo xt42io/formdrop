@@ -9,6 +9,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import { palette } from "@formdrop/ui";
 
 interface RecipientVerificationEmailProps {
   verificationLink: string;
@@ -51,21 +52,27 @@ export const RecipientVerificationEmail = ({
   </Html>
 );
 
+/*
+ * Inline style objects with literal values, not classes and not custom
+ * properties: this renders in mail clients, where `var()` is unsupported and a
+ * class may never arrive. The values come from packages/ui so the email still
+ * follows the brand when the ramp moves.
+ */
 const main = {
-  backgroundColor: "#f6f9fc",
+  backgroundColor: palette["ink-50"],
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
 };
 
 const container = {
-  backgroundColor: "#ffffff",
+  backgroundColor: "white",
   margin: "0 auto",
   padding: "20px 0 48px",
   marginBottom: "64px",
 };
 
 const h1 = {
-  color: "#6f63e4",
+  color: palette["accent-500"],
   fontSize: "24px",
   fontWeight: "bold",
   margin: "40px 0",
@@ -74,7 +81,7 @@ const h1 = {
 };
 
 const text = {
-  color: "#333",
+  color: palette["ink-800"],
   fontSize: "16px",
   lineHeight: "26px",
   margin: "16px 40px",
@@ -86,9 +93,9 @@ const buttonContainer = {
 };
 
 const button = {
-  backgroundColor: "#6f63e4",
+  backgroundColor: palette["accent-500"],
   borderRadius: "8px",
-  color: "#fff",
+  color: "white",
   fontSize: "16px",
   fontWeight: "bold",
   textDecoration: "none",
@@ -98,7 +105,7 @@ const button = {
 };
 
 const link = {
-  color: "#6f63e4",
+  color: palette["accent-500"],
   fontSize: "14px",
   textDecoration: "underline",
   margin: "16px 40px",
@@ -106,7 +113,7 @@ const link = {
 };
 
 const footer = {
-  color: "#8898aa",
+  color: palette["ink-500"],
   fontSize: "12px",
   lineHeight: "16px",
   margin: "16px 40px",

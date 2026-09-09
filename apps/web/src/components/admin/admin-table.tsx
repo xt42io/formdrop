@@ -9,6 +9,7 @@ import {
   type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
+  type VisibilityState,
 } from "@tanstack/react-table";
 import { Button, Icon, Select } from "@formdrop/ui";
 import {
@@ -16,6 +17,11 @@ import {
   ArrowUp01Icon,
   UnfoldMoreIcon,
 } from "@hugeicons/core-free-icons";
+import {
+  ColumnsMenu,
+  readColumnVisibility,
+  writeColumnVisibility,
+} from "./columns-menu";
 
 /**
  * The cross-tenant table (PRD 4.6).
@@ -40,6 +46,11 @@ export interface AdminTableSearch {
 }
 
 export interface AdminTableProps<T> {
+  /**
+   * Namespaces the hidden-columns preference. Each table remembers its own --
+   * hiding "Payload" on submissions should not hide anything on forms.
+   */
+  tableId: string;
   data: T[];
   // `any` is TanStack's own column value type; narrowing it here would mean
   // every caller declaring a union of its cell types for no gain.
@@ -60,6 +71,7 @@ export interface AdminTableProps<T> {
 }
 
 export function AdminTable<T>({
+  tableId,
   data,
   columns,
   isLoading,
@@ -76,6 +88,14 @@ export function AdminTable<T>({
     { id: searchParams.sortBy, desc: searchParams.sortOrder === "desc" },
   ]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+
+  // Read in an effect, not during render: this is localStorage and the server
+  // has none, so reading inline would hydrate-mismatch for anyone who has
+  // hidden a column.
+  useEffect(() => {
+    setColumnVisibility(readColumnVisibility(tableId));
+  }, [tableId]);
 
   const table = useReactTable({
     data,
@@ -87,6 +107,7 @@ export function AdminTable<T>({
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
       globalFilter,
       pagination: {
         pageIndex: searchParams.page - 1,
@@ -95,6 +116,12 @@ export function AdminTable<T>({
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: (updater) => {
+      const next =
+        typeof updater === "function" ? updater(columnVisibility) : updater;
+      setColumnVisibility(next);
+      writeColumnVisibility(tableId, next);
+    },
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: (updater) => {
       const next =
@@ -111,21 +138,38 @@ export function AdminTable<T>({
     },
   });
 
-  // Mirror sorting into the URL, so a sorted view can be linked.
+  /*
+   * Mirror sorting into the URL, so a sorted view can be linked.
+   *
+   * The guard is the whole point. Both of these effects run on mount, and on
+   * mount the state they are mirroring was initialised *from* the URL -- so
+   * without it they push a history entry describing the page you are already
+   * on. Landing on the users table cost four entries between them, which meant
+   * four presses of Back to leave a page you had visited once.
+   */
   useEffect(() => {
     if (sorting.length === 0) return;
-    onSearchParamsChange({
-      sortBy: sorting[0].id,
-      sortOrder: sorting[0].desc ? "desc" : "asc",
-    });
+
+    const sortBy = sorting[0].id;
+    const sortOrder = sorting[0].desc ? "desc" : "asc";
+    if (
+      sortBy === searchParams.sortBy &&
+      sortOrder === searchParams.sortOrder
+    ) {
+      return;
+    }
+
+    onSearchParamsChange({ sortBy, sortOrder });
     // onSearchParamsChange is rebuilt each render by the caller's navigate
     // closure; depending on it would loop.
     // eslint-disable-next-line
   }, [sorting]);
 
   // Debounced, because this runs on every keystroke and each one is a
-  // navigation.
+  // navigation. Same no-op guard, for the same reason.
   useEffect(() => {
+    if ((globalFilter ?? "") === searchParams.search) return;
+
     const timer = setTimeout(() => {
       onSearchParamsChange({ search: globalFilter, page: 1 });
     }, 300);
@@ -177,25 +221,27 @@ export function AdminTable<T>({
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="w-full min-w-0 rounded-xl border border-ink-200 px-3 py-1.5 text-sm text-ink-950 transition-colors focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20 focus:outline-none sm:w-64"
         />
-        <Select
-          label="Rows per page"
-          value={searchParams.pageSize}
-          options={[10, 25, 50, 100].map((n) => ({
-            value: n,
-            label: `${n} per page`,
-          }))}
-          onChange={(nextSize) =>
-            onSearchParamsChange({ pageSize: nextSize, page: 1 })
-          }
-          className="w-auto shrink-0"
-        />
+        <div className="flex items-center gap-2">
+          <ColumnsMenu table={table} />
+          <Select
+            label="Rows per page"
+            value={searchParams.pageSize}
+            options={[10, 25, 50, 100].map((n) => ({
+              value: n,
+              label: `${n} per page`,
+            }))}
+            onChange={(nextSize) =>
+              onSearchParamsChange({ pageSize: nextSize, page: 1 })
+            }
+            className="w-auto shrink-0"
+          />
+        </div>
       </div>
 
-      {/* Grows with the rows up to a ceiling, then scrolls -- the same
-          treatment the forms list has. 26rem rather than the submissions
-          table's 32rem, because this panel also carries a toolbar and a
-          pagination footer. */}
-      <div className="max-h-[26rem] overflow-auto">
+      {/* Grows with the rows up to a ceiling, then scrolls. 38rem fits ten
+          rows -- the default page size -- without cutting the last one in
+          half, which 26rem did. */}
+      <div className="max-h-[38rem] overflow-auto">
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 bg-ink-50">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -260,7 +306,10 @@ export function AdminTable<T>({
           <tbody className="divide-y divide-ink-100">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="px-4 py-12">
+                <td
+                  colSpan={table.getVisibleLeafColumns().length}
+                  className="px-4 py-12"
+                >
                   <p className="text-center text-sm text-ink-500">
                     {emptyMessage(globalFilter ?? "")}
                   </p>

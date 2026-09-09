@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   ArrowDownRight01Icon,
   ArrowUpRight01Icon,
@@ -70,10 +70,7 @@ function Delta({
     <span
       className={`inline-flex items-center gap-0.5 text-xs font-medium ${tone}`}
     >
-      <HugeiconsIcon
-        icon={up ? ArrowUpRight01Icon : ArrowDownRight01Icon}
-        size={13}
-      />
+      <Icon icon={up ? ArrowUpRight01Icon : ArrowDownRight01Icon} size={13} />
       {label}
     </span>
   );

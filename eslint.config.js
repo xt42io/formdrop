@@ -40,8 +40,8 @@ export default tseslint.config(
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
       ],
 
-      // W4: Hugeicons is the icon library. This is the rule that keeps the
-      // migration from drifting back.
+      // W4: Hugeicons is the icon library, reached through one wrapper. These
+      // are the rules that keep the migration from drifting back.
       "no-restricted-imports": [
         "error",
         {
@@ -49,11 +49,29 @@ export default tseslint.config(
             {
               name: "lucide-react",
               message:
-                "Use @hugeicons/core-free-icons with HugeiconsIcon instead — see the PRD, W4.",
+                "Use @hugeicons/core-free-icons with <Icon> from @formdrop/ui instead — see the PRD, W4.",
+            },
+            {
+              // Section 4.7 asks for size and colour defaults in a single
+              // place. They only stay there if reaching past the wrapper is
+              // an error rather than a habit -- packages/ui is exempt below,
+              // since that is where the wrapper renders.
+              name: "@hugeicons/react",
+              message:
+                "Import <Icon> from @formdrop/ui rather than HugeiconsIcon directly — it owns the size default (PRD W4.7).",
             },
           ],
         },
       ],
+    },
+  },
+
+  // The wrapper itself. Somewhere has to import HugeiconsIcon, and this is
+  // the one file allowed to -- that is the whole point of the rule above.
+  {
+    files: ["packages/ui/src/icon.tsx"],
+    rules: {
+      "no-restricted-imports": "off",
     },
   },
 

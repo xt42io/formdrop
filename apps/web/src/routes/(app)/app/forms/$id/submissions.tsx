@@ -23,11 +23,10 @@ import {
   StarIcon,
   ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CopyButton } from "@/components/copy-button";
-import { Button, Modal } from "@formdrop/ui";
+import { Button, Icon, Modal } from "@formdrop/ui";
 import { SubmissionsTable } from "@/components/submissions-table";
 
 import { useIsPro } from "@/hooks/use-is-pro";
@@ -273,7 +272,7 @@ function RouteComponent() {
                 variant="ghost"
                 size="sm"
                 className="text-accent hover:text-accent-600 font-medium p-0 h-auto hover:bg-transparent"
-                icon={<HugeiconsIcon icon={ArrowDown01Icon} size={14} />}
+                icon={<Icon icon={ArrowDown01Icon} size={14} />}
               >
                 Show {value.length - 3} more
               </Button>
@@ -323,7 +322,7 @@ function RouteComponent() {
               to="/app/forms"
               className="hover:bg-ink-100 p-2 rounded-lg transition-colors"
             >
-              <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
+              <Icon icon={ArrowLeft01Icon} />
             </Link>
             <h2 className="text-lg font-semibold">Submissions</h2>
           </div>
@@ -360,7 +359,7 @@ function RouteComponent() {
               to="/app/forms"
               className="hover:bg-ink-100 p-2 rounded-lg transition-colors"
             >
-              <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
+              <Icon icon={ArrowLeft01Icon} />
             </Link>
             <h2 className="text-lg font-semibold">Submissions</h2>
           </div>
@@ -385,7 +384,7 @@ function RouteComponent() {
             to="/app/forms"
             className="hover:bg-ink-100 p-2 rounded-lg transition-colors"
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} size={18} />
+            <Icon icon={ArrowLeft01Icon} />
           </Link>
           <h2 className="text-lg font-semibold">
             Submissions
@@ -404,7 +403,7 @@ function RouteComponent() {
               disabled={deleteMutation.isPending}
               variant="danger"
               size="sm"
-              icon={<HugeiconsIcon icon={Delete02Icon} size={18} />}
+              icon={<Icon icon={Delete02Icon} />}
             >
               Delete ({selectedSubmissionIds.length})
             </Button>
@@ -414,7 +413,7 @@ function RouteComponent() {
             variant="secondary"
             size="sm"
             className="text-ink-600 hover:bg-ink-100 border-ink-200"
-            icon={<HugeiconsIcon icon={Download01Icon} size={18} />}
+            icon={<Icon icon={Download01Icon} />}
           >
             Export
           </Button>
@@ -424,14 +423,14 @@ function RouteComponent() {
             variant={viewMode === "card" ? "primary" : "ghost"}
             size="sm"
             className={`p-2 ${viewMode === "card" ? "" : "text-ink-600 hover:bg-ink-100"}`}
-            icon={<HugeiconsIcon icon={GridIcon} size={18} />}
+            icon={<Icon icon={GridIcon} />}
           />
           <Button
             onClick={() => setViewMode("table")}
             variant={viewMode === "table" ? "primary" : "ghost"}
             size="sm"
             className={`p-2 ${viewMode === "table" ? "" : "text-ink-600 hover:bg-ink-100"}`}
-            icon={<HugeiconsIcon icon={TableIcon} size={18} />}
+            icon={<Icon icon={TableIcon} />}
           />
         </div>
       </div>
@@ -446,7 +445,7 @@ function RouteComponent() {
             variant="primary"
             size="md"
             className="rounded-xl"
-            icon={<HugeiconsIcon icon={CodeIcon} size={18} />}
+            icon={<Icon icon={CodeIcon} />}
           >
             Show Integration Guide
           </Button>
@@ -494,7 +493,7 @@ function RouteComponent() {
           <div ref={lastSubmissionElementRef} className="h-4 w-full">
             {isFetchingNextPage && (
               <div className="flex justify-center py-4">
-                <HugeiconsIcon
+                <Icon
                   icon={Loading03Icon}
                   className="animate-spin text-ink-400"
                   size={24}
@@ -541,7 +540,7 @@ function RouteComponent() {
                   variant="ghost"
                   size="sm"
                   className="hover:bg-ink-100 p-2 h-auto"
-                  icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
+                  icon={<Icon icon={Cancel01Icon} size={20} />}
                 />
               </div>
 
@@ -618,7 +617,7 @@ function RouteComponent() {
         <div className="p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-tint-rose flex items-center justify-center text-tint-rose-ink">
-              <HugeiconsIcon icon={AlertCircleIcon} size={20} />
+              <Icon icon={AlertCircleIcon} size={20} />
             </div>
             <h3 className="text-lg font-semibold text-ink-950">
               Delete Submissions
@@ -649,7 +648,7 @@ function RouteComponent() {
             className="rounded-lg"
             icon={
               !deleteMutation.isPending && (
-                <HugeiconsIcon icon={Delete02Icon} size={16} />
+                <Icon icon={Delete02Icon} size={16} />
               )
             }
           >
@@ -673,7 +672,7 @@ function RouteComponent() {
               variant="ghost"
               size="sm"
               className="p-2 hover:bg-ink-100 rounded-lg h-auto"
-              icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
+              icon={<Icon icon={Cancel01Icon} size={20} />}
             />
           </div>
 
@@ -742,7 +741,7 @@ function RouteComponent() {
 
                 <div className="relative flex gap-3">
                   <div className="p-2 bg-white/10 rounded-lg h-fit shrink-0">
-                    <HugeiconsIcon
+                    <Icon
                       icon={StarIcon}
                       size={20}
                       className="text-yellow-400"
@@ -762,7 +761,7 @@ function RouteComponent() {
                       className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-white hover:text-ink-200 transition-colors"
                     >
                       Upgrade to Pro
-                      <HugeiconsIcon icon={ArrowRight01Icon} size={14} />
+                      <Icon icon={ArrowRight01Icon} size={14} />
                     </Link>
                   </div>
                 </div>
@@ -803,7 +802,7 @@ function RouteComponent() {
               variant="ghost"
               size="sm"
               className="p-2 hover:bg-ink-100 rounded-lg h-auto"
-              icon={<HugeiconsIcon icon={Cancel01Icon} size={20} />}
+              icon={<Icon icon={Cancel01Icon} size={20} />}
             />
           </div>
 
@@ -823,7 +822,7 @@ function RouteComponent() {
                 size="sm"
                 className="p-2 rounded-lg relative z-10 hover:bg-black/5 h-auto"
                 icon={
-                  <HugeiconsIcon
+                  <Icon
                     icon={Html5Icon}
                     className="text-orange-600"
                     size={24}
@@ -836,7 +835,7 @@ function RouteComponent() {
                 size="sm"
                 className="p-2 rounded-lg relative z-10 hover:bg-black/5 h-auto"
                 icon={
-                  <HugeiconsIcon
+                  <Icon
                     icon={JavaScriptIcon}
                     className="text-yellow-500"
                     size={24}

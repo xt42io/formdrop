@@ -12,7 +12,7 @@ import {
   SortingState,
   ColumnFiltersState,
 } from "@tanstack/react-table";
-import { Button } from "@formdrop/ui";
+import { Button, Icon } from "@formdrop/ui";
 import {
   UserBlock01Icon,
   Login03Icon,
@@ -20,7 +20,6 @@ import {
   ArrowUp01Icon,
   ArrowDown01Icon,
 } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/(admin)/admin/users/")({
@@ -109,7 +108,7 @@ const createColumns = () => [
           params={{ userId: info.row.original.id }}
         >
           <Button variant="outline" size="sm" title="View User">
-            <HugeiconsIcon icon={ViewIcon} size={16} />
+            <Icon icon={ViewIcon} size={16} />
           </Button>
         </Link>
         <Button
@@ -118,7 +117,7 @@ const createColumns = () => [
           onClick={() => handleImpersonate(info.row.original.id)}
           title="Impersonate User"
         >
-          <HugeiconsIcon icon={Login03Icon} size={16} />
+          <Icon icon={Login03Icon} size={16} />
         </Button>
         <Button
           variant="danger"
@@ -126,7 +125,7 @@ const createColumns = () => [
           onClick={() => handleBanUser(info.row.original.id)}
           title="Ban User"
         >
-          <HugeiconsIcon icon={UserBlock01Icon} size={16} />
+          <Icon icon={UserBlock01Icon} size={16} />
         </Button>
       </div>
     ),
@@ -334,12 +333,9 @@ function AdminUsers() {
                           {header.column.getCanSort() && (
                             <span className="ml-1">
                               {header.column.getIsSorted() === "asc" ? (
-                                <HugeiconsIcon icon={ArrowUp01Icon} size={14} />
+                                <Icon icon={ArrowUp01Icon} size={14} />
                               ) : header.column.getIsSorted() === "desc" ? (
-                                <HugeiconsIcon
-                                  icon={ArrowDown01Icon}
-                                  size={14}
-                                />
+                                <Icon icon={ArrowDown01Icon} size={14} />
                               ) : (
                                 <span className="text-gray-300">⇅</span>
                               )}

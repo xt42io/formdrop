@@ -238,10 +238,17 @@ export function AdminTable<T>({
         </div>
       </div>
 
-      {/* Grows with the rows up to a ceiling, then scrolls. 38rem fits ten
-          rows -- the default page size -- without cutting the last one in
-          half, which 26rem did. */}
-      <div className="max-h-[38rem] overflow-auto">
+      {/*
+        Grows with the rows, then scrolls.
+
+        The ceiling is the viewport minus the chrome around it -- the page
+        heading, this panel's toolbar and its pagination footer -- rather than
+        a fixed rem value. A fixed one is wrong at both ends: 38rem wasted half
+        a tall screen and still could not show 25 rows, while on a short screen
+        it pushed the pagination controls off the bottom. The floor keeps it
+        usable if the viewport is very short.
+      */}
+      <div className="max-h-[max(20rem,calc(100vh-22rem))] overflow-auto">
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 bg-ink-50">
             {table.getHeaderGroups().map((headerGroup) => (

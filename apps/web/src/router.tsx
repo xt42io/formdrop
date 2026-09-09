@@ -1,3 +1,9 @@
+// TEMPORARY, and first on purpose: it patches fetch on import, and that has
+// to happen before routeTree pulls in the module that creates the Better Auth
+// client and fetches the session. No-ops unless VITE_MOCK_DATA=1; delete this
+// line and lib/mock-data.ts to remove it.
+import "./lib/mock-data";
+
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";

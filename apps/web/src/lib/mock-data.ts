@@ -1,4 +1,3 @@
-import axios, { type AxiosInstance, type AxiosResponse } from "axios";
 import type {
   ApiKey,
   Form,
@@ -359,29 +358,42 @@ function respond(config: MockConfig) {
 /**
  * Replaces the transport, so no request leaves the browser.
  *
- * An adapter rather than an interceptor: it substitutes the whole request, so
- * there is no network call to fail first and nothing to unwind afterwards.
+ * This patches `fetch` rather than an axios adapter, because app-client is on
+ * fetch now. It still catches the admin pages, which call axios directly --
+ * axios uses the fetch adapter in the browser, so wrapping fetch reaches both
+ * without this file needing to know axios exists.
+ *
+ * Anything that is not a dashboard API path falls through to the real fetch,
+ * so auth, assets and the Vite dev channels are untouched.
  */
-export function installMockData(instance: AxiosInstance): void {
+export function installMockData(): void {
   if (!MOCK_ENABLED) return;
+  if (typeof window === "undefined") return;
 
-  const adapter = async (config: MockConfig): Promise<AxiosResponse> => {
+  const real = window.fetch.bind(window);
+
+  window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+    const raw =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.href
+          : input.url;
+    const path = new URL(raw, window.location.origin).pathname;
+
+    if (!path.startsWith("/api/") || path.startsWith("/api/auth")) {
+      return real(input, init);
+    }
+
     // A little latency, so loading and skeleton states are visible rather than
     // being skipped over entirely.
     await new Promise((resolve) => setTimeout(resolve, 120));
 
-    return {
-      data: respond(config),
+    return new Response(JSON.stringify(respond({ url: path })), {
       status: 200,
-      statusText: "OK",
-      headers: {},
-      config,
-    } as unknown as AxiosResponse;
+      headers: { "Content-Type": "application/json" },
+    });
   };
-
-  instance.defaults.adapter = adapter as never;
-  // The admin pages call the global axios export rather than this instance.
-  axios.defaults.adapter = adapter as never;
 
   console.warn(
     "[FormDrop] VITE_MOCK_DATA=1 - dashboard requests are served from " +

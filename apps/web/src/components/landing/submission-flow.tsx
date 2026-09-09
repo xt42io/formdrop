@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   CheckmarkCircle02Icon,
   Mail01Icon,
@@ -79,9 +79,7 @@ export function SubmissionFlow() {
 
               <motion.div
                 animate={
-                  reduceMotion
-                    ? undefined
-                    : { scale: step === 2 ? 0.97 : 1 }
+                  reduceMotion ? undefined : { scale: step === 2 ? 0.97 : 1 }
                 }
                 transition={{ duration: 0.18 }}
                 className={`mt-1 flex items-center justify-center rounded-xl py-2.5 text-sm font-semibold transition-colors ${
@@ -155,15 +153,11 @@ export function SubmissionFlow() {
                     transition={{ duration: 0.25 }}
                     className="flex items-center gap-2.5 rounded-xl border border-ink-200 bg-ink-950 px-3.5 py-2.5 shadow-lift"
                   >
-                    <HugeiconsIcon
-                      icon={SlackIcon}
-                      size={16}
-                      className="text-white"
-                    />
+                    <Icon icon={SlackIcon} size={16} className="text-white" />
                     <span className="text-xs font-medium text-white">
                       #leads &middot; new submission
                     </span>
-                    <HugeiconsIcon
+                    <Icon
                       icon={CheckmarkCircle02Icon}
                       size={15}
                       className="text-accent-300"
@@ -184,7 +178,7 @@ export function SubmissionFlow() {
         <Arrow />
         <Caption active={notified}>
           <span className="inline-flex items-center gap-1.5">
-            <HugeiconsIcon icon={Mail01Icon} size={14} />
+            <Icon icon={Mail01Icon} size={14} />
             Notified
           </span>
         </Caption>
@@ -245,9 +239,7 @@ function Row({
       <div className="flex min-w-0 items-center gap-3">
         <span
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
-            highlight
-              ? "bg-accent-500 text-white"
-              : "bg-ink-100 text-ink-500"
+            highlight ? "bg-accent-500 text-white" : "bg-ink-100 text-ink-500"
           }`}
         >
           {name.charAt(0)}

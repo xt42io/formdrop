@@ -26,10 +26,10 @@ function ApiDocs() {
             FormDrop uses API keys for authentication to the Management API. You
             can find your API keys in the dashboard settings.
           </p>
-          <div className="my-6 rounded-xl border border-[#f2d9a6] bg-[#fff8ea] p-4">
+          <div className="my-6 rounded-xl border border-tint-amber bg-tint-amber/30 p-4">
             <div className="flex">
               <div className="ml-3">
-                <p className="text-sm leading-relaxed text-[#8a5a00]">
+                <p className="text-sm leading-relaxed text-tint-amber-ink">
                   <span className="font-bold">Important:</span> Keep your
                   Private API Key secret. It allows full access to your forms
                   and submissions. Never expose this in client-side code.
@@ -51,7 +51,7 @@ function ApiDocs() {
           {/* Submit Form */}
           <section id="submit-form">
             <div className="flex items-center gap-3 mb-4">
-              <span className="rounded-lg bg-[#cdf0dd] px-2.5 py-1 font-mono text-xs font-bold text-[#1f6b45]">
+              <span className="rounded-lg bg-tint-green px-2.5 py-1 font-mono text-xs font-bold text-tint-green-ink">
                 POST
               </span>
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
@@ -96,7 +96,7 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* List Forms */}
           <section id="list-forms">
             <div className="flex items-center gap-3 mb-4">
-              <span className="rounded-lg bg-[#cfe2ff] px-2.5 py-1 font-mono text-xs font-bold text-[#2b4c9b]">
+              <span className="rounded-lg bg-tint-blue px-2.5 py-1 font-mono text-xs font-bold text-tint-blue-ink">
                 GET
               </span>
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
@@ -116,7 +116,7 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Get Submissions */}
           <section id="get-submissions">
             <div className="flex items-center gap-3 mb-4">
-              <span className="rounded-lg bg-[#cfe2ff] px-2.5 py-1 font-mono text-xs font-bold text-[#2b4c9b]">
+              <span className="rounded-lg bg-tint-blue px-2.5 py-1 font-mono text-xs font-bold text-tint-blue-ink">
                 GET
               </span>
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
@@ -137,7 +137,7 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Delete Form */}
           <section id="delete-form">
             <div className="flex items-center gap-3 mb-4">
-              <span className="rounded-lg bg-[#fde3dd] px-2.5 py-1 font-mono text-xs font-bold text-[#b4341f]">
+              <span className="rounded-lg bg-tint-rose px-2.5 py-1 font-mono text-xs font-bold text-tint-rose-ink">
                 DELETE
               </span>
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
@@ -158,7 +158,7 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Delete Submission */}
           <section id="delete-submission">
             <div className="flex items-center gap-3 mb-4">
-              <span className="rounded-lg bg-[#fde3dd] px-2.5 py-1 font-mono text-xs font-bold text-[#b4341f]">
+              <span className="rounded-lg bg-tint-rose px-2.5 py-1 font-mono text-xs font-bold text-tint-rose-ink">
                 DELETE
               </span>
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">
@@ -179,7 +179,7 @@ fetch('https://api.formdrop.co/f/my-form-slug', {
           {/* Bulk delete submissions */}
           <section id="delete-submissions-bulk">
             <div className="flex items-center gap-3 mb-4">
-              <span className="rounded-lg bg-[#fde3dd] px-2.5 py-1 font-mono text-xs font-bold text-[#b4341f]">
+              <span className="rounded-lg bg-tint-rose px-2.5 py-1 font-mono text-xs font-bold text-tint-rose-ink">
                 DELETE
               </span>
               <h2 className="text-xl font-semibold tracking-[-0.02em] text-ink-950">

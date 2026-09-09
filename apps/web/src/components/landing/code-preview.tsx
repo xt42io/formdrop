@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { Icon } from "@formdrop/ui";
 import {
   Copy01Icon,
   Html5Icon,
@@ -122,7 +122,7 @@ export function CodePreview() {
                 : "border border-transparent text-ink-500 hover:text-ink-800"
             }`}
           >
-            <HugeiconsIcon icon={SNIPPETS[key].icon} size={15} />
+            <Icon icon={SNIPPETS[key].icon} size={15} />
             {SNIPPETS[key].label}
           </button>
         ))}
@@ -145,7 +145,7 @@ export function CodePreview() {
               aria-label="Copy snippet"
               className="flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1 text-[11.5px] font-medium text-ink-400 transition-colors hover:bg-white/5 hover:text-ink-100"
             >
-              <HugeiconsIcon
+              <Icon
                 icon={copied ? Tick02Icon : Copy01Icon}
                 size={14}
                 className={copied ? "text-accent-300" : undefined}

@@ -1,13 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { appClient, type ApiKey } from "@/lib/app-client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Add01Icon,
   AlertCircleIcon,
   Delete02Icon,
-  ViewIcon,
-  ViewOffIcon,
 } from "@hugeicons/core-free-icons";
 import moment from "moment";
 import { CopyButton } from "@/components/copy-button";
@@ -29,6 +27,16 @@ function ApiKeysPage() {
   const [newKeyName, setNewKeyName] = useState("");
   const [deletingKeyId, setDeletingKeyId] = useState<string | null>(null);
 
+  /*
+   * The plaintext of a key just created, held only in this component's state.
+   *
+   * It is the one moment it can be read: what the database has is a SHA-256
+   * digest, so nothing -- not the list endpoint, not support, not a database
+   * read -- can produce it again. Clearing this is genuinely destructive from
+   * the reader's point of view, which is why the dialog says so.
+   */
+  const [createdKey, setCreatedKey] = useState<string | null>(null);
+
   const { data: keys = [], isLoading } = useQuery({
     queryKey: ["api-keys"],
     queryFn: async () => {
@@ -49,12 +57,13 @@ function ApiKeysPage() {
       if ("error" in response) {
         throw new Error(response.error);
       }
-      return response.key;
+      return response;
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
       setIsCreating(false);
       setNewKeyName("");
+      setCreatedKey(response.plaintext);
     },
   });
 
@@ -207,6 +216,45 @@ function ApiKeysPage() {
       </Modal>
 
       {/* Delete Confirmation Modal */}
+      {/*
+        The one time the key is readable (W2: "show the plaintext once at
+        creation").
+ 
+        Deliberately not dismissible by clicking away: what is stored is a
+        SHA-256 digest, so closing this without copying loses the key for
+        good, and the only remedy is to revoke it and make another. A stray
+        click on the backdrop should not be able to cost somebody that.
+      */}
+      <Modal
+        isOpen={createdKey !== null}
+        onClose={() => {}}
+        label="Copy your new API key"
+      >
+        <div className="p-6">
+          <h3 className="text-lg font-semibold text-ink-950">
+            Copy your API key
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-ink-600">
+            This is the only time it will be shown. FormDrop stores a hash, so
+            it cannot be recovered — if you lose it, revoke this key and create
+            another.
+          </p>
+
+          <div className="mt-4 flex items-center gap-2 rounded-card border border-ink-200 bg-ink-50 p-3">
+            <code className="min-w-0 flex-1 font-mono text-xs break-all text-ink-950">
+              {createdKey}
+            </code>
+            <CopyButton text={createdKey ?? ""} className="relative shrink-0" />
+          </div>
+
+          <div className="mt-6 flex justify-end">
+            <Button onClick={() => setCreatedKey(null)}>
+              I have copied it
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       <Modal
         isOpen={deletingKeyId !== null}
         onClose={() => setDeletingKeyId(null)}
@@ -271,18 +319,10 @@ function ApiKeyRow({
   apiKey: ApiKey;
   onRevoke: () => void;
 }) {
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (!revealed) return;
-    const timer = setTimeout(() => setRevealed(false), 15_000);
-    return () => clearTimeout(timer);
-  }, [revealed]);
-
-  // Stacked below sm. The key pill is shrink-0 by necessity -- a truncated
-  // secret is useless -- so on one line it took its ~150px out of the name,
-  // which is the field that identifies the key: "Production server" came out
-  // as "Production s..." and "Staging" as "S...".
+  // Stacked below sm. The prefix pill is shrink-0, so on one line it took
+  // its ~150px out of the name -- the field that actually identifies the
+  // key: "Production server" came out as "Production s..." and "Staging" as
+  // "S...".
   return (
     <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-3 sm:px-6">
       <div className="min-w-0 sm:flex-1">
@@ -304,21 +344,21 @@ function ApiKeyRow({
         </div>
       </div>
 
+      {/*
+        The prefix, and nothing to reveal.
+ 
+        There was a Reveal toggle and a Copy button here, over the full key
+        the list endpoint returned -- which meant every page load handed back
+        a working credential for every key on the account. The stored value is
+        a hash now, so there is nothing to uncover: this is the handle that
+        tells two keys apart, and the key itself was shown once at creation.
+      */}
       <code className="w-fit max-w-full shrink-0 rounded-lg bg-ink-50 px-2.5 py-1.5 font-mono text-xs break-all text-ink-700">
-        {revealed ? apiKey.key : `${apiKey.key.slice(0, 12)}${"•".repeat(8)}`}
+        {apiKey.keyPrefix ?? "fd_live_…"}
+        {"•".repeat(8)}
       </code>
 
       <div className="-ml-2 flex shrink-0 items-center gap-1 sm:ml-0">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setRevealed((r) => !r)}
-          aria-pressed={revealed}
-          icon={<Icon icon={revealed ? ViewOffIcon : ViewIcon} size={15} />}
-        >
-          {revealed ? "Hide" : "Reveal"}
-        </Button>
-        <CopyButton text={apiKey.key} className="relative" />
         <Button
           variant="ghost"
           size="sm"

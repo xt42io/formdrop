@@ -9,14 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as DocsRouteImport } from './routes/docs'
-import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as marketingIndexRouteImport } from './routes/(marketing)/index'
 import { Route as IngestSplatRouteImport } from './routes/ingest/$'
-import { Route as DocsIntegrationsRouteImport } from './routes/docs/integrations'
-import { Route as DocsGettingStartedRouteImport } from './routes/docs/getting-started'
-import { Route as DocsFormsRouteImport } from './routes/docs/forms'
-import { Route as DocsApiRouteImport } from './routes/docs/api'
 import { Route as ApiVerifyRecipientRouteImport } from './routes/api/verify-recipient'
 import { Route as ApiSubscriptionRouteImport } from './routes/api/subscription'
 import { Route as ApiFormsRouteImport } from './routes/api/forms'
@@ -75,16 +69,6 @@ import { Route as appAppFormsIdIntegrationsRouteImport } from './routes/(app)/ap
 import { Route as appAppFormsIdAnalyticsRouteImport } from './routes/(app)/app/forms/$id/analytics'
 import { Route as ApiFormsFormIdRecipientsRecipientIdResendVerificationRouteImport } from './routes/api/forms/$formId/recipients/$recipientId/resend-verification'
 
-const DocsRoute = DocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DocsIndexRoute = DocsIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => DocsRoute,
-} as any)
 const marketingIndexRoute = marketingIndexRouteImport.update({
   id: '/(marketing)/',
   path: '/',
@@ -94,26 +78,6 @@ const IngestSplatRoute = IngestSplatRouteImport.update({
   id: '/ingest/$',
   path: '/ingest/$',
   getParentRoute: () => rootRouteImport,
-} as any)
-const DocsIntegrationsRoute = DocsIntegrationsRouteImport.update({
-  id: '/integrations',
-  path: '/integrations',
-  getParentRoute: () => DocsRoute,
-} as any)
-const DocsGettingStartedRoute = DocsGettingStartedRouteImport.update({
-  id: '/getting-started',
-  path: '/getting-started',
-  getParentRoute: () => DocsRoute,
-} as any)
-const DocsFormsRoute = DocsFormsRouteImport.update({
-  id: '/forms',
-  path: '/forms',
-  getParentRoute: () => DocsRoute,
-} as any)
-const DocsApiRoute = DocsApiRouteImport.update({
-  id: '/api',
-  path: '/api',
-  getParentRoute: () => DocsRoute,
 } as any)
 const ApiVerifyRecipientRoute = ApiVerifyRecipientRouteImport.update({
   id: '/api/verify-recipient',
@@ -423,7 +387,6 @@ const ApiFormsFormIdRecipientsRecipientIdResendVerificationRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/docs': typeof DocsRouteWithChildren
   '/admin': typeof adminAdminRouteWithChildren
   '/app': typeof appAppRouteWithChildren
   '/login': typeof marketingLoginRoute
@@ -438,13 +401,8 @@ export interface FileRoutesByFullPath {
   '/api/forms': typeof ApiFormsRouteWithChildren
   '/api/subscription': typeof ApiSubscriptionRoute
   '/api/verify-recipient': typeof ApiVerifyRecipientRoute
-  '/docs/api': typeof DocsApiRoute
-  '/docs/forms': typeof DocsFormsRoute
-  '/docs/getting-started': typeof DocsGettingStartedRoute
-  '/docs/integrations': typeof DocsIntegrationsRoute
   '/ingest/$': typeof IngestSplatRoute
   '/': typeof marketingIndexRoute
-  '/docs/': typeof DocsIndexRoute
   '/admin/forms': typeof adminAdminFormsRoute
   '/admin/settings': typeof adminAdminSettingsRoute
   '/admin/submissions': typeof adminAdminSubmissionsRoute
@@ -503,13 +461,8 @@ export interface FileRoutesByTo {
   '/api/forms': typeof ApiFormsRouteWithChildren
   '/api/subscription': typeof ApiSubscriptionRoute
   '/api/verify-recipient': typeof ApiVerifyRecipientRoute
-  '/docs/api': typeof DocsApiRoute
-  '/docs/forms': typeof DocsFormsRoute
-  '/docs/getting-started': typeof DocsGettingStartedRoute
-  '/docs/integrations': typeof DocsIntegrationsRoute
   '/ingest/$': typeof IngestSplatRoute
   '/': typeof marketingIndexRoute
-  '/docs': typeof DocsIndexRoute
   '/admin/forms': typeof adminAdminFormsRoute
   '/admin/settings': typeof adminAdminSettingsRoute
   '/admin/submissions': typeof adminAdminSubmissionsRoute
@@ -556,7 +509,6 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/docs': typeof DocsRouteWithChildren
   '/(admin)/admin': typeof adminAdminRouteWithChildren
   '/(app)/app': typeof appAppRouteWithChildren
   '/(marketing)/login': typeof marketingLoginRoute
@@ -571,13 +523,8 @@ export interface FileRoutesById {
   '/api/forms': typeof ApiFormsRouteWithChildren
   '/api/subscription': typeof ApiSubscriptionRoute
   '/api/verify-recipient': typeof ApiVerifyRecipientRoute
-  '/docs/api': typeof DocsApiRoute
-  '/docs/forms': typeof DocsFormsRoute
-  '/docs/getting-started': typeof DocsGettingStartedRoute
-  '/docs/integrations': typeof DocsIntegrationsRoute
   '/ingest/$': typeof IngestSplatRoute
   '/(marketing)/': typeof marketingIndexRoute
-  '/docs/': typeof DocsIndexRoute
   '/(admin)/admin/forms': typeof adminAdminFormsRoute
   '/(admin)/admin/settings': typeof adminAdminSettingsRoute
   '/(admin)/admin/submissions': typeof adminAdminSubmissionsRoute
@@ -625,7 +572,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/docs'
     | '/admin'
     | '/app'
     | '/login'
@@ -640,13 +586,8 @@ export interface FileRouteTypes {
     | '/api/forms'
     | '/api/subscription'
     | '/api/verify-recipient'
-    | '/docs/api'
-    | '/docs/forms'
-    | '/docs/getting-started'
-    | '/docs/integrations'
     | '/ingest/$'
     | '/'
-    | '/docs/'
     | '/admin/forms'
     | '/admin/settings'
     | '/admin/submissions'
@@ -705,13 +646,8 @@ export interface FileRouteTypes {
     | '/api/forms'
     | '/api/subscription'
     | '/api/verify-recipient'
-    | '/docs/api'
-    | '/docs/forms'
-    | '/docs/getting-started'
-    | '/docs/integrations'
     | '/ingest/$'
     | '/'
-    | '/docs'
     | '/admin/forms'
     | '/admin/settings'
     | '/admin/submissions'
@@ -757,7 +693,6 @@ export interface FileRouteTypes {
     | '/api/forms/$formId/recipients/$recipientId/resend-verification'
   id:
     | '__root__'
-    | '/docs'
     | '/(admin)/admin'
     | '/(app)/app'
     | '/(marketing)/login'
@@ -772,13 +707,8 @@ export interface FileRouteTypes {
     | '/api/forms'
     | '/api/subscription'
     | '/api/verify-recipient'
-    | '/docs/api'
-    | '/docs/forms'
-    | '/docs/getting-started'
-    | '/docs/integrations'
     | '/ingest/$'
     | '/(marketing)/'
-    | '/docs/'
     | '/(admin)/admin/forms'
     | '/(admin)/admin/settings'
     | '/(admin)/admin/submissions'
@@ -825,7 +755,6 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  DocsRoute: typeof DocsRouteWithChildren
   adminAdminRoute: typeof adminAdminRouteWithChildren
   appAppRoute: typeof appAppRouteWithChildren
   marketingLoginRoute: typeof marketingLoginRoute
@@ -862,20 +791,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/docs': {
-      id: '/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof DocsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/docs/': {
-      id: '/docs/'
-      path: '/'
-      fullPath: '/docs/'
-      preLoaderRoute: typeof DocsIndexRouteImport
-      parentRoute: typeof DocsRoute
-    }
     '/(marketing)/': {
       id: '/(marketing)/'
       path: '/'
@@ -889,34 +804,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/ingest/$'
       preLoaderRoute: typeof IngestSplatRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/docs/integrations': {
-      id: '/docs/integrations'
-      path: '/integrations'
-      fullPath: '/docs/integrations'
-      preLoaderRoute: typeof DocsIntegrationsRouteImport
-      parentRoute: typeof DocsRoute
-    }
-    '/docs/getting-started': {
-      id: '/docs/getting-started'
-      path: '/getting-started'
-      fullPath: '/docs/getting-started'
-      preLoaderRoute: typeof DocsGettingStartedRouteImport
-      parentRoute: typeof DocsRoute
-    }
-    '/docs/forms': {
-      id: '/docs/forms'
-      path: '/forms'
-      fullPath: '/docs/forms'
-      preLoaderRoute: typeof DocsFormsRouteImport
-      parentRoute: typeof DocsRoute
-    }
-    '/docs/api': {
-      id: '/docs/api'
-      path: '/api'
-      fullPath: '/docs/api'
-      preLoaderRoute: typeof DocsApiRouteImport
-      parentRoute: typeof DocsRoute
     }
     '/api/verify-recipient': {
       id: '/api/verify-recipient'
@@ -1320,24 +1207,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DocsRouteChildren {
-  DocsApiRoute: typeof DocsApiRoute
-  DocsFormsRoute: typeof DocsFormsRoute
-  DocsGettingStartedRoute: typeof DocsGettingStartedRoute
-  DocsIntegrationsRoute: typeof DocsIntegrationsRoute
-  DocsIndexRoute: typeof DocsIndexRoute
-}
-
-const DocsRouteChildren: DocsRouteChildren = {
-  DocsApiRoute: DocsApiRoute,
-  DocsFormsRoute: DocsFormsRoute,
-  DocsGettingStartedRoute: DocsGettingStartedRoute,
-  DocsIntegrationsRoute: DocsIntegrationsRoute,
-  DocsIndexRoute: DocsIndexRoute,
-}
-
-const DocsRouteWithChildren = DocsRoute._addFileChildren(DocsRouteChildren)
-
 interface adminAdminRouteChildren {
   adminAdminFormsRoute: typeof adminAdminFormsRoute
   adminAdminSettingsRoute: typeof adminAdminSettingsRoute
@@ -1491,7 +1360,6 @@ const ApiAdminFormsRouteWithChildren = ApiAdminFormsRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  DocsRoute: DocsRouteWithChildren,
   adminAdminRoute: adminAdminRouteWithChildren,
   appAppRoute: appAppRouteWithChildren,
   marketingLoginRoute: marketingLoginRoute,

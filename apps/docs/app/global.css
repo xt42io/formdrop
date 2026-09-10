@@ -32,3 +32,17 @@
   --color-fd-secondary-foreground: var(--color-ink-800);
   --color-fd-ring: var(--color-accent-500);
 }
+
+/* No shadows on the content surfaces.
+
+   Fumadocs gives cards, callouts and code blocks a border *and* a drop
+   shadow, which is the same separation done twice. On this light ground the
+   border is enough, and it matches the rest of the product -- the dashboard's
+   panels and the landing page's cards are flat with a border too.
+
+   Scoped to #nd-page, the article wrapper, so floating UI keeps its shadow:
+   a popover or a dropdown genuinely does sit above the page, and removing
+   its shadow makes it read as broken rather than clean. */
+#nd-page [class*="shadow-"] {
+  box-shadow: none;
+}

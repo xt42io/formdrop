@@ -1,4 +1,10 @@
-@import url(https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900,100italic,200italic,300italic,italic,500italic,600italic,700italic,800italic,900italic);
+/* Inter is linked from the document head, not imported here.
+
+   A CSS @import is discovered only after this file has been fetched and
+   parsed, so the font request queued behind it: three serialised round trips
+   before the hero text could paint. The head link starts in parallel with
+   this stylesheet, and a preconnect warms the connection to the font host
+   before the URL is even known. */
 @import "tailwindcss";
 
 /* Design tokens and primitive utilities live in @formdrop/ui so the dashboard,
@@ -20,7 +26,19 @@ body {
      It also left the background genuinely unpainted rather than merely white,
      so the page borrowed whatever was behind it. */
   background-color: var(--color-canvas);
-  font-family: "Inter", sans-serif;
+  /* The fallback is a real stack rather than bare `sans-serif`. With
+     display=swap the first paint uses it, so what it looks like is what
+     visitors on a slow connection actually read -- and the closer its metrics
+     are to Inter, the less the page moves when the swap happens. */
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

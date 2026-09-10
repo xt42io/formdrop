@@ -26,7 +26,31 @@ const config = defineConfig({
      * server does no work for it and a self-hosted deploy behind a plain
      * Node process gets the same bytes as one behind a CDN.
      */
-    nitro({ compressPublicAssets: { gzip: true, brotli: true } }),
+    nitro({
+      compressPublicAssets: { gzip: true, brotli: true },
+
+      /*
+       * /docs is served by apps/docs, proxied from here (D2).
+       *
+       * "Served at formdrop.co/docs via a rewrite from apps/web -- existing
+       * URLs keep working, and the docs stay on the primary domain for SEO.
+       * No subdomain."
+       *
+       * A proxy rather than a redirect, so the address bar keeps saying
+       * formdrop.co/docs and search engines see one domain. The docs app sets
+       * basePath: "/docs", so the path it receives is the path it expects and
+       * nothing has to be rewritten in flight.
+       *
+       * The origin is baked at build time, because Nitro route rules are.
+       * DOCS_ORIGIN is what a deploy sets; the default is where `npm run dev`
+       * puts the docs app locally.
+       */
+      routeRules: {
+        "/docs/**": {
+          proxy: `${process.env.DOCS_ORIGIN ?? "http://localhost:1300"}/docs/**`,
+        },
+      },
+    }),
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),

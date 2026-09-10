@@ -1,0 +1,65 @@
+---
+title: Allowed domains
+description: Restricting which sites can post to a form, and what that does and does not protect.
+---
+
+By default a form accepts a submission from anywhere. That is what makes the
+plain HTML case work: a browser posts from your site, and there is nothing to
+configure.
+
+Adding an allowlist in **Settings → Allowed domains** restricts it to the
+hosts you name.
+
+## How entries match
+
+| Entry | Matches | Does not match |
+| --- | --- | --- |
+| `example.com` | `example.com` | `www.example.com`, `example.com.attacker.test` |
+| `*.example.com` | `example.com`, `www.example.com`, `app.example.com` | `notexample.com` |
+
+An entry is matched against the **hostname**, so scheme and port are ignored
+and case does not matter.
+
+<Callout title="A bare domain does not include subdomains">
+  `example.com` matches that host and nothing else. If your site is served
+  from `www.example.com`, list `*.example.com` — or both.
+</Callout>
+
+## Requests with no origin
+
+A browser sends an `Origin` header on a cross-origin form post, and that is
+what the allowlist is checked against.
+
+**When a form has an allowlist and a request arrives with no origin at all,
+it is refused.** That is deliberate: the alternative is that anything not
+sending the header walks straight past the list, which makes the list
+decorative.
+
+The consequence is worth knowing before you turn it on: a `curl` command, a
+server-to-server post, or a mobile app that does not set an `Origin` will
+start getting `403`. If you post from your own backend, either leave the
+allowlist empty or do the restricting there.
+
+## What this protects against
+
+It stops your form endpoint being embedded on a site you do not control —
+somebody copying your HTML onto their own page and pointing the submissions
+at your dashboard.
+
+## What it does not
+
+<Callout type="warn" title="This is not authentication">
+  The `Origin` header is set by the browser, honestly, because a browser
+  enforces it. A script is not a browser: it can send whatever origin it
+  likes, or none. An allowlist raises the effort required; it does not make
+  the endpoint private.
+</Callout>
+
+If a form must only ever be submitted by something you trust, put it behind
+your own server and post from there — where you can require a session, check
+a CSRF token, or apply whatever rule actually matters to you.
+
+## Turning it off
+
+Remove every entry. An empty allowlist means allow all, which is the default
+a new form starts with.

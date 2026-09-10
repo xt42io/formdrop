@@ -2,6 +2,10 @@ import { config } from "dotenv";
 import { createApp } from "./app";
 import { startOutboxWorker } from "../worker";
 import { initSentry } from "../lib/sentry";
+import {
+  initServerAnalytics,
+  shutdownServerAnalytics,
+} from "@formdrop/analytics/server";
 
 // One .env at the repo root serves every workspace, matching what apps/web
 // does with Vite's envDir. dotenv defaults to the working directory, which
@@ -12,6 +16,17 @@ config({ path: new URL("../../../../.env", import.meta.url) });
 // Before the app is built, so a fault during startup is reported too. A
 // no-op without SENTRY_DSN, which is the normal state locally and in CI.
 initSentry();
+
+/*
+ * Server-side analytics (W6: "server events fire from the Elysia API, not
+ * just the browser").
+ *
+ * The same project key the browser uses, so a submission recorded here lands
+ * on the same person the browser identified at signup. Unlike the browser it
+ * posts to PostHog directly -- the /ingest proxy exists to get past ad
+ * blockers, which is not a problem the server has.
+ */
+initServerAnalytics({ key: process.env.VITE_POSTHOG_KEY });
 
 const port = Number(process.env.PORT ?? 1400);
 
@@ -38,6 +53,13 @@ for (const signal of ["SIGINT", "SIGTERM"] as const) {
     // Stops claiming new rows. Anything already claimed has had its next
     // attempt scheduled, so an interrupted send is retried rather than lost.
     stopWorker?.();
-    process.exit(0);
+
+    // posthog-node batches, so without a flush a shutdown drops up to ten
+    // seconds of events -- on a worker that mostly idles, potentially every
+    // event it recorded. Exit is deferred until it settles, and still
+    // happens if it does not.
+    void shutdownServerAnalytics()
+      .catch(() => {})
+      .finally(() => process.exit(0));
   });
 }

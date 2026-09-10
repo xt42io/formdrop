@@ -1,4 +1,4 @@
-import posthog from "posthog-js";
+import type { PostHog } from "posthog-js";
 
 import type { AnalyticsEvent, CaptureArgs } from "./events.ts";
 
@@ -38,7 +38,9 @@ function sanitize(properties: Record<string, unknown> | null) {
   for (const key of Object.keys(safe)) {
     if (key === "$ip") continue;
     const segments = key.replace(/^\$/, "").split(/[_.-]/);
-    if (segments.some((segment) => BLOCKED_SEGMENTS.has(segment.toLowerCase()))) {
+    if (
+      segments.some((segment) => BLOCKED_SEGMENTS.has(segment.toLowerCase()))
+    ) {
       delete safe[key];
     }
   }
@@ -46,7 +48,26 @@ function sanitize(properties: Record<string, unknown> | null) {
   return safe;
 }
 
-let ready = false;
+/*
+ * posthog-js is fetched on demand rather than bundled into the entry.
+ *
+ * It was a static import, so every visitor downloaded and parsed the library
+ * before the first paint -- on the landing page, where the only thing it does
+ * is send one event. A type-only import costs nothing at runtime, and the real
+ * module arrives in its own chunk once initAnalytics runs.
+ *
+ * Events fired before it lands are queued rather than dropped. They were
+ * dropped before: capture() returned early until init had completed, and the
+ * landing page captures landing_viewed from an effect that can beat it. That
+ * silently cost the first event of the funnel the PRD is measuring.
+ */
+let client: PostHog | null = null;
+
+/** Bounded: analytics must never be the reason a tab runs out of memory. */
+const MAX_QUEUED = 50;
+const queued: Array<[string, Record<string, unknown> | undefined]> = [];
+let identity: string | null = null;
+let starting = false;
 
 export interface AnalyticsOptions {
   /** Project key. Analytics stays off entirely when this is absent. */
@@ -57,14 +78,17 @@ export interface AnalyticsOptions {
   uiHost?: string;
 }
 
-export function initAnalytics({
+export async function initAnalytics({
   key,
   apiHost = "/ingest",
   uiHost = "https://us.posthog.com",
 }: AnalyticsOptions) {
   // No key configured is a supported state, not a failure: local and preview
   // environments run without analytics and every call below becomes a no-op.
-  if (ready || !key || typeof window === "undefined") return;
+  if (client || starting || !key || typeof window === "undefined") return;
+  starting = true;
+
+  const { default: posthog } = await import("posthog-js");
 
   posthog.init(key, {
     api_host: apiHost,
@@ -80,13 +104,26 @@ export function initAnalytics({
     sanitize_properties: sanitize,
   });
 
-  ready = true;
+  client = posthog;
+  starting = false;
+
+  // Identity first: an event flushed before it would be attributed to an
+  // anonymous id and the funnel would show two people instead of one.
+  if (identity) posthog.identify(identity);
+  for (const [event, properties] of queued.splice(0)) {
+    posthog.capture(event, properties);
+  }
 }
 
 export function capture<E extends AnalyticsEvent>(...args: CaptureArgs<E>) {
-  if (!ready) return;
   const [event, properties] = args as [E, Record<string, unknown> | undefined];
-  posthog.capture(event, properties);
+  if (client) {
+    client.capture(event, properties);
+    return;
+  }
+  // Only worth queueing if a load is actually in flight; with no key
+  // configured nothing will ever flush it.
+  if (starting && queued.length < MAX_QUEUED) queued.push([event, properties]);
 }
 
 /**
@@ -95,12 +132,13 @@ export function capture<E extends AnalyticsEvent>(...args: CaptureArgs<E>) {
  * data in the analytics store for no analytical gain.
  */
 export function identifyUser(userId: string) {
-  if (!ready) return;
-  posthog.identify(userId);
+  identity = userId;
+  client?.identify(userId);
 }
 
 /** On sign-out, so the next person on this browser is a separate person. */
 export function resetAnalytics() {
-  if (!ready) return;
-  posthog.reset();
+  identity = null;
+  queued.length = 0;
+  client?.reset();
 }

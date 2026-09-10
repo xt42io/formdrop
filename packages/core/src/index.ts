@@ -9,6 +9,11 @@
  * Data access lives behind `@formdrop/core/data`, which does need a database.
  * The split is deliberate: the import path says whether a caller can run
  * without `DATABASE_URL`.
+ *
+ * Pure also means browser-safe: apps/web bundles this entry for the client,
+ * so a Node builtin reaching it breaks that build. api-key.ts is the case in
+ * point -- it needs node:crypto, so it is used from `/data` and deliberately
+ * not re-exported here.
  */
 export { isDomainAllowed, isRequestOriginAllowed } from "./domain.ts";
 export {

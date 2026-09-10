@@ -1,5 +1,5 @@
 import { Icon, Modal } from "@formdrop/ui";
-import { CodeTabs } from "@/components/docs/code-tabs";
+import { CodeTabs } from "@/components/code-tabs";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
 import { CopyButton } from "@/components/copy-button";
 

@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Icon } from "@formdrop/ui";
 import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { AdminSidebar } from "@/components/admin-sidebar";
-import { isCallerAdmin } from "@/lib/require-admin";
+import { isCallerAdmin } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/(admin)/admin")({
   /*

@@ -40,6 +40,34 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
     links: [
+      /*
+       * Fonts before the stylesheet, and only the weights that are used.
+       *
+       * This was an @import at the top of styles.css, which cost three
+       * serialised round trips -- fetch the stylesheet, parse it, discover
+       * the font CSS, fetch that, discover the font files, fetch those --
+       * before any text could paint. The preconnects warm both hosts while
+       * the stylesheet is still downloading.
+       *
+       * display=swap is the part that moves LCP. Without it Google Fonts
+       * serves font-display: auto, which browsers treat as a block period of
+       * around three seconds where the text is simply invisible; the PRD
+       * requires the LCP element to be text, so LCP was waiting on the font
+       * rather than on the render.
+       *
+       * Four weights, not eighteen. The product uses 400, 500, 600 and 700 --
+       * the rest, and every italic, were being offered for nothing.
+       */
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,

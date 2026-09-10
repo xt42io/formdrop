@@ -1,0 +1,90 @@
+---
+title: Plain HTML
+description: A working form with no JavaScript, no build step and no dependencies.
+---
+
+This is the whole integration. It works in every browser, needs no
+JavaScript, and is the version to reach for unless you have a reason not to.
+
+```html
+<form action="https://api.formdrop.co/f/your-form-slug" method="POST">
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" required />
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" required></textarea>
+
+  <button type="submit">Send</button>
+</form>
+```
+
+Submitting navigates the browser to the API's JSON response, which is fine
+for a prototype and not what you want in production.
+
+## Staying on the page
+
+Intercept the submit and post it yourself. Still no dependencies.
+
+```html
+<form id="contact">
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button>Send</button>
+  <p id="status" role="status"></p>
+</form>
+
+<script>
+  const form = document.querySelector("#contact");
+  const status = document.querySelector("#status");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    status.textContent = "Sending…";
+
+    try {
+      const response = await fetch(
+        "https://api.formdrop.co/f/your-form-slug",
+        { method: "POST", body: new FormData(form) },
+      );
+
+      if (!response.ok) throw new Error(await response.text());
+
+      form.reset();
+      status.textContent = "Thanks — we'll be in touch.";
+    } catch {
+      // Keep what they typed. Losing a long message to a failed request is
+      // the worst thing a contact form can do.
+      status.textContent = "That did not send. Please try again.";
+    }
+  });
+</script>
+```
+
+<Callout title="Reset only on success">
+  `form.reset()` belongs inside the success path. Clearing a form whose
+  submit just failed throws away what somebody wrote.
+</Callout>
+
+## A honeypot
+
+A hidden field bots fill in and people do not. If it arrives filled, do
+nothing — and say nothing, because telling a bot it was caught teaches
+whoever runs it to leave the field alone.
+
+```html
+<div aria-hidden="true" style="position:absolute;left:-9999px">
+  <label for="_gotcha">Leave this empty</label>
+  <input id="_gotcha" name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+</div>
+```
+
+```js
+const data = new FormData(form);
+if (data.get("_gotcha")) return; // silently drop
+data.delete("_gotcha");
+```
+
+`aria-hidden` and `tabindex="-1"` matter as much as the trick: a screen
+reader user must never be offered a trap that would discard their submission.
+
+Using React? [`@formdrop/react`](/sdks/react) does this for you.

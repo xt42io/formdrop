@@ -1,0 +1,99 @@
+---
+title: Astro
+description: A form in an .astro page, with or without a client island.
+---
+
+## Without JavaScript
+
+Astro ships no JavaScript by default, and a plain form needs none.
+
+```astro title="src/pages/contact.astro"
+---
+const action = "https://api.formdrop.co/f/your-form-slug";
+---
+
+<form method="POST" action={action}>
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button>Send</button>
+</form>
+```
+
+## Staying on the page
+
+A script tag is enough — no island, no framework.
+
+```astro title="src/pages/contact.astro"
+<form id="contact">
+  <input name="email" type="email" required />
+  <textarea name="message" required></textarea>
+  <button>Send</button>
+  <p id="status" role="status"></p>
+</form>
+
+<script>
+  import { FormDrop } from "@formdrop/js";
+
+  const form = document.querySelector<HTMLFormElement>("#contact")!;
+  const status = document.querySelector("#status")!;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    status.textContent = "Sending…";
+
+    try {
+      await FormDrop.submit("your-form-slug", new FormData(form));
+      form.reset();
+      status.textContent = "Thanks.";
+    } catch {
+      status.textContent = "That did not send. Please try again.";
+    }
+  });
+</script>
+```
+
+Astro bundles the import in the `<script>` tag, so `@formdrop/js` is
+processed like any other dependency.
+
+## With a React island
+
+If you already have React in the project:
+
+```astro title="src/pages/contact.astro"
+---
+import ContactForm from "../components/ContactForm";
+---
+
+<ContactForm client:visible />
+```
+
+`client:visible` means the form only hydrates when it scrolls into view,
+which for a contact form at the bottom of a page is usually never.
+
+## Server-side, in an endpoint
+
+For validating before anything leaves your server:
+
+```ts title="src/pages/api/contact.ts"
+import type { APIRoute } from "astro";
+import { FormDrop } from "@formdrop/js";
+
+export const POST: APIRoute = async ({ request }) => {
+  const data = await request.formData();
+  const email = String(data.get("email") ?? "");
+
+  if (!email.includes("@")) {
+    return new Response("Invalid email", { status: 400 });
+  }
+
+  await FormDrop.submit("your-form-slug", {
+    email,
+    message: String(data.get("message") ?? ""),
+  });
+
+  return new Response(null, { status: 303, headers: { Location: "/thanks" } });
+};
+```
+
+This needs an adapter and `output: "server"` — a static Astro build has no
+server to run it on.

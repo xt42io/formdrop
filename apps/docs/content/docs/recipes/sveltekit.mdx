@@ -1,0 +1,116 @@
+---
+title: SvelteKit
+description: A form as a progressive-enhancement action, or straight from the browser.
+---
+
+## As a form action
+
+The idiomatic SvelteKit version. It works without JavaScript, and
+`use:enhance` upgrades it in place when JavaScript is available.
+
+```ts title="src/routes/contact/+page.server.ts"
+import { fail } from "@sveltejs/kit";
+import { FormDrop } from "@formdrop/js";
+import type { Actions } from "./$types";
+
+export const actions: Actions = {
+  default: async ({ request }) => {
+    const data = await request.formData();
+    const email = String(data.get("email") ?? "");
+
+    if (!email.includes("@")) {
+      return fail(400, { email, error: "That email does not look right." });
+    }
+
+    await FormDrop.submit("your-form-slug", {
+      email,
+      message: String(data.get("message") ?? ""),
+    });
+
+    return { success: true };
+  },
+};
+```
+
+```svelte title="src/routes/contact/+page.svelte"
+<script lang="ts">
+  import { enhance } from "$app/forms";
+  export let form;
+</script>
+
+{#if form?.success}
+  <p>Thanks — we'll be in touch.</p>
+{:else}
+  <form method="POST" use:enhance>
+    <input name="email" type="email" value={form?.email ?? ""} required />
+    <textarea name="message" required></textarea>
+    {#if form?.error}<p role="alert">{form.error}</p>{/if}
+    <button>Send</button>
+  </form>
+{/if}
+```
+
+Note the `value={form?.email}`: when validation fails, the field comes back
+filled. Making somebody retype an address because a server rejected it is
+the small cruelty of most contact forms.
+
+## Straight from the browser
+
+If you would rather not involve your server:
+
+```svelte title="src/routes/contact/+page.svelte"
+<script lang="ts">
+  import { FormDrop } from "@formdrop/js";
+
+  let sending = $state(false);
+  let sent = $state(false);
+  let error = $state<string | null>(null);
+
+  async function submit(event: SubmitEvent) {
+    event.preventDefault();
+    sending = true;
+    error = null;
+
+    try {
+      await FormDrop.submit(
+        "your-form-slug",
+        new FormData(event.currentTarget as HTMLFormElement),
+      );
+      sent = true;
+    } catch (e) {
+      error = e instanceof Error ? e.message : "That did not send.";
+    } finally {
+      sending = false;
+    }
+  }
+</script>
+
+{#if sent}
+  <p>Thanks.</p>
+{:else}
+  <form onsubmit={submit}>
+    <input name="email" type="email" required />
+    <textarea name="message" required></textarea>
+    {#if error}<p role="alert">{error}</p>{/if}
+    <button disabled={sending}>Send</button>
+  </form>
+{/if}
+```
+
+## Reading submissions
+
+Only from `+page.server.ts` or an endpoint — an API key grants full access
+to the account and must not reach the browser.
+
+```ts title="src/routes/admin/+page.server.ts"
+import { FORMDROP_API_KEY } from "$env/static/private";
+import { FormDrop } from "@formdrop/js";
+
+export async function load() {
+  const fd = new FormDrop({ apiKey: FORMDROP_API_KEY });
+  return await fd.forms.submissions.list("your-form-slug", { limit: 50 });
+}
+```
+
+`$env/static/private` is the half SvelteKit refuses to bundle into client
+code, which is the point.

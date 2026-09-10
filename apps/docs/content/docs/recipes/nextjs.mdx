@@ -1,0 +1,90 @@
+---
+title: Next.js
+description: A contact form in the App Router, as a client component or a server action.
+---
+
+## As a client component
+
+The simplest version, using the React SDK.
+
+```tsx title="app/contact/page.tsx"
+"use client";
+
+import { useFormDrop } from "@formdrop/react";
+
+export default function Contact() {
+  const { submit, isSubmitting, isSuccess, error } = useFormDrop("your-form-slug");
+
+  if (isSuccess) return <p>Thanks — we&apos;ll be in touch.</p>;
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        submit(new FormData(event.currentTarget));
+      }}
+    >
+      <input name="email" type="email" required />
+      <textarea name="message" required />
+      {error && <p role="alert">{error.message}</p>}
+      <button disabled={isSubmitting}>Send</button>
+    </form>
+  );
+}
+```
+
+## As a server action
+
+Keeps the form working without JavaScript, and lets you validate before
+anything leaves your server.
+
+```tsx title="app/contact/page.tsx"
+import { FormDrop } from "@formdrop/js";
+
+async function send(formData: FormData) {
+  "use server";
+
+  const email = String(formData.get("email") ?? "");
+  if (!email.includes("@")) return;
+
+  await FormDrop.submit("your-form-slug", {
+    email,
+    message: String(formData.get("message") ?? ""),
+  });
+}
+
+export default function Contact() {
+  return (
+    <form action={send}>
+      <input name="email" type="email" required />
+      <textarea name="message" required />
+      <button>Send</button>
+    </form>
+  );
+}
+```
+
+<Callout title="A server action is not rate limited by us per visitor">
+  Posting from your server means every submission arrives from one address.
+  The collect endpoint is limited per form rather than per IP, so this does
+  not throttle your visitors — but it also means your own validation is the
+  only thing standing between a script and your form.
+</Callout>
+
+## Reading submissions
+
+Server side only — an API key grants full access to the account.
+
+```tsx title="app/admin/page.tsx"
+import { FormDrop } from "@formdrop/js";
+
+export default async function Admin() {
+  const fd = new FormDrop({ apiKey: process.env.FORMDROP_API_KEY });
+  const { data } = await fd.forms.submissions.list("your-form-slug", { limit: 50 });
+
+  return <ul>{data.map((s) => <li key={s.id}>{String(s.payload.email)}</li>)}</ul>;
+}
+```
+
+Put the key in `.env.local` as `FORMDROP_API_KEY`, without the
+`NEXT_PUBLIC_` prefix — that prefix is what ships a value to the browser.

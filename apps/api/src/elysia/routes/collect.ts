@@ -12,6 +12,7 @@ import {
   recordSubmission,
 } from "@formdrop/core/data";
 import { errorSchema } from "../schemas";
+import { checkCollectLimit, collectLimitHeaders } from "../rate-limit";
 
 /**
  * POST /f/:slug -- the endpoint customers' own forms post to.
@@ -34,7 +35,7 @@ import { errorSchema } from "../schemas";
  */
 export const collect = new Elysia().post(
   "/f/:slug",
-  async ({ params, body, headers, server, request, status }) => {
+  async ({ params, body, headers, server, request, status, set }) => {
     const form = await findFormBySlug(params.slug);
     if (!form) return status(404, { error: "Form not found" });
 
@@ -58,6 +59,26 @@ export const collect = new Elysia().post(
 
     if (!payload || Object.keys(payload).length === 0) {
       return status(400, { error: "No submission data found" });
+    }
+
+    /*
+     * Keyed on the form, not the caller's IP (W2: "per-form on collect").
+     *
+     * Strangers posting from wherever they are is the entire purpose of this
+     * endpoint, so an IP limit would throttle a shared NAT or a corporate
+     * proxy as if it were one visitor. The form is what a flood damages, so
+     * the form is what is protected.
+     *
+     * Checked after the form resolves, so an unknown slug cannot consume a
+     * real form's allowance, and after the origin check so a blocked origin
+     * is answered on its own terms.
+     */
+    const limit = checkCollectLimit(form.id);
+    Object.assign(set.headers, collectLimitHeaders(limit));
+
+    if (!limit.allowed) {
+      set.headers["retry-after"] = String(limit.retryAfterSeconds);
+      return status(429, { error: "Too many submissions, try again shortly" });
     }
 
     const owner = await findFormOwnerEmail(form.userId);
@@ -132,6 +153,7 @@ export const collect = new Elysia().post(
       400: errorSchema,
       403: errorSchema,
       404: errorSchema,
+      429: errorSchema,
     },
   },
 );

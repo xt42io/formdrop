@@ -8,10 +8,11 @@
   "scripts": {
     "dev": "bun --watch src/elysia/server.ts",
     "start": "bun src/elysia/server.ts",
-    "build": "tsc",
+    "build": "tsc && npm run openapi",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "openapi": "tsx scripts/generate-openapi.ts"
   },
   "dependencies": {
     "@elysiajs/cors": "^1.4.2",

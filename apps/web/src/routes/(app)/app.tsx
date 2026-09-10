@@ -1,12 +1,35 @@
-import { createFileRoute, Outlet, useLocation } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Outlet,
+  redirect,
+  useLocation,
+} from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { PlanGateProvider } from "@formdrop/ui";
 import { Sidebar } from "@/components/sidebar";
 import { AppHeader } from "@/components/app-header";
 import { CommandPalette } from "@/components/command-palette";
 import { useIsPro } from "@/hooks/use-is-pro";
+import { isCallerAuthenticated } from "@/lib/route-guards";
 
 export const Route = createFileRoute("/(app)/app")({
+  /*
+   * The dashboard requires a session, checked on the server.
+   *
+   * There was no guard here at all. The mock always supplied a session, so a
+   * logged-out visitor never appeared -- and with it gone they got the shell,
+   * skeletons that never resolve and a stream of 401s, instead of the login
+   * page. The API was never exposed; every /api handler checks the session.
+   * What was missing was telling the visitor.
+   *
+   * Same shape as the admin guard: beforeLoad runs during SSR on a full page
+   * load, so nothing of the dashboard is generated for someone who cannot see
+   * it.
+   */
+  beforeLoad: async () => {
+    const { isAuthenticated } = await isCallerAuthenticated();
+    if (!isAuthenticated) throw redirect({ to: "/login" });
+  },
   component: RouteComponent,
 });
 

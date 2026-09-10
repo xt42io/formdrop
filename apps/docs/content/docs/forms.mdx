@@ -1,0 +1,137 @@
+---
+title: Forms
+description: Creating forms, wiring them up, and restricting who can post to them.
+---
+
+## Creating a form
+
+Create one from the dashboard with **Create Form**. You choose a name; the
+slug is generated for you and is what appears in the endpoint URL.
+
+## Wiring it up
+
+The simplest version is a plain HTML form with an `action`. No JavaScript, no
+build step, no key.
+
+<CodeBlockTabs>
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="html">HTML</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="react">React</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="hook">React (SDK)</CodeBlockTabsTrigger>
+  </CodeBlockTabsList>
+
+<CodeBlockTab value="html">
+
+```html
+<form action="https://api.formdrop.co/f/your-form-slug" method="POST">
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" required />
+
+  <label for="message">Message</label>
+  <textarea id="message" name="message" required></textarea>
+
+  <button type="submit">Send message</button>
+</form>
+```
+
+</CodeBlockTab>
+
+<CodeBlockTab value="react">
+
+```tsx
+export default function ContactForm() {
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+
+    await fetch("https://api.formdrop.co/f/your-form-slug", {
+      method: "POST",
+      body: data,
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="email" name="email" required />
+      <textarea name="message" required />
+      <button type="submit">Send message</button>
+    </form>
+  );
+}
+```
+
+</CodeBlockTab>
+
+<CodeBlockTab value="hook">
+
+```tsx
+import { useFormDrop } from "@formdrop/react";
+
+export default function ContactForm() {
+  const { submit, isSubmitting, isSuccess } = useFormDrop("your-form-slug");
+
+  if (isSuccess) return <p>Thanks.</p>;
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        submit(new FormData(event.currentTarget));
+      }}
+    >
+      <input type="email" name="email" required />
+      <textarea name="message" required />
+      <button disabled={isSubmitting}>Send message</button>
+    </form>
+  );
+}
+```
+
+</CodeBlockTab>
+</CodeBlockTabs>
+
+<Callout title="Every field needs a name">
+  The `name` attribute is how a field is identified in your submission. A field
+  without one is never sent by the browser, so it cannot arrive.
+</Callout>
+
+## What a submission holds
+
+Alongside the fields you posted, FormDrop records the time it arrived, the
+submitting IP and the user agent. Nothing else — there is no tracking cookie
+and no fingerprint.
+
+The payload is whatever your form defines. Two forms on the same account can
+have completely different fields, and one form's fields can change over time
+without breaking anything already stored.
+
+## Managing a form
+
+Opening a form in the dashboard gives you five tabs:
+
+| Tab | What it is for |
+| --- | --- |
+| **Submissions** | Everything collected, searchable, with export |
+| **Analytics** | Volume over time, and how this form compares to the previous period |
+| **Notifications** | Email recipients, Slack and Discord |
+| **Integrations** | Google Sheets, and more as they land |
+| **Settings** | Rename, restrict domains, delete |
+
+## Allowed domains
+
+By default a form accepts a submission from anywhere, which is what makes the
+plain HTML case work. Adding an allowlist in **Settings** restricts it to the
+sites you name — `example.com`, `app.example.com` — and anything else is
+refused.
+
+<Callout type="warn" title="An allowlist is not authentication">
+  It is checked against the browser's `Origin` header, which a browser sets
+  honestly but a script does not have to send at all. It stops your form being
+  embedded on somebody else's site; it does not stop a determined script
+  posting directly. For that, keep the form behind your own server.
+</Callout>
+
+## Deleting a form
+
+**Settings** → **Danger zone**. Deleting a form stops its endpoint accepting
+submissions and removes the data it collected. This cannot be undone.

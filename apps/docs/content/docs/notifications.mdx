@@ -1,0 +1,64 @@
+---
+title: Notifications & webhooks
+description: How a submission reaches you, what happens when a delivery fails, and what is coming.
+---
+
+A submission is stored first and delivered afterwards. That ordering is the
+whole design, and it is why a provider having a bad afternoon delays a
+notification rather than losing a form fill.
+
+## The channels
+
+| Channel | Where it goes | Configure |
+| --- | --- | --- |
+| **Email** | The form's owner, plus any verified recipients | Notifications tab |
+| **Slack** | A channel, via an incoming webhook | Notifications tab |
+| **Discord** | A server channel, via a webhook | Notifications tab |
+| **Google Sheets** | A row appended to a sheet | Integrations tab |
+
+Each destination is queued separately. One bounced address does not hold up
+Slack, and it does not stop the other recipients.
+
+## Email recipients verify themselves
+
+Adding a recipient sends them a confirmation link, and nothing is delivered
+to that address until they follow it.
+
+Without that, anyone could point somebody else's inbox at a busy form. The
+owner is always a recipient when email is on and does not confirm separately —
+their address was verified at signup.
+
+## What happens when a delivery fails
+
+The submission and the intent to deliver it are written in the **same
+database transaction**, so there is no window where a submission exists with
+nothing queued to tell you about it.
+
+A worker then drains the queue:
+
+1. A failed delivery is retried with a widening gap — roughly 30 seconds,
+   then 2 minutes, 5, 15, and 30.
+2. Six attempts, spanning about half an hour. That covers the case this is
+   for: a provider having a bad few minutes.
+3. Anything still failing is marked failed and **kept**, with the error that
+   stopped it — rather than disappearing quietly.
+
+The point of the last one is that a notification which never arrived is
+something you can find out about, instead of a silence you have to notice.
+
+<Callout title="A failed notification is not a lost submission">
+  Delivery and collection are separate. If Slack was down when a form was
+  filled in, the submission is in your dashboard regardless.
+</Callout>
+
+## Webhooks
+
+<Callout type="info" title="Coming soon">
+  Outbound webhooks — a JSON payload to any URL you choose — are designed and
+  not yet available. The channel exists in the delivery queue, so when they
+  land they inherit the same retry and failure handling as everything above.
+</Callout>
+
+Until then, the way to get submissions into your own system is to
+[read them from the API](/sdks/javascript), or to post from your own server
+so you already have the data before it reaches us.

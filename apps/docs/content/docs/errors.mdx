@@ -1,0 +1,101 @@
+---
+title: Error reference
+description: Every status the API returns, what causes it, and whether retrying helps.
+---
+
+Every failure has the same shape:
+
+```json
+{ "error": "Form not found" }
+```
+
+## Statuses
+
+| Status | Meaning | Retry? |
+| --- | --- | --- |
+| `400` | The request was rejected before anything happened | No — fix the request |
+| `401` | Missing, malformed or revoked API key | No |
+| `403` | The form's allowlist refused this origin | No |
+| `404` | No such form or submission, or it was deleted | No |
+| `429` | Rate limited | Yes, after `Retry-After` |
+| `500` | Something broke on our side | Yes, with backoff |
+
+Only `429` and `5xx` are worth retrying. A `401` will not become valid on a
+second attempt, and retrying it just multiplies the failure.
+
+## What each one usually means
+
+### 400 — Invalid request
+
+- **`No submission data found`** — the body was empty, or it parsed to
+  something that is not an object. A form with no `name` attributes on its
+  fields produces this, because the browser sends nothing.
+- **`Invalid cursor`** — the `cursor` query parameter was not one we issued.
+  Pass back a `nextCursor` from a previous response rather than constructing
+  one.
+- **`Invalid request`** — the body or query failed the endpoint's schema.
+
+### 401 — Unauthorized
+
+- **`API key required in Authorization header`** — no `Authorization` header.
+  It should read `Bearer fd_live_…`.
+- **`Invalid API key`** — the key is not one of yours, or it was revoked.
+
+Keys are shown once, at creation. If you have lost one, revoke it and make
+another — we store a hash and cannot recover the original.
+
+### 403 — Forbidden
+
+**`Domain not allowed for this form`.** The form has an allowlist and the
+request either came from a host that is not on it, or carried no `Origin`
+header at all. See [allowed domains](/allowed-domains) — a request with no
+origin is refused on purpose.
+
+### 404 — Not found
+
+The slug or id does not exist, or points at something deleted. Deleted forms
+and submissions are indistinguishable from ones that never existed, which is
+deliberate: the alternative lets a stranger probe which slugs you once had.
+
+### 429 — Rate limited
+
+You are over the [rate limit](/limits). `Retry-After` says how many seconds
+to wait. Waiting less than that is certain to be refused again.
+
+### 5xx — Our fault
+
+Something failed on our side. Retry with backoff. If it persists, the
+submission has not been stored and it is worth getting in touch.
+
+## Typed errors in the SDK
+
+The [JavaScript SDK](/sdks/javascript) maps each status to a class, so you
+branch on the problem rather than the number:
+
+| Class | Status |
+| --- | --- |
+| `FormDropValidationError` | 400 |
+| `FormDropAuthError` | 401 |
+| `FormDropForbiddenError` | 403 |
+| `FormDropNotFoundError` | 404 |
+| `FormDropRateLimitError` | 429, carries `retryAfterSeconds` |
+| `FormDropServerError` | 5xx |
+| `FormDropNetworkError` | no response at all |
+
+`FormDropNetworkError` is separate from a `5xx` because the remedy differs:
+one is a fault on our side, the other is the network between us — DNS, TLS,
+a timeout, or a device that is simply offline.
+
+```ts
+import { FormDropError, FormDropRateLimitError } from "@formdrop/js";
+
+try {
+  await fd.forms.get("contact");
+} catch (error) {
+  if (error instanceof FormDropRateLimitError) {
+    await wait(error.retryAfterSeconds ?? 60);
+  } else if (error instanceof FormDropError) {
+    console.error(error.status, error.message);
+  }
+}
+```

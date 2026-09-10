@@ -4,6 +4,7 @@
     ".env"
   ],
   "globalEnv": [
+    "VITE_*",
     "DATABASE_URL",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",

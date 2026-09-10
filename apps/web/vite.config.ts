@@ -14,7 +14,19 @@ const config = defineConfig({
   plugins: [
     devtools(),
     tanstackStart(),
-    nitro(),
+    /*
+     * Pre-compressed assets.
+     *
+     * The built entry chunk is 416 KB raw and 126 KB gzipped, and Nitro was
+     * serving the raw one -- no content-encoding header at all. Across the
+     * four chunks a first visit downloads that is 1.4 MB instead of 416 KB,
+     * which is most of what LCP is waiting on.
+     *
+     * Compression happens at build time rather than per request, so the
+     * server does no work for it and a self-hosted deploy behind a plain
+     * Node process gets the same bytes as one behind a CDN.
+     */
+    nitro({ config: { compressPublicAssets: { gzip: true, brotli: true } } }),
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),

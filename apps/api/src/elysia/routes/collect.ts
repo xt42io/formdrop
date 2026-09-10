@@ -13,6 +13,7 @@ import {
 } from "@formdrop/core/data";
 import { errorSchema } from "../schemas";
 import { checkCollectLimit, collectLimitHeaders } from "../rate-limit";
+import { captureServer } from "@formdrop/analytics/server";
 
 /**
  * POST /f/:slug -- the endpoint customers' own forms post to.
@@ -124,6 +125,21 @@ export const collect = new Elysia().post(
       period,
       deliveries,
     });
+
+    /*
+     * W6's core event, and one only the server can see: nobody's browser is
+     * open when a stranger posts to somebody else's form.
+     *
+     * Attributed to the form's owner, because they are the person with an
+     * account -- filing it under the visitor would create a PostHog person
+     * per stranger, which would both distort the numbers and store something
+     * about someone who never agreed to it.
+     *
+     * No properties. The payload is the submission and the privacy rule
+     * forbids it; the form id would be a weak identifier of the customer's
+     * own site and is not asked for by the taxonomy.
+     */
+    captureServer(form.userId, "submission_received");
 
     return status(201, {
       success: true,

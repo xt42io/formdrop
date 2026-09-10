@@ -13,7 +13,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <DocsLayout
       tree={source.pageTree}
       nav={{ title: "FormDrop docs", url: "/" }}
-      githubUrl="https://github.com/devtofunmi/formdrop"
+      githubUrl="https://github.com/xt42io/formdrop"
     >
       {children}
     </DocsLayout>

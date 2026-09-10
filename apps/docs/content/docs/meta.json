@@ -3,9 +3,17 @@
   "pages": [
     "index",
     "getting-started",
+    "---Guides---",
     "forms",
     "integrations",
-    "---API---",
-    "api"
+    "notifications",
+    "allowed-domains",
+    "limits",
+    "---SDKs---",
+    "sdks",
+    "recipes",
+    "---Reference---",
+    "api",
+    "errors"
   ]
 }

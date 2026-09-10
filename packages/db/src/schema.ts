@@ -193,12 +193,16 @@ export const apiKeys = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    // Plaintext, and deliberately still here. W2 replaces it with the hash
-    // below, but the risk register's mitigation is a hash-on-next-use
-    // dual-read window: an existing key keeps working until it is presented
-    // once and hashed. Dropping this column is a later migration, after the
-    // forced rotation that W2 pairs with an in-app and email notice.
-    key: text("key").notNull().unique(),
+    // Plaintext, and deliberately still here -- but nullable now, which is
+    // the difference between "we store keys in plaintext" and "we used to".
+    //
+    // A key created today writes only the hash and leaves this null. A key
+    // created before hashing keeps its plaintext until it is presented once,
+    // at which point it is hashed and this is cleared: the risk register's
+    // hash-on-next-use dual-read window, so nobody's integration breaks on
+    // deploy. Dropping the column is a later migration, after the forced
+    // rotation W2 pairs with an in-app and email notice.
+    key: text("key").unique(),
 
     // SHA-256 of the key. Nullable because every row that exists today has no
     // hash yet -- it is filled in the first time that key authenticates.

@@ -246,10 +246,14 @@ function Row({
         </span>
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-ink-900">{name}</p>
-          <p className="truncate text-xs text-ink-500">{email}</p>
+          {/* ink-600, not ink-500. These rows sit on the hero's tinted
+              backdrop rather than white, where ink-500 measures 4.49:1 --
+              just under the bar. The earlier sweep off ink-400 only checked
+              white grounds. */}
+          <p className="truncate text-xs text-ink-600">{email}</p>
         </div>
       </div>
-      <span className="shrink-0 text-xs text-ink-500">{time}</span>
+      <span className="shrink-0 text-xs text-ink-600">{time}</span>
     </div>
   );
 }

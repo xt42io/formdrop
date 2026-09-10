@@ -1,0 +1,134 @@
+---
+title: JavaScript SDK
+description: "@formdrop/js — one install instead of a hand-written fetch."
+---
+
+Zero dependencies, ESM and CJS, browser and Node 18 or later. About 3 KB
+gzipped.
+
+```bash
+npm i @formdrop/js
+```
+
+## Submitting
+
+No API key. This is the call a form on your own site makes, so there is
+nothing secret to ship to the browser.
+
+```ts
+import { FormDrop } from "@formdrop/js";
+
+await FormDrop.submit("your-form-slug", { email, message });
+```
+
+A `FormData` works too, which makes wiring up an existing form one line:
+
+```ts
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await FormDrop.submit("your-form-slug", new FormData(form));
+});
+```
+
+## Reading your data
+
+This needs an API key, so it belongs on a server. A key grants full access to
+every form and submission on the account.
+
+```ts
+const fd = new FormDrop({ apiKey: process.env.FORMDROP_API_KEY });
+
+const { data, nextCursor } = await fd.forms.submissions.list("contact", {
+  limit: 50,
+});
+```
+
+| Method | What it does |
+| --- | --- |
+| `fd.forms.list()` | Every form on the account |
+| `fd.forms.create({ name })` | Creates one |
+| `fd.forms.get(slug)` | One form |
+| `fd.forms.delete(slug)` | Deletes it |
+| `fd.forms.submissions.list(slug, { limit, cursor })` | One page, newest first |
+| `fd.forms.submissions.get(slug, id)` | One submission |
+| `fd.forms.submissions.delete(slug, id)` | Deletes one |
+| `fd.forms.submissions.deleteMany(slug, ids)` | Deletes several |
+
+## Paging
+
+Paging is by cursor, not by page number. `nextCursor` is `null` on the last
+page; pass it back as `cursor` to continue.
+
+```ts
+let cursor: string | undefined;
+
+do {
+  const page = await fd.forms.submissions.list("contact", { limit: 200, cursor });
+  for (const submission of page.data) {
+    // ...
+  }
+  cursor = page.nextCursor ?? undefined;
+} while (cursor);
+```
+
+<Callout title="Do not build a cursor yourself">
+  The encoding is the API's business and will change. Treat it as an opaque
+  string that came from a previous response.
+</Callout>
+
+`limit` defaults to 50 and is capped at 200.
+
+## Errors
+
+Every failure is a typed class, so you branch on the problem rather than on a
+status code.
+
+```ts
+import { FormDropNotFoundError, FormDropRateLimitError } from "@formdrop/js";
+
+try {
+  await fd.forms.get("contact");
+} catch (error) {
+  if (error instanceof FormDropNotFoundError) return null;
+
+  if (error instanceof FormDropRateLimitError) {
+    await wait(error.retryAfterSeconds ?? 60);
+  }
+
+  throw error;
+}
+```
+
+See the [error reference](/errors) for what each one means.
+
+## Retries
+
+`5xx` and `429` are retried automatically with exponential backoff and jitter,
+twice by default, honouring `Retry-After` when the server sends one. Nothing
+else is retried — a `401` or a `404` will not improve on a second attempt.
+
+```ts
+new FormDrop({ apiKey, retries: 0 }); // opt out
+```
+
+## Cancelling
+
+Every method takes an `AbortSignal`, and it cancels a pending retry as well as
+a request in flight.
+
+```ts
+await fd.forms.list({ signal: AbortSignal.timeout(5000) });
+```
+
+## Options
+
+```ts
+new FormDrop({
+  apiKey,   // required for everything except FormDrop.submit
+  baseUrl,  // defaults to https://api.formdrop.co
+  retries,  // defaults to 2
+  fetch,    // defaults to the global
+});
+```
+
+Using React? [`@formdrop/react`](/sdks/react) wraps this in a hook.

@@ -1,0 +1,126 @@
+---
+title: React SDK
+description: "@formdrop/react — a hook over the client, with the form state already written."
+---
+
+A thin layer over [`@formdrop/js`](/sdks/javascript): the request, the retries
+and the typed errors all come from there. About 1.3 KB gzipped on top.
+
+```bash
+npm i @formdrop/react
+```
+
+React 18 or 19. No API key — submitting is a public call.
+
+## The hook
+
+```tsx
+import { useFormDrop } from "@formdrop/react";
+
+function ContactForm() {
+  const { submit, isSubmitting, isSuccess, error, reset } =
+    useFormDrop("your-form-slug");
+
+  if (isSuccess) {
+    return (
+      <p>
+        Thanks. <button onClick={reset}>Send another</button>
+      </p>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        submit(new FormData(event.currentTarget));
+      }}
+    >
+      <input name="email" type="email" required />
+      <textarea name="message" />
+      {error && <p role="alert">{error.message}</p>}
+      <button disabled={isSubmitting}>
+        {isSubmitting ? "Sending…" : "Send"}
+      </button>
+    </form>
+  );
+}
+```
+
+`submit` resolves rather than throwing. A hook cannot throw anywhere a
+component could catch it, so failures arrive as `error`.
+
+## The wrapper
+
+For when a form is just a form:
+
+```tsx
+import { FormDropForm } from "@formdrop/react";
+
+<FormDropForm slug="your-form-slug">
+  {({ isSubmitting, isSuccess, error }) => (
+    <>
+      <input name="email" type="email" required />
+      {error && <p role="alert">{error.message}</p>}
+      {isSuccess && <p>Thanks</p>}
+      <button disabled={isSubmitting}>Send</button>
+    </>
+  )}
+</FormDropForm>;
+```
+
+It handles `onSubmit`, serialises the fields, and clears the form on success —
+and only on success, so a failed submit does not throw away what somebody
+typed.
+
+### The honeypot
+
+`FormDropForm` adds a hidden field that bots fill in and people do not. A
+submission arriving with it filled is dropped silently, because telling a bot
+it was caught teaches whoever runs it to leave the field alone.
+
+The field never reaches the API — it is ours, not part of your data — and it
+is kept out of the accessibility tree and the tab order, so a screen reader
+user is never offered a trap that would discard their submission.
+
+```tsx
+<FormDropForm slug="contact" honeypot={false}>
+```
+
+turns it off if you have your own spam handling.
+
+## Errors
+
+The error classes are re-exported, so you do not need `@formdrop/js`
+installed separately:
+
+```tsx
+import { FormDropRateLimitError } from "@formdrop/react";
+
+const { error } = useFormDrop("contact");
+
+if (error instanceof FormDropRateLimitError) {
+  // error.retryAfterSeconds
+}
+```
+
+## Options
+
+```tsx
+useFormDrop("slug", {
+  baseUrl,   // defaults to https://api.formdrop.co
+  retries,   // defaults to 2
+  onSuccess,
+  onError,
+});
+```
+
+## Behaviour worth knowing
+
+- **Submitted twice.** If a form is sent again before the first answer
+  arrives, the newer submit owns the result — a slow first response cannot
+  overwrite it.
+- **Unmounting.** A form inside a dialog that closes mid-request will not set
+  state after it is gone.
+- **`submit` is stable** across renders, so it is safe in a dependency array
+  even when `onSuccess` is an inline arrow.

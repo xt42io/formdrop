@@ -1,22 +1,33 @@
 import {
   createFileRoute,
-  Navigate,
   Outlet,
+  redirect,
   useLocation,
 } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Icon } from "@formdrop/ui";
 import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { AdminSidebar } from "@/components/admin-sidebar";
-import { useSession } from "@/lib/auth-client";
+import { isCallerAdmin } from "@/lib/require-admin";
 
 export const Route = createFileRoute("/(admin)/admin")({
+  /*
+   * The role check, on the server (PRD 4.6).
+   *
+   * beforeLoad runs during SSR on a full page load, so a non-admin never
+   * receives admin markup at all -- and on a client navigation it is an RPC,
+   * so the answer still comes from the server. What this replaces decided in
+   * the component from a client-held session: the shell painted first and the
+   * check was running on the visitor's side of the wire.
+   */
+  beforeLoad: async () => {
+    const { isAdmin } = await isCallerAdmin();
+    if (!isAdmin) throw redirect({ to: "/" });
+  },
   component: AdminLayout,
 });
 
 function AdminLayout() {
-  const { data: session, isPending } = useSession();
-
   // Below md the sidebar is a drawer, so the layout owns whether it is open --
   // it also renders the bar holding the button that opens it. Same shape as
   // the account dashboard's layout.
@@ -28,30 +39,6 @@ function AdminLayout() {
   useEffect(() => {
     setNavOpen(false);
   }, [location.pathname]);
-
-  if (isPending) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-canvas">
-        <div className="flex flex-col items-center gap-4">
-          <img src="/purple_icon.svg" alt="" className="h-10 w-10" />
-          <div className="h-1.5 w-48 overflow-hidden rounded-full bg-ink-100">
-            <div className="h-full w-1/3 animate-pulse rounded-full bg-accent-500" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  /*
-   * Client-side, and worth being clear about: this hides the shell, it does
-   * not protect the data. Every /api/admin handler checks the role
-   * server-side, which is what actually matters -- PRD 4.6 asks for that and
-   * it is in place. What is still missing is a server-side guard on the route
-   * itself, so the shell paints for an instant before redirecting.
-   */
-  if (!session || session.user.role !== "admin") {
-    return <Navigate to="/" replace />;
-  }
 
   return (
     // The same shell as the account dashboard: canvas ground, the faint rule

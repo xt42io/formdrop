@@ -1,4 +1,11 @@
 {
   "title": "Docs",
-  "pages": ["index", "getting-started", "forms", "integrations"]
+  "pages": [
+    "index",
+    "getting-started",
+    "forms",
+    "integrations",
+    "---API---",
+    "api"
+  ]
 }

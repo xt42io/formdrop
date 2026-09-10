@@ -4,22 +4,25 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 1300",
-    "build": "next build",
+    "dev": "npm run openapi && next dev --port 1300",
+    "build": "npm run openapi && next build",
     "start": "next start --port 1300",
     "postinstall": "fumadocs-mdx",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "openapi": "node scripts/generate-openapi-pages.mjs"
   },
   "dependencies": {
     "fumadocs-core": "^16.15.9",
     "fumadocs-mdx": "^15.4.0",
+    "fumadocs-openapi": "^11.4.2",
     "fumadocs-ui": "^16.15.9",
     "next": "^16.3.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
+    "@formdrop/api": "*",
     "@formdrop/tsconfig": "*",
     "@formdrop/ui": "*",
     "@tailwindcss/postcss": "^4.1.18",

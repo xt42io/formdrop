@@ -1,0 +1,77 @@
+---
+title: Rate limits & quotas
+description: How often you can call the API, and how many submissions a plan includes.
+---
+
+Two different things, often confused. A **rate limit** is how fast; a
+**quota** is how many in a month.
+
+## Rate limits
+
+| Endpoint | Limit | Keyed on |
+| --- | --- | --- |
+| `POST /f/{slug}` | 60 per minute | The form |
+| Everything under `/v1` | 120 per minute | The API key |
+
+Collect is limited **per form**, not per visitor. Your visitors post from
+wherever they are, and limiting by IP would throttle a shared office
+connection or a mobile network as though it were one person. The form is what
+a flood damages, so the form is what is protected.
+
+The authenticated API is limited per key, where a caller is a script.
+
+### Reading the headers
+
+Every response carries the current state:
+
+```
+x-ratelimit-limit: 120
+x-ratelimit-remaining: 118
+x-ratelimit-reset: 1789432800
+```
+
+`x-ratelimit-reset` is a Unix timestamp in seconds.
+
+### When you are over
+
+The request is refused with `429` and a `Retry-After` header saying how many
+seconds to wait.
+
+```json
+{ "error": "Rate limit exceeded" }
+```
+
+The [JavaScript SDK](/sdks/javascript) retries these for you with backoff,
+honouring `Retry-After`. If you are calling the API directly, wait the
+number of seconds it gives you rather than retrying immediately — an
+immediate retry is certain to be refused again.
+
+## Pagination limits
+
+`GET /v1/forms/{slug}/submissions` returns 50 per page by default and accepts
+`limit` up to **200**. A larger value is clamped rather than rejected.
+
+Paging is by cursor. Pass the previous response's `nextCursor`; a `null`
+`nextCursor` means you have reached the end.
+
+## Plan quotas
+
+| Plan | Submissions per month |
+| --- | --- |
+| Free | 100 |
+| Pro | 10,000 |
+
+Usage is counted per calendar month and shown in the dashboard sidebar. It
+resets at the start of each month.
+
+<Callout title="Quota and rate limit are independent">
+  Staying under your monthly quota does not exempt you from the per-minute
+  rate limit, and vice versa. A form receiving a burst of 200 submissions in
+  a minute will hit the rate limit long before the quota notices.
+</Callout>
+
+## Asking for more
+
+The limits above are the defaults, not a hard ceiling on what is possible.
+If a legitimate workload needs more, get in touch before working around it —
+a shape we know about is one we can raise.

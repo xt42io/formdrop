@@ -1,0 +1,37 @@
+---
+title: Introduction
+description: FormDrop is the backend for your forms. Point a form at a URL and the submissions land in a dashboard.
+---
+
+FormDrop gives an HTML form somewhere to post to. You do not write a backend,
+host an endpoint, or manage a database — you point the form at a URL and the
+submissions arrive in a dashboard, your inbox, Slack, Discord, or a
+spreadsheet.
+
+## The whole thing
+
+```html
+<form action="https://api.formdrop.co/f/your-form-slug" method="POST">
+  <input name="email" type="email" required />
+  <textarea name="message"></textarea>
+  <button>Send</button>
+</form>
+```
+
+That is a working form. No JavaScript, no build step, no key.
+
+## What you get
+
+- **A dashboard** for every submission, searchable and exportable.
+- **Notifications** by email, Slack and Discord the moment something arrives.
+- **Sync** to Google Sheets and Airtable.
+- **An API** for reading your data back, and [SDKs](/sdks/javascript) if you
+  would rather not write `fetch` by hand.
+
+## Where to go next
+
+- [Getting started](/getting-started) — create a form and receive your first
+  submission.
+- [Forms](/forms) — slugs, domain allowlisting, and what a submission looks
+  like.
+- [API reference](/api) — every endpoint, generated from the API itself.

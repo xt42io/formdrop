@@ -32,3 +32,11 @@ apps/docs/.source
 apps/docs/next-env.d.ts
 apps/docs/AGENTS.md
 apps/docs/CLAUDE.md
+
+# Generated from apps/api's OpenAPI spec on every docs build. Committing the
+# pages would invite somebody to edit one the next build overwrites, and the
+# copied spec is a build artifact of apps/api rather than a source file.
+apps/docs/openapi.json
+apps/docs/content/docs/api/*
+!apps/docs/content/docs/api/meta.json
+*.tsbuildinfo

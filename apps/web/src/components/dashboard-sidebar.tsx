@@ -305,7 +305,20 @@ export function DashboardSidebar({
 
       {secondaryLink && <div className="px-0">{renderLink(secondaryLink)}</div>}
 
-      <div className="w-full border-t border-ink-100 p-4">
+      {/*
+        Horizontal padding goes when the rail collapses, the way the header
+        above already drops from px-5 to px-0.
+
+        p-4 leaves 23px of content inside a 55px footer, and the avatar is
+        32px -- so nine pixels of it were being cut off by the overflow-hidden
+        that exists to truncate the name and email beside it. The avatar is
+        centred when collapsed, so the padding was doing nothing but clipping.
+      */}
+      <div
+        className={`w-full border-t border-ink-100 ${
+          railCollapsed ? "px-0 py-4" : "p-4"
+        }`}
+      >
         {isPending ? (
           <div className="flex w-full items-center gap-3">
             <div className="h-8 w-8 shrink-0 animate-pulse rounded-full bg-ink-100" />

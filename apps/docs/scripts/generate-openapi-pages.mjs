@@ -1,4 +1,4 @@
-import { copyFileSync, existsSync, rmSync } from "node:fs";
+import { copyFileSync, existsSync, rmSync, writeFileSync } from "node:fs";
 import { generateFiles } from "fumadocs-openapi";
 import { createOpenAPI } from "fumadocs-openapi/server";
 
@@ -45,5 +45,27 @@ await generateFiles({
   per: "operation",
   groupBy: "tag",
 });
+
+/*
+ * The section's nav is written here rather than committed, because the
+ * directory above is wiped on every run -- a hand-placed meta.json in it
+ * survived exactly until the next regeneration, which is how this was found.
+ *
+ * The tag order is deliberate: Public first, since collecting a submission
+ * is the endpoint most readers came for and the only one needing no key.
+ */
+writeFileSync(
+  `${OUTPUT}/meta.json`,
+  `${JSON.stringify(
+    {
+      title: "API reference",
+      description: "Generated from the API's own spec. Do not edit by hand.",
+      pages: ["public", "forms", "submissions"],
+    },
+    null,
+    2,
+  )}
+`,
+);
 
 console.log("[openapi] reference pages generated");

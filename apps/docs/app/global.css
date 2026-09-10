@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+/* The product's tokens, so the docs are the same colours as the dashboard
+   and the landing page rather than Fumadocs' defaults.
+
+   §13 flagged this as a risk of putting a Next app in a Vite monorepo --
+   "verify packages/ui tokens are consumable as plain CSS". They are: the
+   file is plain @theme and custom properties with no build step of its own,
+   which is what makes it importable from either bundler. */
+@import "@formdrop/ui/tokens.css";
+
+/* Fumadocs themes itself from its own custom properties, so pointing those
+   at ours is what actually changes the colours -- overriding component
+   classes would fight the library on every upgrade. */
+:root {
+  --color-fd-background: var(--color-canvas);
+  --color-fd-foreground: var(--color-ink-950);
+  --color-fd-muted: var(--color-ink-50);
+  --color-fd-muted-foreground: var(--color-ink-500);
+  --color-fd-border: var(--color-ink-200);
+  --color-fd-primary: var(--color-accent-500);
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-accent: var(--color-accent-50);
+  --color-fd-accent-foreground: var(--color-accent-700);
+  --color-fd-card: #ffffff;
+  --color-fd-card-foreground: var(--color-ink-950);
+  --color-fd-popover: #ffffff;
+  --color-fd-popover-foreground: var(--color-ink-950);
+  --color-fd-secondary: var(--color-ink-50);
+  --color-fd-secondary-foreground: var(--color-ink-800);
+  --color-fd-ring: var(--color-accent-500);
+}

@@ -1,6 +1,6 @@
 import { Button, Icon } from "@formdrop/ui";
 import { CreditCardIcon } from "@hugeicons/core-free-icons";
-import { authClient } from "@/lib/auth-client";
+import { getBillingClient } from "@/lib/billing-client";
 import { useState } from "react";
 import { UpgradeModal } from "@/components/upgrade-modal";
 
@@ -87,7 +87,10 @@ export function BillingSettings({ settings }: BillingSettingsProps) {
             <Button
               variant="outline"
               icon={<Icon icon={CreditCardIcon} size={16} />}
-              onClick={() => authClient.customer.portal()}
+              onClick={async () => {
+                const billing = await getBillingClient();
+                await billing.customer.portal();
+              }}
             >
               Manage subscription
             </Button>

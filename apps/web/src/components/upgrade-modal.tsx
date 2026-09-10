@@ -2,7 +2,7 @@ import { Tick02Icon, Cancel01Icon, StarIcon } from "@hugeicons/core-free-icons";
 import { motion } from "motion/react";
 import { Icon, Modal } from "@formdrop/ui";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { getBillingClient } from "@/lib/billing-client";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -27,7 +27,9 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const handleUpgrade = async () => {
     setIsLoading(true);
     try {
-      await authClient.checkout({
+      // Fetched on the click rather than with the page; see lib/billing-client.
+      const billing = await getBillingClient();
+      await billing.checkout({
         slug: billingInterval === "year" ? "Pro Yearly" : "Pro Monthly",
       });
     } catch (error) {

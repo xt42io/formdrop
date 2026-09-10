@@ -84,3 +84,10 @@ export {
   listDeliverableRecipients,
   recordSubmission,
 } from "./collect.ts";
+export {
+  claimDueDeliveries,
+  findDeliveryContext,
+  markAttemptFailed,
+  markDelivered,
+  type ClaimedDelivery,
+} from "./outbox.ts";

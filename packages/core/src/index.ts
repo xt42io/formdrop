@@ -34,3 +34,11 @@ export {
   pageSize,
   type SubmissionCursor,
 } from "./cursor.ts";
+export {
+  MAX_ATTEMPTS,
+  isExhausted,
+  nextAttemptDelayMs,
+  plannedDeliveries,
+  type OutboxChannel,
+  type PlannedDelivery,
+} from "./outbox.ts";

@@ -1,6 +1,7 @@
 import type { PostHog } from "posthog-js";
 
 import type { AnalyticsEvent, CaptureArgs } from "./events.ts";
+import { sanitize } from "./sanitize.ts";
 
 export type { AnalyticsEvent, AnalyticsEventMap } from "./events.ts";
 
@@ -11,56 +12,6 @@ export type { AnalyticsEvent, AnalyticsEventMap } from "./events.ts";
  * unset without touching a single call site.
  */
 
-/**
- * Property names that must never leave the browser, from the PRD privacy rule:
- * submission payload contents, recipient email addresses and IPs. Enforced in
- * `sanitize_properties` rather than left to each call site, so it holds for
- * every event including PostHog's own.
- */
-const BLOCKED_SEGMENTS = new Set([
-  "answers",
-  "data",
-  "email",
-  "emails",
-  "fields",
-  "ip",
-  "ips",
-  "payload",
-  "recipient",
-  "recipients",
-]);
-
-function sanitize(properties: Record<string, unknown> | null) {
-  // PostHog derives $ip from the request server-side; nulling it is the
-  // documented way to turn that off.
-  const safe: Record<string, unknown> = { ...(properties ?? {}), $ip: null };
-
-  for (const key of Object.keys(safe)) {
-    if (key === "$ip") continue;
-    const segments = key.replace(/^\$/, "").split(/[_.-]/);
-    if (
-      segments.some((segment) => BLOCKED_SEGMENTS.has(segment.toLowerCase()))
-    ) {
-      delete safe[key];
-    }
-  }
-
-  return safe;
-}
-
-/*
- * posthog-js is fetched on demand rather than bundled into the entry.
- *
- * It was a static import, so every visitor downloaded and parsed the library
- * before the first paint -- on the landing page, where the only thing it does
- * is send one event. A type-only import costs nothing at runtime, and the real
- * module arrives in its own chunk once initAnalytics runs.
- *
- * Events fired before it lands are queued rather than dropped. They were
- * dropped before: capture() returned early until init had completed, and the
- * landing page captures landing_viewed from an effect that can beat it. That
- * silently cost the first event of the funnel the PRD is measuring.
- */
 let client: PostHog | null = null;
 
 /** Bounded: analytics must never be the reason a tab runs out of memory. */

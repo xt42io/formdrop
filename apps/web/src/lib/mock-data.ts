@@ -192,7 +192,10 @@ const API_KEYS = [
   {
     id: "key-1",
     userId: USER_ID,
-    key: "fd_live_9f2a7c41d8e04b6f9a3c5d7e1b2f4a68",
+    // The prefix, matching what the list endpoint returns now that keys are
+    // stored as a hash. A full key here would be a fixture of a shape the
+    // real API can no longer produce.
+    keyPrefix: "fd_live_9f2a7c41",
     name: "Production server",
     lastUsedAt: daysAgo(0.2),
     createdAt: daysAgo(64),
@@ -200,7 +203,7 @@ const API_KEYS = [
   {
     id: "key-2",
     userId: USER_ID,
-    key: "fd_live_1c8b3e59f7a24d0c8e6b9f2a4d7c1e35",
+    keyPrefix: "fd_live_1c8b3e59",
     name: "Staging",
     lastUsedAt: null,
     createdAt: daysAgo(12),
@@ -428,7 +431,26 @@ const ROUTES: [RegExp, (m: RegExpMatchArray, cfg: MockConfig) => unknown][] = [
     }),
   ],
   [/^\/api\/forms$/, () => ({ forms: FORMS })],
-  [/^\/api\/api-keys$/, () => ({ keys: API_KEYS })],
+  [
+    // The POST shares this entry, since the table matches on path alone. It
+    // carries the created key and its plaintext so the show-once dialog has
+    // something real to display -- a key the server would only ever return
+    // once, which is the whole behaviour being previewed.
+    /^\/api\/api-keys$/,
+    () => ({
+      keys: API_KEYS,
+      key: {
+        id: "key-new",
+        userId: USER_ID,
+        keyPrefix: "fd_live_4b7e2a90",
+        name: "New API Key",
+        lastUsedAt: null,
+        createdAt: daysAgo(0),
+      },
+      plaintext: "fd_live_4b7e2a90c15d43f8b6e097a2d3c4b5e61f7a8d9c0b1e2f3a4",
+      success: true,
+    }),
+  ],
   [/^\/api\/subscription$/, () => ({ subscription: SUBSCRIPTION })],
   [
     /^\/api\/analytics$/,

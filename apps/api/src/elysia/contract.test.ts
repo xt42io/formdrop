@@ -28,6 +28,10 @@ const findSubmissionInForm = vi.fn();
 const softDeleteForm = vi.fn();
 const softDeleteSubmission = vi.fn();
 const softDeleteSubmissions = vi.fn();
+const findFormBySlug = vi.fn();
+const findFormOwnerEmail = vi.fn();
+const listDeliverableRecipients = vi.fn();
+const recordSubmission = vi.fn();
 
 /*
  * vi.mock replaces the module wholesale, so every name the routes import has
@@ -47,6 +51,11 @@ vi.mock("@formdrop/core/data", () => ({
   softDeleteForm: (...a: unknown[]) => softDeleteForm(...a),
   softDeleteSubmission: (...a: unknown[]) => softDeleteSubmission(...a),
   softDeleteSubmissions: (...a: unknown[]) => softDeleteSubmissions(...a),
+  findFormBySlug: (...a: unknown[]) => findFormBySlug(...a),
+  findFormOwnerEmail: (...a: unknown[]) => findFormOwnerEmail(...a),
+  listDeliverableRecipients: (...a: unknown[]) =>
+    listDeliverableRecipients(...a),
+  recordSubmission: (...a: unknown[]) => recordSubmission(...a),
 }));
 
 const { createApp } = await import("./app");
@@ -79,9 +88,93 @@ const submissionRow = {
   createdAt: CREATED,
 };
 
+/** The response schema declares this a uuid, so the fixture must be one. */
+const SUBMISSION_ID = "8f1c2d3e-4a5b-4c6d-8e9f-0a1b2c3d4e5f";
+
+/** A form with every notification channel switched on and configured. */
+const collectForm = {
+  ...formRow,
+  userId: "u1",
+  deletedAt: null,
+  allowedDomains: null,
+  emailNotificationsEnabled: true,
+  slackNotificationsEnabled: true,
+  slackWebhookUrl: "https://hooks.slack.test/x",
+  slackChannelName: "#inbox",
+  discordNotificationsEnabled: false,
+  discordWebhookUrl: null,
+  discordChannelName: null,
+  googleSheetsEnabled: false,
+  googleSheetsSpreadsheetId: null,
+  googleSheetsAccessToken: null,
+  googleSheetsRefreshToken: null,
+  googleSheetsTokenExpiry: null,
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
   touchApiKeyLastUsed.mockResolvedValue(undefined);
+});
+
+describe("POST /f/:slug -- queues delivery instead of firing it (D8)", () => {
+  beforeEach(() => {
+    findFormBySlug.mockResolvedValue(collectForm);
+    findFormOwnerEmail.mockResolvedValue("owner@example.com");
+    listDeliverableRecipients.mockResolvedValue([
+      { email: "team@example.com" },
+    ]);
+    recordSubmission.mockResolvedValue({ id: SUBMISSION_ID });
+  });
+
+  const post = () =>
+    call("/f/contact", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "visitor@example.com" }),
+    });
+
+  it("still answers 201 with the submission id", async () => {
+    const res = await post();
+    expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({
+      success: true,
+      submissionId: SUBMISSION_ID,
+      message: "Submission received",
+    });
+  });
+
+  it("hands the planned rows to the same transaction as the submission", async () => {
+    await post();
+
+    // The point of D8: the rows are an argument to the write, so they commit
+    // with it. Anything that sent from the route instead would leave no trace
+    // here.
+    expect(recordSubmission).toHaveBeenCalledTimes(1);
+    const [input] = recordSubmission.mock.calls[0] as [
+      { deliveries: Array<{ channel: string; target: string }> },
+    ];
+
+    expect(input.deliveries).toEqual([
+      { channel: "email", target: "owner@example.com" },
+      { channel: "email", target: "team@example.com" },
+      { channel: "slack", target: "https://hooks.slack.test/x" },
+    ]);
+  });
+
+  it("queues nothing when the form has no channel configured", async () => {
+    findFormBySlug.mockResolvedValue({
+      ...collectForm,
+      emailNotificationsEnabled: false,
+      slackNotificationsEnabled: false,
+    });
+
+    await post();
+
+    const [input] = recordSubmission.mock.calls[0] as [
+      { deliveries: unknown[] },
+    ];
+    expect(input.deliveries).toEqual([]);
+  });
 });
 
 describe("GET / -- the health check Express served at the root", () => {

@@ -5,12 +5,7 @@ import {
   listApiKeysForUser,
 } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
-import crypto from "crypto";
 import { json, type HandlerPayload } from "@/lib/api/respond";
-
-const generateApiKey = () => {
-  return `fd_${crypto.randomBytes(24).toString("hex")}`;
-};
 
 const GET = async ({ request }: { request: Request }) => {
   try {
@@ -52,13 +47,21 @@ const POST = async ({ request }: { request: Request }) => {
     const body = await request.json();
     const { name } = body;
 
-    const newKey = await createApiKey({
+    const { apiKey, plaintext } = await createApiKey({
       userId: session.user.id,
-      key: generateApiKey(),
       name: name || "New API Key",
     });
 
-    return json({ key: newKey });
+    /*
+     * The only time the key is readable (W2: "show the plaintext once at
+     * creation").
+     *
+     * What is stored is a SHA-256 digest, so this response cannot be
+     * reproduced -- not by the list endpoint, not by support, not by reading
+     * the database. The UI has to make that clear, because a reader who
+     * dismisses this dialog has lost the key.
+     */
+    return json({ key: apiKey, plaintext });
   } catch (error: any) {
     return json(
       {

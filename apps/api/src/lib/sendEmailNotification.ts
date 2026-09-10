@@ -1,6 +1,7 @@
 import { recordNotificationUsage } from "./recordNotificationUsage";
 
 import { SendMailClient } from "zeptomail";
+import { palette } from "@formdrop/ui/palette";
 
 // Configure which email provider to use: 'plunk' or 'zepto'
 const EMAIL_PROVIDER: "plunk" | "zepto" = "zepto";
@@ -21,22 +22,37 @@ function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-// Generate email HTML template
+/*
+ * The notification email's markup.
+ *
+ * Colours come from the palette rather than being typed in. W4 forbids a raw
+ * hex outside the token file, and these five were the last ones in the repo --
+ * they were also Tailwind's default zinc rather than the product's ink ramp,
+ * so the email did not match anything else FormDrop sends.
+ *
+ * A literal hex is still what goes down the wire: mail clients do not support
+ * custom properties, which is one of the cases packages/ui/palette exists for.
+ * Importing the value keeps it tied to tokens.css, where a drift test guards
+ * it, instead of being a copy nobody updates.
+ *
+ * W7 replaces this whole function with a React Email template. Until it does,
+ * this is the version that does not break the rule.
+ */
 function generateEmailHTML(
   formName: string,
   data: Record<string, any>,
 ): string {
   return `
     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #18181b;">New Submission for ${formName}</h2>
-      <p style="color: #52525b;">You have received a new submission:</p>
-      <div style="background: #f4f4f5; padding: 24px; border-radius: 12px; margin-top: 20px;">
+      <h2 style="color: ${palette["ink-950"]};">New Submission for ${formName}</h2>
+      <p style="color: ${palette["ink-600"]};">You have received a new submission:</p>
+      <div style="background: ${palette["ink-50"]}; padding: 24px; border-radius: 12px; margin-top: 20px;">
         ${Object.entries(data)
           .map(
             ([key, value]) => `
           <div style="margin-bottom: 16px;">
-            <div style="font-weight: 600; color: #71717a; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${key}</div>
-            <div style="color: #18181b; font-size: 16px; white-space: pre-wrap;">${
+            <div style="font-weight: 600; color: ${palette["ink-500"]}; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${key}</div>
+            <div style="color: ${palette["ink-950"]}; font-size: 16px; white-space: pre-wrap;">${
               Array.isArray(value)
                 ? value.join(", ")
                 : typeof value === "object"

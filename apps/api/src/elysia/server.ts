@@ -1,12 +1,17 @@
 import { config } from "dotenv";
 import { createApp } from "./app";
 import { startOutboxWorker } from "../worker";
+import { initSentry } from "../lib/sentry";
 
 // One .env at the repo root serves every workspace, matching what apps/web
 // does with Vite's envDir. dotenv defaults to the working directory, which
 // under Turbo is apps/api -- where there is no .env, so every environment
 // variable would silently be undefined.
 config({ path: new URL("../../../../.env", import.meta.url) });
+
+// Before the app is built, so a fault during startup is reported too. A
+// no-op without SENTRY_DSN, which is the normal state locally and in CI.
+initSentry();
 
 const port = Number(process.env.PORT ?? 1400);
 

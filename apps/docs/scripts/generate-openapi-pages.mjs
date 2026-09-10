@@ -1,4 +1,10 @@
-import { copyFileSync, existsSync, rmSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { generateFiles } from "fumadocs-openapi";
 import { createOpenAPI } from "fumadocs-openapi/server";
 
@@ -35,6 +41,8 @@ if (!existsSync(SOURCE)) {
 
 copyFileSync(SOURCE, LOCAL);
 
+const spec = JSON.parse(readFileSync(LOCAL, "utf8"));
+
 // Regenerated from scratch, so an endpoint deleted from the API stops having
 // a page rather than leaving a stale one behind.
 rmSync(OUTPUT, { recursive: true, force: true });
@@ -60,11 +68,57 @@ writeFileSync(
     {
       title: "API reference",
       description: "Generated from the API's own spec. Do not edit by hand.",
-      pages: ["public", "forms", "submissions"],
+      pages: ["index", "public", "forms", "submissions"],
     },
     null,
     2,
   )}
+`,
+);
+
+/*
+ * A landing page for the section, because the sidebar entry links to /api
+ * and there was nothing there -- the tag folders each had pages, and their
+ * parent 404'd.
+ *
+ * Generated with everything else so it cannot be lost to the wipe above, and
+ * so the endpoint count in it cannot go stale.
+ */
+const operations = Object.values(spec.paths ?? {}).reduce(
+  (n, item) => n + Object.keys(item).length,
+  0,
+);
+
+writeFileSync(
+  `${OUTPUT}/index.mdx`,
+  `---
+title: API reference
+description: Every endpoint, generated from the API's own OpenAPI spec.
+---
+
+The ${operations} endpoints below are generated from the API's own OpenAPI
+spec, which is built from the same schemas that validate requests at runtime.
+If a route changes, this changes with it.
+
+## Authentication
+
+\`POST /f/{slug}\` is public — that is the endpoint your visitors' browsers
+post to, and it takes no credential. Everything under \`/v1\` needs an API key
+from **Settings → API keys**, sent as a bearer token:
+
+\`\`\`bash
+curl https://api.formdrop.co/v1/forms \
+  -H "Authorization: Bearer fd_live_your_key"
+\`\`\`
+
+A key grants full access to every form and submission on the account, so keep
+it on a server. Anything shipped to a browser is public.
+
+## Base URL
+
+\`\`\`
+https://api.formdrop.co
+\`\`\`
 `,
 );
 

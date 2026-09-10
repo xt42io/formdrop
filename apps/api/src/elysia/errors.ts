@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { captureError } from "../lib/sentry";
 
 /**
  * One place where an unhandled error becomes a response and a log line.
@@ -11,9 +12,12 @@ import { Elysia } from "elysia";
  * Logs are JSON so a collector can index them by code and path rather than
  * grepping message text.
  *
- * Sentry is the remaining half of W2's requirement and is deliberately not
- * wired here: it needs a DSN and a decision about PII scrubbing, since request
- * bodies on this API are submission payloads. This is the seam it attaches to.
+ * Faults also go to Sentry (W2). Only the ones that reach this point: the 404,
+ * validation and parse branches above are answers, not faults, and reporting
+ * them would bury a real crash under a stream of clients sending bad input.
+ *
+ * What is sent is scrubbed hard, because request bodies on this API are
+ * submission payloads -- see ../lib/sentry.
  */
 export const errorHandling = new Elysia({ name: "error-handling" }).onError(
   { as: "global" },
@@ -44,6 +48,10 @@ export const errorHandling = new Elysia({ name: "error-handling" }).onError(
         stack: error instanceof Error ? error.stack : undefined,
       }),
     );
+
+    // The path but not the query string, and never the body: the first
+    // locates the fault, the other two are the customer's data.
+    captureError(error, { code, method: request.method, path });
 
     return status(500, { error: "Internal server error" });
   },

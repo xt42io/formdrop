@@ -4,9 +4,20 @@ import { authClient } from "@/lib/auth-client";
 export function Navbar() {
   const { data: session } = authClient.useSession();
 
+  /*
+   * `external` means "not a route this app owns".
+   *
+   * /docs is served by apps/docs through a Nitro proxy, so there is no entry
+   * for it in the router's tree. A <Link> would intercept the click, find
+   * nothing, and render Not Found without ever reaching the server -- which
+   * is exactly what it did: typing the URL worked, clicking the nav did not.
+   *
+   * A plain anchor does a real navigation, which is what a proxied path
+   * needs.
+   */
   const links = [
     { href: "/pricing", label: "Pricing" },
-    { href: "/docs", label: "Docs" },
+    { href: "/docs", label: "Docs", external: true },
     ...(!session ? [{ href: "/login", label: "Login" }] : []),
   ];
 
@@ -21,15 +32,20 @@ export function Navbar() {
         </Link>
 
         <div className="hidden gap-x-7 md:flex">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className="text-sm font-medium text-ink-600 transition-colors hover:text-ink-950"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {links.map((link) => {
+            const className =
+              "text-sm font-medium text-ink-600 transition-colors hover:text-ink-950";
+
+            return link.external ? (
+              <a key={link.href} href={link.href} className={className}>
+                {link.label}
+              </a>
+            ) : (
+              <Link key={link.href} to={link.href} className={className}>
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
 
         <Link

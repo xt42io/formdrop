@@ -98,10 +98,18 @@ export default tseslint.config(
   {
     files: [
       "**/*.config.{js,ts}",
-      "**/scripts/**/*.ts",
+      // .mjs as well: the SDK's size budget check is one, and a build script
+      // that cannot call console.log is not much of a build script.
+      "**/scripts/**/*.{ts,mjs}",
       "packages/db/**/*.ts",
       "apps/api/**/*.ts",
     ],
+    languageOptions: {
+      globals: {
+        console: "readonly",
+        process: "readonly",
+      },
+    },
     rules: {
       "no-console": "off",
     },

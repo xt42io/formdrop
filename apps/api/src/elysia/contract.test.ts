@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { API_KEY_LIMIT } from "@formdrop/core";
 
 /**
  * Contract tests for the legacy paths (PRD W2 acceptance).
@@ -313,5 +314,41 @@ describe("CORS -- wide open only where it should be", () => {
     });
     // Express sent "*" here, which is the bug the port set out to fix.
     expect(res.headers.get("access-control-allow-origin")).toBeNull();
+  });
+});
+
+describe("rate limiting on /v1 (W2: per-key)", () => {
+  /*
+   * A key of its own. The limiter is module state shared by every test in
+   * this file, so exhausting the usual fixture key would leave the rest of
+   * the suite refused -- an order-dependent failure that would be miserable
+   * to track down.
+   */
+  const key = { authorization: "Bearer fd_live_ratelimit_probe" };
+
+  it("answers 429 with a retry-after once the window is spent", async () => {
+    findApiKeyByValue.mockResolvedValue({ id: "k1", userId: "u1" });
+    listFormsForApiKey.mockResolvedValue([]);
+
+    let refused: Response | undefined;
+
+    // One past the limit. The exact ceiling lives in packages/core; this only
+    // needs to prove the group is wired to it.
+    for (let i = 0; i < API_KEY_LIMIT.limit + 1; i++) {
+      const res = await call("/v1/forms", { headers: key });
+      if (res.status === 429) {
+        refused = res;
+        break;
+      }
+    }
+
+    expect(refused, "the limiter never refused a request").toBeDefined();
+    expect(await refused!.json()).toEqual({ error: "Rate limit exceeded" });
+
+    // Without this a client retries immediately and is refused again.
+    expect(Number(refused!.headers.get("retry-after"))).toBeGreaterThanOrEqual(
+      1,
+    );
+    expect(refused!.headers.get("x-ratelimit-remaining")).toBe("0");
   });
 });

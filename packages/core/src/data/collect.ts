@@ -2,10 +2,12 @@ import { db } from "@formdrop/db";
 import {
   emailNotificationRecipients,
   forms,
+  notificationOutbox,
   submissions,
   usage,
   user,
 } from "@formdrop/db/schema";
+import type { PlannedDelivery } from "../outbox.ts";
 import { and, eq, isNotNull, sql } from "drizzle-orm";
 
 /**
@@ -74,9 +76,11 @@ export function listDeliverableRecipients(formId: string) {
  * existed but the owner's usage, and therefore their quota and their charts,
  * did not know about it.
  *
- * D8 puts the outbox rows in this same transaction once that table exists.
- * This is the seam they attach to: the transaction is already here, and adding
- * them is one more insert inside it rather than a restructure of the route.
+ * The outbox rows go in the same transaction (D8). That is the whole point of
+ * the design: a submission and the intent to deliver it are committed together
+ * or not at all, so there is no window where a row is stored with nothing
+ * queued to tell anyone about it -- which is exactly what the fire-and-forget
+ * fan-out this replaces could do on any failure.
  */
 export async function recordSubmission(input: {
   formId: string;
@@ -85,6 +89,8 @@ export async function recordSubmission(input: {
   ip: string | null;
   userAgent: string | null;
   period: string;
+  /** One row per destination, from plannedDeliveries(). */
+  deliveries: PlannedDelivery[];
 }) {
   return db.transaction(async (tx) => {
     const [submission] = await tx
@@ -109,6 +115,20 @@ export async function recordSubmission(input: {
         target: [usage.userId, usage.formId, usage.period],
         set: { count: sql`${usage.count} + 1` },
       });
+
+    // No rows when the form has no channel configured. Inserting an empty
+    // array is an error in Drizzle, and a form nobody asked to be notified
+    // about should not leave anything behind for the worker to scan.
+    if (input.deliveries.length > 0) {
+      await tx.insert(notificationOutbox).values(
+        input.deliveries.map((delivery) => ({
+          submissionId: submission.id,
+          formId: input.formId,
+          channel: delivery.channel,
+          target: delivery.target,
+        })),
+      );
+    }
 
     return submission;
   });

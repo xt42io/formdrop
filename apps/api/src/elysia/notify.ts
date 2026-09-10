@@ -1,4 +1,4 @@
-import type { NotificationTargets } from "@formdrop/core";
+import type { ClaimedDelivery } from "@formdrop/core/data";
 import { sendEmailNotification } from "../lib/sendEmailNotification";
 import {
   sendDiscordNotification,
@@ -7,95 +7,102 @@ import {
 import { syncGoogleSheets } from "../lib/syncGoogleSheets";
 
 /**
- * Fans a stored submission out to the channels resolved for its form.
+ * Delivers one outbox row (PRD W2, D8).
  *
- * Fire-and-forget, matching Express: the response goes back as soon as the
- * submission is stored, and delivery happens afterwards. A channel that fails
- * is logged and dropped -- there is no retry and the owner is never told.
+ * This used to be `dispatchNotifications`: the route called it with every
+ * channel at once, it fired four requests without awaiting any of them, and
+ * whatever failed was logged and forgotten. There were no retries and the
+ * owner was never told.
  *
- * That is the behaviour W2 replaces with the D8 outbox, and it is the reason
- * this is a separate function rather than inline in the route: when the outbox
- * table exists, the route writes rows inside its transaction and a worker
- * calls into here, without the route changing shape again.
- *
- * Errors are swallowed per channel on purpose. One channel's outage must not
- * stop the others, and none of them can affect a response that has already
- * been sent.
+ * One row, one channel, and it throws. Both matter. Per-channel means a
+ * bounced address retries on its own instead of dragging Slack with it, and
+ * throwing is how the worker learns to schedule another attempt -- the old
+ * version swallowed errors precisely because nothing was listening.
  */
-export interface NotificationContext {
-  formId: string;
+export interface DeliveryContext {
   formName: string;
   userId: string;
-  submissionId: string;
-  period: string;
   payload: Record<string, unknown>;
   slackChannelName: string | null;
   discordChannelName: string | null;
   googleSheetsSheetId: string | null;
+  googleSheetsAccessToken: string | null;
   googleSheetsRefreshToken: string | null;
   googleSheetsTokenExpiry: Date | null;
 }
 
-function report(channel: string, context: NotificationContext, error: unknown) {
-  console.error(
-    JSON.stringify({
-      level: "error",
-      event: "notification_failed",
-      channel,
-      formId: context.formId,
-      submissionId: context.submissionId,
-      message: error instanceof Error ? error.message : String(error),
-    }),
-  );
-}
-
-export function dispatchNotifications(
-  targets: NotificationTargets,
-  context: NotificationContext,
-): void {
+export async function deliver(
+  row: ClaimedDelivery,
+  context: DeliveryContext,
+): Promise<void> {
   const shared = {
     formName: context.formName,
     data: context.payload,
     userId: context.userId,
-    formId: context.formId,
-    submissionId: context.submissionId,
-    period: context.period,
+    formId: row.formId,
+    submissionId: row.submissionId,
+    // The usage period is only used for reporting inside the senders; the
+    // counter itself was incremented in the submission's transaction.
+    period: "",
   };
 
-  for (const email of targets.emails) {
-    void sendEmailNotification({ ...shared, recipientEmail: email }).catch(
-      (error: unknown) => report("email", context, error),
-    );
-  }
+  switch (row.channel) {
+    case "email":
+      // `target` is the recipient address, which is why email produces a row
+      // per recipient rather than one row for all of them.
+      await sendEmailNotification({ ...shared, recipientEmail: row.target });
+      return;
 
-  if (targets.slack) {
-    void sendSlackNotification({
-      ...shared,
-      webhookUrl: targets.slack.webhookUrl,
-      channelName: context.slackChannelName,
-    }).catch((error: unknown) => report("slack", context, error));
-  }
+    case "slack":
+      await sendSlackNotification({
+        ...shared,
+        webhookUrl: row.target,
+        channelName: context.slackChannelName,
+      });
+      return;
 
-  if (targets.discord) {
-    void sendDiscordNotification({
-      ...shared,
-      webhookUrl: targets.discord.webhookUrl,
-      channelName: context.discordChannelName,
-    }).catch((error: unknown) => report("discord", context, error));
-  }
+    case "discord":
+      await sendDiscordNotification({
+        ...shared,
+        webhookUrl: row.target,
+        channelName: context.discordChannelName,
+      });
+      return;
 
-  if (targets.googleSheets) {
-    void syncGoogleSheets({
-      spreadsheetId: targets.googleSheets.spreadsheetId,
-      sheetId: context.googleSheetsSheetId,
-      accessToken: targets.googleSheets.accessToken,
-      refreshToken: context.googleSheetsRefreshToken,
-      tokenExpiry: context.googleSheetsTokenExpiry,
-      submissionData: context.payload,
-      submissionId: context.submissionId,
-      formId: context.formId,
-      userId: context.userId,
-      formName: context.formName,
-    }).catch((error: unknown) => report("google_sheets", context, error));
+    case "google_sheets": {
+      // Read now rather than snapshotted when the row was written: an access
+      // token captured at collect time is very likely expired by the time a
+      // retry runs.
+      if (!context.googleSheetsAccessToken) {
+        throw new Error("Google Sheets is no longer connected for this form");
+      }
+
+      await syncGoogleSheets({
+        spreadsheetId: row.target,
+        sheetId: context.googleSheetsSheetId,
+        accessToken: context.googleSheetsAccessToken,
+        refreshToken: context.googleSheetsRefreshToken,
+        tokenExpiry: context.googleSheetsTokenExpiry,
+        submissionData: context.payload,
+        submissionId: row.submissionId,
+        formId: row.formId,
+        userId: context.userId,
+        formName: context.formName,
+      });
+      return;
+    }
+
+    case "webhook":
+      // In the schema's enum so the column does not need a migration when
+      // outbound webhooks land, but nothing writes one yet. Failing loudly
+      // beats a row that silently reports success.
+      throw new Error("Outbound webhooks are not implemented yet");
+
+    default: {
+      // Exhaustiveness: adding a channel to the enum without handling it here
+      // becomes a type error rather than a row that never delivers.
+      const unreachable: never = row.channel;
+      throw new Error(`Unknown outbox channel: ${String(unreachable)}`);
+    }
   }
 }

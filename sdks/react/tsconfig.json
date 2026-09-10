@@ -1,0 +1,8 @@
+{
+  "extends": "@formdrop/tsconfig/react.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "moduleResolution": "bundler"
+  },
+  "include": ["src"]
+}

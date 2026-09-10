@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import {
   isRequestOriginAllowed,
+  plannedDeliveries,
   resolveNotificationTargets,
   usagePeriod,
 } from "@formdrop/core";
@@ -10,7 +11,6 @@ import {
   listDeliverableRecipients,
   recordSubmission,
 } from "@formdrop/core/data";
-import { dispatchNotifications } from "../notify";
 import { errorSchema } from "../schemas";
 
 /**
@@ -68,6 +68,29 @@ export const collect = new Elysia().post(
 
     const period = usagePeriod();
 
+    // Only the recipient lookup needs the database; which channels actually
+    // fire is decided by packages/core, so the rule stays testable without one.
+    const recipients = form.emailNotificationsEnabled
+      ? await listDeliverableRecipients(form.id)
+      : [];
+
+    const deliveries = plannedDeliveries(
+      resolveNotificationTargets(form, owner, recipients),
+    );
+
+    /*
+     * Queued in the submission's own transaction, not sent from here (D8).
+     *
+     * What this replaces fired four requests without awaiting them and
+     * returned; anything that failed was logged and dropped, with no retry and
+     * nothing the owner could see. Now the intent to deliver is committed
+     * with the row it belongs to -- either both exist or neither does -- and
+     * the worker owns getting it out.
+     *
+     * The response is unchanged and still does not wait for delivery, which
+     * is what keeps p95 on this endpoint about the write.
+     */
+
     const submission = await recordSubmission({
       formId: form.id,
       userId: form.userId,
@@ -78,26 +101,7 @@ export const collect = new Elysia().post(
         null,
       userAgent: headers["user-agent"] ?? null,
       period,
-    });
-
-    // Only the recipient lookup needs the database; which channels actually
-    // fire is decided by packages/core, so the rule stays testable without one.
-    const recipients = form.emailNotificationsEnabled
-      ? await listDeliverableRecipients(form.id)
-      : [];
-
-    dispatchNotifications(resolveNotificationTargets(form, owner, recipients), {
-      formId: form.id,
-      formName: form.name,
-      userId: form.userId,
-      submissionId: submission.id,
-      period,
-      payload,
-      slackChannelName: form.slackChannelName,
-      discordChannelName: form.discordChannelName,
-      googleSheetsSheetId: form.googleSheetsSheetId,
-      googleSheetsRefreshToken: form.googleSheetsRefreshToken,
-      googleSheetsTokenExpiry: form.googleSheetsTokenExpiry,
+      deliveries,
     });
 
     return status(201, {

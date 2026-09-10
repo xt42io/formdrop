@@ -5,17 +5,21 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./events": "./src/events.ts"
+    "./events": "./src/events.ts",
+    "./server": "./src/server.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@formdrop/tsconfig": "*",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
-    "posthog-js": "^1.425.1"
+    "posthog-js": "^1.425.1",
+    "posthog-node": "^4.10.2"
   }
 }

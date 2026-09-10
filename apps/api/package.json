@@ -16,6 +16,7 @@
   "dependencies": {
     "@elysiajs/cors": "^1.4.2",
     "@elysiajs/openapi": "^1.4.16",
+    "@formdrop/analytics": "*",
     "@formdrop/core": "*",
     "@formdrop/db": "*",
     "@formdrop/ui": "*",

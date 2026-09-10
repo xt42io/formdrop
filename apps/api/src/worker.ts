@@ -4,6 +4,8 @@ import {
   markAttemptFailed,
   markDelivered,
 } from "@formdrop/core/data";
+import { isExhausted } from "@formdrop/core";
+import { captureServer } from "@formdrop/analytics/server";
 import { deliver } from "./elysia/notify";
 
 /**
@@ -49,6 +51,12 @@ export async function drainOnce(batchSize = BATCH_SIZE): Promise<number> {
 
   await Promise.all(
     claimed.map(async (row) => {
+      // Hoisted so the catch can attribute a failure to the right person.
+      // The context load is itself one of the things that can fail, so this
+      // stays null when the form or submission is gone -- and there is then
+      // nobody to attribute the event to.
+      let ownerId: string | null = null;
+
       try {
         const context = await findDeliveryContext(row.submissionId, row.formId);
 
@@ -57,6 +65,8 @@ export async function drainOnce(batchSize = BATCH_SIZE): Promise<number> {
           // Nothing to send and nothing to fix, so this is not retried.
           throw new Error("submission or form no longer exists");
         }
+
+        ownerId = context.form.userId;
 
         await deliver(row, {
           formName: context.form.name,
@@ -71,6 +81,15 @@ export async function drainOnce(batchSize = BATCH_SIZE): Promise<number> {
         });
 
         await markDelivered(row.id);
+
+        // W6: notification_sent, with the channel. This is what the
+        // failure-rate-by-channel dashboard the PRD asks for is built from,
+        // and it can only be observed here -- delivery happens long after
+        // the request that queued it.
+        captureServer(context.form.userId, "notification_sent", {
+          channel: row.channel,
+        });
+
         log("outbox_delivered", {
           outboxId: row.id,
           channel: row.channel,
@@ -81,6 +100,24 @@ export async function drainOnce(batchSize = BATCH_SIZE): Promise<number> {
         // Recorded rather than thrown on: one row failing must not abandon the
         // other nineteen in this batch.
         await markAttemptFailed(row.id, row.attempts, error);
+
+        /*
+         * Only once the row is out of attempts, not on every retry.
+         *
+         * A provider having a bad thirty seconds produces several failed
+         * attempts and then a success; counting each one would report a
+         * failure rate that is mostly noise. What the dashboard needs to
+         * show is deliveries that never arrived.
+         *
+         * Attributed by form id lookup rather than the context, which may be
+         * what failed to load.
+         */
+        if (isExhausted(row.attempts) && ownerId) {
+          captureServer(ownerId, "notification_failed", {
+            channel: row.channel,
+          });
+        }
+
         logError("outbox_attempt_failed", {
           outboxId: row.id,
           channel: row.channel,

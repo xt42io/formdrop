@@ -42,3 +42,10 @@ export {
   type OutboxChannel,
   type PlannedDelivery,
 } from "./outbox.ts";
+export {
+  API_KEY_LIMIT,
+  COLLECT_LIMIT,
+  RateLimiter,
+  type RateLimitOptions,
+  type RateLimitResult,
+} from "./rate-limit.ts";

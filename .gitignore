@@ -19,3 +19,7 @@ todos.json
 coverage/
 playwright-report/
 test-results/
+
+# Next.js build output and the sources fumadocs-mdx generates from content/
+.next
+apps/docs/.source

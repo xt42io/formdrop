@@ -26,7 +26,7 @@ const config = defineConfig({
      * server does no work for it and a self-hosted deploy behind a plain
      * Node process gets the same bytes as one behind a CDN.
      */
-    nitro({ config: { compressPublicAssets: { gzip: true, brotli: true } } }),
+    nitro({ compressPublicAssets: { gzip: true, brotli: true } }),
     viteTsConfigPaths({
       projects: ["./tsconfig.json"],
     }),

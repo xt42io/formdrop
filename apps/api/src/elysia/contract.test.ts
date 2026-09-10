@@ -33,6 +33,7 @@ const findFormBySlug = vi.fn();
 const findFormOwnerEmail = vi.fn();
 const listDeliverableRecipients = vi.fn();
 const recordSubmission = vi.fn();
+const captureServer = vi.fn();
 
 /*
  * vi.mock replaces the module wholesale, so every name the routes import has
@@ -57,6 +58,12 @@ vi.mock("@formdrop/core/data", () => ({
   listDeliverableRecipients: (...a: unknown[]) =>
     listDeliverableRecipients(...a),
   recordSubmission: (...a: unknown[]) => recordSubmission(...a),
+}));
+
+// Stubbed so the suite needs no project key and sends nothing. What is being
+// checked is that the route captures at all, and against whom.
+vi.mock("@formdrop/analytics/server", () => ({
+  captureServer: (...a: unknown[]) => captureServer(...a),
 }));
 
 const { createApp } = await import("./app");
@@ -160,6 +167,23 @@ describe("POST /f/:slug -- queues delivery instead of firing it (D8)", () => {
       { channel: "email", target: "team@example.com" },
       { channel: "slack", target: "https://hooks.slack.test/x" },
     ]);
+  });
+
+  it("records submission_received against the form's owner (W6)", async () => {
+    await post();
+
+    // Only the server can see this: nobody's browser is open when a stranger
+    // posts to somebody else's form.
+    expect(captureServer).toHaveBeenCalledWith("u1", "submission_received");
+  });
+
+  it("sends no properties with it, so no payload can leak", async () => {
+    await post();
+
+    // The submission is the payload, and W6 forbids payload contents as
+    // event properties. The safest version of that is no properties at all.
+    const [, , properties] = captureServer.mock.calls[0] as unknown[];
+    expect(properties).toBeUndefined();
   });
 
   it("queues nothing when the form has no channel configured", async () => {

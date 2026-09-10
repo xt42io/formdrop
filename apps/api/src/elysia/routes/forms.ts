@@ -8,6 +8,7 @@ import {
 } from "@formdrop/core/data";
 import { apiKeyAuth } from "../auth";
 import { errorSchema, formSchema, serializeForm } from "../schemas";
+import { rateLimitByApiKey } from "../rate-limit";
 
 /**
  * /v1/forms.
@@ -18,6 +19,7 @@ import { errorSchema, formSchema, serializeForm } from "../schemas";
  */
 export const formsV1 = new Elysia({ prefix: "/v1/forms" })
   .use(apiKeyAuth)
+  .use(rateLimitByApiKey)
   .get(
     "",
     async ({ key }) => ({

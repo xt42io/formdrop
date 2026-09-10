@@ -10,6 +10,7 @@ import {
 } from "@formdrop/core/data";
 import { apiKeyAuth } from "../auth";
 import { errorSchema, serializeSubmission, submissionSchema } from "../schemas";
+import { rateLimitByApiKey } from "../rate-limit";
 
 const FORM_NOT_FOUND = { error: "Form not found" };
 
@@ -17,6 +18,7 @@ export const submissionsV1 = new Elysia({
   prefix: "/v1/forms/:slug/submissions",
 })
   .use(apiKeyAuth)
+  .use(rateLimitByApiKey)
   .get(
     "",
     async ({ key, params, query, status }) => {

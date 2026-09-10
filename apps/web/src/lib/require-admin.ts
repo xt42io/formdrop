@@ -1,6 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
-import { MOCK_ENABLED } from "./mock-data";
 
 /**
  * Whether the caller is an admin, decided on the server (PRD 4.6).
@@ -22,22 +21,6 @@ import { MOCK_ENABLED } from "./mock-data";
  */
 export const isCallerAdmin = createServerFn({ method: "GET" }).handler(
   async () => {
-    // The mock fabricates an admin session in the browser, so with it on there
-    // is no real session for this to read and the admin surface would be
-    // unreachable in the very mode built to preview it.
-    //
-    // This does not widen anything. When the mock is on it is already
-    // answering /api/auth/get-session with an administrator, so the flag is
-    // the security boundary either way -- this keeps the server agreeing with
-    // the client instead of the two contradicting each other. The mock and
-    // this branch are removed together.
-    if (MOCK_ENABLED) {
-      console.warn(
-        "[FormDrop] VITE_MOCK_DATA=1 - the admin role check is bypassed.",
-      );
-      return { isAdmin: true };
-    }
-
     // Imported here rather than at module scope: this module is reachable from
     // the client bundle through the route's beforeLoad, and auth pulls in the
     // database client.

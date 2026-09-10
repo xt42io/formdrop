@@ -9,10 +9,20 @@ import { defineConfig } from "vitest/config";
  * measuring anything. They are exercised end to end by the Playwright smoke
  * path instead.
  *
- * The thresholds are the PRD's: 70% lines for the package, and 100% for the
- * domain allowlist and quota functions, which are the two places where being
- * wrong means either letting a stranger post to someone's form or billing the
- * wrong number.
+ * The PRD asks for 70% lines here, and for 100% on the domain allowlist and
+ * quota functions - the two places where being wrong means either letting a
+ * stranger post to someone's form or billing the wrong number.
+ *
+ * The global gate is set at 100 rather than 70 because that is where this
+ * package actually is, on every file and every metric. At 70 the gate had
+ * thirty points of slack: a whole new module could arrive with no tests at
+ * all and CI would still pass, which makes the number a report rather than a
+ * check. These are pure functions with no I/O, so full coverage is both
+ * achievable and already true, and the gate now fails on the thing it exists
+ * to catch.
+ *
+ * The two per-file entries are therefore redundant today, and kept anyway: if
+ * the global is ever relaxed, they stop those two from being relaxed with it.
  */
 export default defineConfig({
   test: {
@@ -22,7 +32,10 @@ export default defineConfig({
       include: ["src/*.ts"],
       exclude: ["src/index.ts", "src/*.test.ts"],
       thresholds: {
-        lines: 70,
+        lines: 100,
+        functions: 100,
+        statements: 100,
+        branches: 100,
         "src/domain.ts": {
           lines: 100,
           functions: 100,

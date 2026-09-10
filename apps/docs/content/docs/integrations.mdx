@@ -1,0 +1,57 @@
+---
+title: Integrations & Notifications
+description: Connect your forms to the tools you already use.
+---
+
+FormDrop separates the two kinds of connection, because they answer different
+questions:
+
+- **Notifications** tell a person something arrived.
+- **Integrations** put the data somewhere else.
+
+Both are configured per form, in the tabs of the same name.
+
+## Notifications
+
+<Cards>
+  <Card title="Email" description="An email the moment a submission arrives. Add as many recipients as you like; each one confirms their own address first." />
+  <Card title="Slack" description="Posts to a channel through an incoming webhook. Good for a shared inbox nobody has to remember to check." />
+  <Card title="Discord" description="The same, for a Discord server. Useful for community and support forms." />
+</Cards>
+
+### Recipients confirm their own address
+
+Adding an email recipient sends them a verification link, and nothing is
+delivered to that address until they follow it. That is deliberate: without
+it, anyone could point somebody else's inbox at a busy form.
+
+The form's owner is always a recipient when email is on, and does not need to
+confirm — their address is already verified from signing up.
+
+## Integrations
+
+<Cards>
+  <Card title="Google Sheets" description="Appends a row per submission to a sheet you choose. The connection is per form, so two forms can write to different spreadsheets." />
+</Cards>
+
+### Coming soon
+
+<Cards>
+  <Card title="Webhooks" description="A JSON payload to any URL when a submission arrives — Zapier, Make, or your own backend." />
+  <Card title="Airtable" description="Sync submissions into an Airtable base." />
+</Cards>
+
+## What happens when a delivery fails
+
+A notification is not sent inside the request that collects the submission.
+The submission is stored first and the delivery is queued alongside it, in the
+same database transaction — so a provider having a bad afternoon delays the
+notification and can never lose the submission.
+
+Failed deliveries are retried with a widening gap, roughly over half an hour.
+Something that never succeeds is kept and marked failed rather than
+disappearing quietly, so a notification that never arrived is a thing you can
+find out about.
+
+Each destination is queued separately. One bounced email address does not
+hold up Slack, and it does not stop the other four recipients.

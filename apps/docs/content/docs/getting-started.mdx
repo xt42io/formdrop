@@ -1,0 +1,124 @@
+---
+title: Getting Started
+description: Collect your first submission in a few minutes.
+---
+
+## 1. Create a form
+
+Create a form from the dashboard. You get a **form URL** built from its slug:
+
+```
+https://api.formdrop.co/f/your-form-slug
+```
+
+The slug is the only part of FormDrop your visitors ever see, and it is not a
+secret — it is meant to sit in public HTML.
+
+## 2. Send a submission
+
+Post to that URL. A plain HTML form works with no JavaScript at all; so does
+`fetch`, `curl`, or anything else that can make a request.
+
+<CodeBlockTabs>
+  <CodeBlockTabsList>
+    <CodeBlockTabsTrigger value="html">HTML</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="js">JavaScript</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="sdk">SDK</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="curl">cURL</CodeBlockTabsTrigger>
+    <CodeBlockTabsTrigger value="php">PHP</CodeBlockTabsTrigger>
+  </CodeBlockTabsList>
+
+<CodeBlockTab value="html">
+
+```html
+<form action="https://api.formdrop.co/f/your-form-slug" method="POST">
+  <input type="email" name="email" placeholder="Email" required />
+  <textarea name="message" placeholder="Message" required></textarea>
+  <button type="submit">Send</button>
+</form>
+```
+
+</CodeBlockTab>
+
+<CodeBlockTab value="js">
+
+```js
+await fetch("https://api.formdrop.co/f/your-form-slug", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    email: "user@example.com",
+    message: "Hello world",
+  }),
+});
+```
+
+</CodeBlockTab>
+
+<CodeBlockTab value="sdk">
+
+```js
+import { FormDrop } from "@formdrop/js";
+
+await FormDrop.submit("your-form-slug", {
+  email: "user@example.com",
+  message: "Hello world",
+});
+```
+
+</CodeBlockTab>
+
+<CodeBlockTab value="curl">
+
+```bash
+curl -X POST https://api.formdrop.co/f/your-form-slug \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "user@example.com", "message": "Hello world" }'
+```
+
+</CodeBlockTab>
+
+<CodeBlockTab value="php">
+
+```php
+<?php
+$url  = 'https://api.formdrop.co/f/your-form-slug';
+$data = ['email' => 'user@example.com', 'message' => 'Hello world'];
+
+$context = stream_context_create([
+    'http' => [
+        'method'  => 'POST',
+        'header'  => "Content-type: application/json\r\n",
+        'content' => json_encode($data),
+    ],
+]);
+
+$result = file_get_contents($url, false, $context);
+```
+
+</CodeBlockTab>
+</CodeBlockTabs>
+
+<Callout title="Give every field a name">
+  A field without a `name` attribute is not submitted by the browser at all, so
+  it never reaches us. This is the single most common reason a submission
+  arrives with something missing.
+</Callout>
+
+Both JSON and standard form encoding are accepted. The fields are whatever
+your form defines — FormDrop does not require a schema and does not reject
+unexpected fields.
+
+## 3. Check your dashboard
+
+The submission appears under **Forms** → your form → **Submissions**. From the
+same place you can turn on email, Slack or Discord notifications, and connect
+Google Sheets.
+
+## Where to go next
+
+<Cards>
+  <Card title="Forms" href="/forms" description="Slugs, allowed domains, and what a submission looks like." />
+  <Card title="Integrations" href="/integrations" description="Email, Slack, Discord and Google Sheets." />
+  <Card title="API reference" href="/api" description="Every endpoint, generated from the API itself." />
+</Cards>

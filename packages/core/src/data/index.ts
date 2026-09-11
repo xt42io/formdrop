@@ -79,6 +79,7 @@ export {
   listAllSubmissionsForForm,
 } from "./submissions.ts";
 export {
+  countLifetimeSubmissionsForUser,
   findFormBySlug,
   findFormOwnerEmail,
   listDeliverableRecipients,

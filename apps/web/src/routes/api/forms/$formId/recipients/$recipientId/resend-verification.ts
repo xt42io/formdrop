@@ -28,39 +28,33 @@ const POST = async ({
 
     const { formId, recipientId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
       return json({ error: "Form not found" }, { status: 404 });
     }
 
-    // Get recipient
     const recipient = await findRecipientInForm(formId, recipientId);
 
     if (!recipient) {
       return json({ error: "Recipient not found" }, { status: 404 });
     }
 
-    // Check if already verified
     if (recipient.verifiedAt) {
       return json({ error: "Recipient already verified" }, { status: 400 });
     }
 
-    // Generate new verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationTokenExpiresAt = new Date(
       Date.now() + 24 * 60 * 60 * 1000,
     ); // 24 hours
 
-    // Update recipient with new token
     await setRecipientVerificationToken(
       recipientId,
       verificationToken,
       verificationTokenExpiresAt,
     );
 
-    // Send verification email
     const verificationUrl = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
 
     await getResend().emails.send({

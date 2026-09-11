@@ -26,7 +26,6 @@ const GET = async ({
 
     const { formId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {

@@ -60,7 +60,6 @@ export async function sendSlackNotification({
     throw new Error(`Slack webhook failed: ${response.statusText}`);
   }
 
-  // Record notification usage
   await recordNotificationUsage({
     userId,
     formId,
@@ -125,7 +124,6 @@ export async function sendDiscordNotification({
     throw new Error(`Discord webhook failed: ${response.statusText}`);
   }
 
-  // Record notification usage
   await recordNotificationUsage({
     userId,
     formId,

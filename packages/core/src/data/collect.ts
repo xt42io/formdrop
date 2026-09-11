@@ -103,7 +103,7 @@ export async function recordSubmission(input: {
       })
       .returning();
 
-    await tx
+    const [usageRow] = await tx
       .insert(usage)
       .values({
         userId: input.userId,
@@ -114,7 +114,8 @@ export async function recordSubmission(input: {
       .onConflictDoUpdate({
         target: [usage.userId, usage.formId, usage.period],
         set: { count: sql`${usage.count} + 1` },
-      });
+      })
+      .returning({ count: usage.count });
 
     // No rows when the form has no channel configured. Inserting an empty
     // array is an error in Drizzle, and a form nobody asked to be notified
@@ -130,6 +131,35 @@ export async function recordSubmission(input: {
       );
     }
 
-    return submission;
+    return { submission, periodCount: usageRow.count };
   });
+}
+
+/**
+ * Every submission this account has ever collected, including ones since
+ * deleted.
+ *
+ * Distinct from `countSubmissionsForUser` in ./account.ts, which counts the
+ * rows that still exist and is what the account page displays. Activation asks
+ * a different question -- has this person ever received anything -- and the
+ * answer to that must not become "no" again when they clear their inbox.
+ *
+ * Read off `usage` rather than counted from `submissions`, for two reasons:
+ * the table holds one row per form per period instead of one per submission,
+ * so the aggregate stays small as the account grows; and deleting submissions
+ * -- which users do routinely, and the retention tool does in bulk -- leaves
+ * these counters untouched, so somebody who clears their inbox does not read
+ * as a new signup all over again.
+ *
+ * The caveat is form deletion: usage rows cascade from `forms`. Forms are soft
+ * deleted, so the cascade only fires if a row is ever hard deleted, and the
+ * cost is one duplicate activation event for that account.
+ */
+export async function countLifetimeSubmissionsForUser(userId: string) {
+  const [row] = await db
+    .select({ total: sql<number>`coalesce(sum(${usage.count}), 0)::int` })
+    .from(usage)
+    .where(eq(usage.userId, userId));
+
+  return row?.total ?? 0;
 }

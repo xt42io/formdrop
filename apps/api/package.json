@@ -20,12 +20,12 @@
     "@formdrop/analytics": "*",
     "@formdrop/core": "*",
     "@formdrop/db": "*",
+    "@formdrop/email": "*",
     "@formdrop/ui": "*",
     "@sentry/node": "^10.74.0",
     "dotenv": "^16.0.0",
     "drizzle-orm": "^0.39.0",
-    "elysia": "^1.4.30",
-    "zeptomail": "^7.0.0"
+    "elysia": "^1.4.30"
   },
   "devDependencies": {
     "@formdrop/tsconfig": "*",

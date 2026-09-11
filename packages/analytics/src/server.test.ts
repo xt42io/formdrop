@@ -15,11 +15,8 @@ vi.mock("posthog-node", () => ({
   },
 }));
 
-const {
-  captureServer,
-  initServerAnalytics,
-  shutdownServerAnalytics,
-} = await import("./server.ts");
+const { captureServer, initServerAnalytics, shutdownServerAnalytics } =
+  await import("./server.ts");
 
 beforeEach(() => {
   vi.clearAllMocks();

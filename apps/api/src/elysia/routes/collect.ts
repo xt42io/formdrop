@@ -50,13 +50,26 @@ export const collect = new Elysia().post(
       return status(403, { error: "Domain not allowed for this form" });
     }
 
-    // Elysia does not reject a malformed or non-object body here -- the body
-    // schema is deliberately unconstrained, so a bare string or an array
-    // arrives as-is. Without this guard `Object.keys("oops")` yields character
-    // indices, which is a non-empty object, and the garbage gets stored.
+    /*
+     * Elysia does not reject a malformed or non-object body here -- the body
+     * schema is deliberately unconstrained, so a bare string or an array
+     * arrives as-is. Without this guard `Object.keys("oops")` yields character
+     * indices, which is a non-empty object, and the garbage gets stored.
+     *
+     * The spread is not cosmetic. Elysia on Bun parses a urlencoded body into
+     * an object with a null prototype, and Drizzle's `is()` reads
+     * `Object.getPrototypeOf(value).constructor` on any object it is handed --
+     * which throws on one, so the insert fails and the endpoint answers 500.
+     *
+     * That is the plain HTML form path, the one case this product promises
+     * works with no JavaScript at all, and a JSON body is unaffected because
+     * JSON.parse returns an ordinary object. So it broke for exactly the
+     * submissions least likely to be noticed in testing and most likely to be
+     * real. Copying into a normal object is the whole fix.
+     */
     const payload =
       body !== null && typeof body === "object" && !Array.isArray(body)
-        ? (body as Record<string, unknown>)
+        ? { ...(body as Record<string, unknown>) }
         : null;
 
     if (!payload || Object.keys(payload).length === 0) {

@@ -19,7 +19,6 @@ export const Route = createFileRoute("/api/verify-recipient")({
             );
           }
 
-          // Find recipient with this token
           const recipient = await findRecipientByValidToken(token);
 
           if (!recipient) {
@@ -29,7 +28,6 @@ export const Route = createFileRoute("/api/verify-recipient")({
             );
           }
 
-          // Mark as verified
           await markRecipientVerified(recipient.id);
 
           return Response.json({

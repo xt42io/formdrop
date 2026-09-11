@@ -14,7 +14,6 @@ export const Route = createFileRoute(
           const error = url.searchParams.get("error");
 
           if (error) {
-            // User denied access
             return Response.redirect(
               `${process.env.APP_URL}/app/forms/${state}/integrations?error=google_sheets_denied`,
               302,
@@ -30,7 +29,6 @@ export const Route = createFileRoute(
 
           const formId = state;
 
-          // Exchange code for access token
           const tokenResponse = await fetch(
             "https://oauth2.googleapis.com/token",
             {
@@ -69,7 +67,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Get form info to create spreadsheet name
           const form = await findFormById(formId);
 
           if (!form) {
@@ -79,7 +76,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Create a new spreadsheet automatically
           const createSpreadsheetResponse = await fetch(
             "https://sheets.googleapis.com/v4/spreadsheets",
             {
@@ -111,7 +107,6 @@ export const Route = createFileRoute(
           const spreadsheetId = spreadsheetData.spreadsheetId;
           const spreadsheetName = spreadsheetData.properties.title;
 
-          // Update form with Google Sheets tokens and spreadsheet info
           await updateFormById(formId, {
             googleSheetsAccessToken: accessToken,
             googleSheetsRefreshToken: refreshToken,
@@ -121,7 +116,6 @@ export const Route = createFileRoute(
             googleSheetsEnabled: true, // Enable immediately
           });
 
-          // Redirect back to integrations page with success
           return Response.redirect(
             `${process.env.APP_URL}/app/forms/${formId}/integrations?success=google_sheets_connected`,
             302,

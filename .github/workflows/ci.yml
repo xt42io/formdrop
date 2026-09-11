@@ -94,3 +94,36 @@ jobs:
           name: playwright-report
           path: apps/web/playwright-report
           retention-days: 7
+
+  # The SDK against the real API (PRD W8). Separate from `verify` because it
+  # needs staging to be up and credentials to reach it: a unit run that goes
+  # red when a staging box is down is a unit run people learn to ignore.
+  #
+  # Skipped entirely when the secrets are absent, so a fork's PR does not fail
+  # on something it cannot have. That makes this advisory on forks and binding
+  # on this repository, which is the right way round.
+  sdk-contract:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build the SDK
+        run: npx turbo run build --filter=@formdrop/js
+
+      - name: Contract tests against staging
+        run: npm run test:contract --workspace @formdrop/js
+        env:
+          # Unset means the suite skips itself rather than failing, so this
+          # job stays green until staging exists and the secrets are added.
+          FORMDROP_STAGING_URL: ${{ secrets.FORMDROP_STAGING_URL }}
+          FORMDROP_STAGING_KEY: ${{ secrets.FORMDROP_STAGING_KEY }}

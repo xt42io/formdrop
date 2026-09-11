@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { updateFormById } from "@formdrop/core/data";
+import { findFormById, updateFormById } from "@formdrop/core/data";
 
 export const Route = createFileRoute("/api/integrations/slack/callback")({
   server: {
@@ -71,6 +71,29 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
             slackTeamName: teamName,
             slackNotificationsEnabled: true,
           });
+
+          /*
+           * The connection happened here, exactly once. Capturing it from the
+           * page the redirect lands on would count again on every reload of a
+           * URL that still carries ?success=, and would miss the case where
+           * the tab is closed before it renders.
+           *
+           * Lazily imported: posthog-node must not reach the client bundle.
+           */
+          try {
+            const owner = await findFormById(formId);
+            if (owner) {
+              const { captureServer } = await import("@/lib/server-analytics");
+              captureServer(owner.userId, "integration_connected", {
+                provider: "slack",
+              });
+            }
+          } catch (analyticsError) {
+            console.error(
+              "integration_connected capture failed",
+              analyticsError,
+            );
+          }
 
           return Response.redirect(
             `${process.env.APP_URL}/app/forms/${formId}/notifications?success=slack_connected`,

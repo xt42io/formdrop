@@ -25,7 +25,6 @@ const GET = async ({
 
     const { formId, submissionId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
@@ -68,14 +67,12 @@ const DELETE = async ({
 
     const { formId, submissionId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
       return json({ error: "Form not found" }, { status: 404 });
     }
 
-    // Soft delete submission
     await softDeleteSubmission(formId, submissionId);
 
     return json({ success: true });

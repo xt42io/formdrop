@@ -30,7 +30,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Verify form belongs to user
           const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
@@ -44,7 +43,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Update form with spreadsheet info and enable integration
           await updateFormById(formId, {
             googleSheetsSpreadsheetId: spreadsheetId,
             googleSheetsSpreadsheetName: spreadsheetName,

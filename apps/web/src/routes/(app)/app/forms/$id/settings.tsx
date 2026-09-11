@@ -61,7 +61,6 @@ function RouteComponent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["form", id] });
-      // Maybe show a toast?
     },
   });
 
@@ -84,7 +83,6 @@ function RouteComponent() {
   const handleAddDomain = () => {
     if (newDomain.trim()) {
       const domain = newDomain.trim();
-      // Prevent duplicates
       if (!allowedDomains.includes(domain)) {
         const newDomains = [...allowedDomains, domain];
         setAllowedDomains(newDomains);

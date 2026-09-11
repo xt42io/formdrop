@@ -5,7 +5,6 @@ import { Polar } from "@polar-sh/sdk";
 async function main() {
   console.log("⚠️  Clearing database...");
   try {
-    // Clear Polar customers
     if (process.env.POLAR_ACCESS_TOKEN) {
       console.log("⚠️  Clearing Polar customers...");
       const polar = new Polar({
@@ -24,7 +23,6 @@ async function main() {
       console.log("✅ Polar customers cleared successfully");
     }
 
-    // Truncate all tables in the public schema
     await db.execute(sql`
       DO $$ DECLARE
           r RECORD;

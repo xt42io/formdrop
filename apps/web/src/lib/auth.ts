@@ -124,6 +124,30 @@ export const auth = betterAuth({
                 currentPeriodEnd: new Date(subscription.currentPeriodEnd!),
                 cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
               });
+
+              /*
+               * The end of the monetization funnel, and the only step of it no
+               * browser can report: the person paying has been handed back to
+               * Polar, and whether their tab is still open by the time the
+               * money clears is not something to hang a conversion number on.
+               *
+               * The `if (userId)` above is what makes this safe to attribute --
+               * without a resolved id the row is not written either, and a
+               * subscription filed under an anonymous person would break the
+               * free-to-pro funnel rather than fill it in.
+               *
+               * No plan property: the taxonomy does not ask for one, and the
+               * product name is already on the row this sits beside.
+               */
+              try {
+                const { captureServer } = await import("./server-analytics");
+                captureServer(userId, "subscription_activated");
+              } catch (analyticsError) {
+                console.error(
+                  "subscription_activated capture failed",
+                  analyticsError,
+                );
+              }
             }
           },
           onSubscriptionUpdated: async (payload) => {

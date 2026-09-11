@@ -13,6 +13,7 @@
     "openapi": "node scripts/generate-openapi-pages.mjs"
   },
   "dependencies": {
+    "@formdrop/analytics": "*",
     "fumadocs-core": "^16.15.9",
     "fumadocs-mdx": "^15.4.0",
     "fumadocs-openapi": "^11.4.2",

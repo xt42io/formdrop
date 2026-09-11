@@ -2,6 +2,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  useRouterState,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
@@ -19,6 +20,7 @@ import {
   identifyUser,
   initAnalytics,
   resetAnalytics,
+  setSessionRecording,
 } from "@formdrop/analytics";
 
 interface MyRouterContext {
@@ -101,6 +103,28 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     initAnalytics({ key: import.meta.env.VITE_POSTHOG_KEY });
   }, []);
+
+  /*
+   * Session replay, scoped (W6): on for the dashboard, off everywhere else.
+   *
+   * The allowlist is the point. Auth routes are where passwords and one-time
+   * codes are typed, and while inputs are masked at the recorder, the right
+   * answer for a login screen is no recording rather than a masked one. The
+   * marketing pages are excluded too -- there is nothing to learn from
+   * replaying a scroll down the pricing page that the funnel events do not
+   * already say.
+   *
+   * /app is matched on a path boundary, so a future /application or
+   * /app-store would not quietly opt itself in.
+   */
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+
+  useEffect(() => {
+    const inDashboard = pathname === "/app" || pathname.startsWith("/app/");
+    setSessionRecording(inDashboard);
+  }, [pathname]);
 
   // Better Auth owns identity: identify once a session resolves, reset on sign
   // out so the next person on this browser is a separate person, and do neither

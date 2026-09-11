@@ -1,0 +1,100 @@
+name: Publish SDKs
+
+# The SDKs are versioned independently (PRD W8), so the tag says which one is
+# going out and at what version:
+#
+#   @formdrop/js@0.2.0      -> publishes sdks/js
+#   @formdrop/react@0.1.3   -> publishes sdks/react
+#
+# Nothing publishes on a push to a branch. A release is a deliberate tag, and
+# the tag is the only input this workflow takes.
+on:
+  push:
+    tags:
+      - "@formdrop/js@*"
+      - "@formdrop/react@*"
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Provenance is the point of publishing from CI rather than a laptop: npm
+      # records which workflow, at which commit, produced the tarball, and the
+      # registry shows it on the package page. It needs an OIDC token, and
+      # `contents: read` stops this job being able to do anything else.
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Work out which SDK this tag is for
+        id: target
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          # The last @ separates name from version, and the name itself starts
+          # with one -- so strip from the right, not the left.
+          NAME="${TAG%@*}"
+          VERSION="${TAG##*@}"
+
+          case "$NAME" in
+            @formdrop/js)    DIR=sdks/js ;;
+            @formdrop/react) DIR=sdks/react ;;
+            *) echo "::error::$TAG does not name a publishable SDK"; exit 1 ;;
+          esac
+
+          echo "name=$NAME"       >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "dir=$DIR"         >> "$GITHUB_OUTPUT"
+
+      - name: Install
+        run: npm ci
+
+      # A tag that disagrees with package.json would publish a version nobody
+      # asked for, and npm would accept it. Checked before anything is built.
+      - name: Check the tag matches package.json
+        run: |
+          DECLARED=$(node -p "require('./${{ steps.target.outputs.dir }}/package.json').version")
+          if [ "$DECLARED" != "${{ steps.target.outputs.version }}" ]; then
+            echo "::error::tag says ${{ steps.target.outputs.version }}, package.json says $DECLARED"
+            exit 1
+          fi
+
+      # The whole repo, not just the SDK: @formdrop/react builds against
+      # @formdrop/js, and the size gate in each build is what enforces the
+      # PRD's 5 KB and 2 KB budgets. A bundle over budget fails here rather
+      # than reaching npm.
+      - name: Build
+        run: npx turbo run build
+
+      - name: Typecheck
+        run: npx turbo run typecheck
+
+      - name: Test
+        run: npx turbo run test
+
+      # `npm publish` refuses to overwrite an existing version, so a re-run of
+      # this workflow on the same tag fails loudly instead of doing something
+      # surprising. provenance is also set in each package's publishConfig;
+      # passing it here means a publish cannot silently lose it.
+      - name: Publish
+        run: npm publish --provenance --access public
+        working-directory: ${{ steps.target.outputs.dir }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Summarise
+        run: |
+          echo "Published **${{ steps.target.outputs.name }}@${{ steps.target.outputs.version }}** with provenance." \
+            >> "$GITHUB_STEP_SUMMARY"

@@ -77,7 +77,6 @@ export function GoogleSheetsConfigModal({
         throw new Error("Failed to save configuration");
       }
 
-      // Invalidate form query to refresh the UI
       await queryClient.invalidateQueries({ queryKey: ["form", formId] });
       onClose();
     } catch (err: any) {

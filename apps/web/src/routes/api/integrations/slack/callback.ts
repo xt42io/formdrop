@@ -12,7 +12,6 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
           const error = url.searchParams.get("error");
 
           if (error) {
-            // User denied access
             return Response.redirect(
               `${process.env.APP_URL}/app/forms/${state}/notifications?error=slack_denied`,
               302,
@@ -28,7 +27,6 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
 
           const formId = state;
 
-          // Exchange code for access token
           const tokenResponse = await fetch(
             "https://slack.com/api/oauth.v2.access",
             {
@@ -54,7 +52,6 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
             );
           }
 
-          // Extract webhook information
           const webhookUrl = tokenData.incoming_webhook?.url;
           const channelId = tokenData.incoming_webhook?.channel_id;
           const channelName = tokenData.incoming_webhook?.channel;
@@ -67,7 +64,6 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
             );
           }
 
-          // Update form with Slack information
           await updateFormById(formId, {
             slackWebhookUrl: webhookUrl,
             slackChannelId: channelId,
@@ -76,7 +72,6 @@ export const Route = createFileRoute("/api/integrations/slack/callback")({
             slackNotificationsEnabled: true,
           });
 
-          // Redirect back to notifications page
           return Response.redirect(
             `${process.env.APP_URL}/app/forms/${formId}/notifications?success=slack_connected`,
             302,

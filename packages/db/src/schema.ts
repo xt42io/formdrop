@@ -402,4 +402,64 @@ export const notificationOutbox = pgTable(
   ],
 );
 
+export const emailDeliveryStatusEnum = pgEnum("email_delivery_status", [
+  "sent",
+  "failed",
+]);
+
+/**
+ * Every email FormDrop sends, and what happened to it (PRD W7).
+ *
+ * Today a failed send is a line in a log nobody reads, so "did my
+ * notification go out?" is not a question support can answer. A row per send
+ * with the provider's own message id makes it one that can be looked up with
+ * the provider, and the PRD's plan is to surface these in the dashboard.
+ *
+ * Deliberately not a foreign key to submissions or recipients. This table
+ * outlives what it describes -- the interesting case is a notification for a
+ * submission somebody has since deleted -- and a cascade would erase exactly
+ * the history it exists to keep.
+ */
+export const emailDeliveries = pgTable(
+  "email_deliveries",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+
+    /**
+     * The account this send belongs to, when there is one.
+     *
+     * Nullable because recipient verification goes to somebody who may have
+     * no account at all, and that send still has to be debuggable.
+     */
+    userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+
+    /** Which template produced it, e.g. "new_submission". */
+    template: text("template").notNull(),
+
+    recipient: text("recipient").notNull(),
+
+    subject: text("subject").notNull(),
+
+    /** Adapter name: "resend", "zeptomail", later "sendbyte". */
+    provider: text("provider").notNull(),
+
+    status: emailDeliveryStatusEnum("status").notNull(),
+
+    /** The provider's id for the message. Null on failure, and for providers that give none. */
+    providerMessageId: text("provider_message_id"),
+
+    /** The failure, kept so it can be read without going to the logs. */
+    error: text("error"),
+
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [
+    // "What has this account been sent, newest first" -- the dashboard view.
+    index("email_deliveries_user_idx").on(table.userId, table.createdAt),
+
+    // "What is failing right now", which is the operational question.
+    index("email_deliveries_status_idx").on(table.status, table.createdAt),
+  ],
+);
+
 export { account, session, user, verification };

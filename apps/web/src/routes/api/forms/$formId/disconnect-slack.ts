@@ -21,14 +21,12 @@ const DELETE = async ({
 
     const { formId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
       return json({ error: "Form not found" }, { status: 404 });
     }
 
-    // Clear Slack integration
     await disconnectSlack(formId);
 
     return json({ success: true });

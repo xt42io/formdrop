@@ -33,7 +33,6 @@ export const Route = createFileRoute("/api/integrations/slack/authorize")({
             );
           }
 
-          // Verify form belongs to user
           const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
@@ -50,14 +49,12 @@ export const Route = createFileRoute("/api/integrations/slack/authorize")({
             );
           }
 
-          // Build Slack OAuth URL
           const slackAuthUrl = new URL("https://slack.com/oauth/v2/authorize");
           slackAuthUrl.searchParams.set("client_id", clientId);
           slackAuthUrl.searchParams.set("scope", "incoming-webhook");
           slackAuthUrl.searchParams.set("redirect_uri", redirectUri);
           slackAuthUrl.searchParams.set("state", formId); // Pass formId in state
 
-          // Redirect to Slack OAuth
           return Response.redirect(slackAuthUrl.toString(), 302);
         } catch (error: any) {
           return Response.json(

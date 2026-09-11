@@ -9,10 +9,8 @@ import {
 /**
  * Resend, behind the interface.
  *
- * This is one of the two providers the repository already sends through. It
- * is here so W7's structural work -- one entry point, React Email templates,
- * a delivery log -- can land and be used before D3 resolves, rather than
- * waiting on a contract nobody has yet.
+ * The provider apps/web sent through before W7, kept as a working option and
+ * as the fallback while the SendByte cutover is proved out.
  */
 export function resendProvider(apiKey: string, from: string): EmailProvider {
   // Constructed once per provider instance rather than per send; the client

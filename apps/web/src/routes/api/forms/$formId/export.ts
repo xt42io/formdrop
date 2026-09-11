@@ -38,7 +38,6 @@ export const Route = createFileRoute("/api/forms/$formId/export")({
               // Write BOM for Excel compatibility
               controller.enqueue(encoder.encode("\uFEFF"));
 
-              // Write Headers
               const csvHeaders = ["ID", "Created At"];
               if (includeMetadata) {
                 csvHeaders.push("IP", "User Agent");
@@ -77,7 +76,6 @@ export const Route = createFileRoute("/api/forms/$formId/export")({
 
                   row.push(JSON.stringify(sub.payload).replace(/"/g, '""')); // Escape quotes for CSV
 
-                  // Format as CSV line
                   const line =
                     row.map((field) => `"${field}"`).join(",") + "\n";
                   controller.enqueue(encoder.encode(line));

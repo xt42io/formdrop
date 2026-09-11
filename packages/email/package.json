@@ -1,0 +1,30 @@
+{
+  "name": "@formdrop/email",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./provider": "./src/provider.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@formdrop/tsconfig": "*",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@formdrop/db": "*",
+    "@formdrop/ui": "*",
+    "@react-email/components": "^1.0.1",
+    "@react-email/render": "^2.0.0",
+    "react": "^19.2.0",
+    "resend": "^6.5.2",
+    "zeptomail": "^7.0.0"
+  }
+}

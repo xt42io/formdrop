@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { RootProvider } from "fumadocs-ui/provider/next";
+import { Analytics } from "./analytics";
 import "./global.css";
 
 /**
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
+        <Analytics />
         <RootProvider theme={{ enabled: false, forcedTheme: "light" }}>
           {children}
         </RootProvider>

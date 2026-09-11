@@ -178,6 +178,37 @@ describe("POST /f/:slug -- queues delivery instead of firing it (D8)", () => {
     ]);
   });
 
+  it("hands the store an ordinary object for a urlencoded body", async () => {
+    const res = await call("/f/contact", {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: "email=visitor%40example.com&message=hello",
+    });
+
+    expect(res.status).toBe(201);
+
+    const [input] = recordSubmission.mock.calls[0] as [
+      { payload: Record<string, unknown> },
+    ];
+
+    expect(input.payload).toEqual({
+      email: "visitor@example.com",
+      message: "hello",
+    });
+
+    /*
+     * The assertion that matters. Elysia on Bun parses a urlencoded body into
+     * a null-prototype object, and Drizzle reads
+     * `Object.getPrototypeOf(value).constructor` on anything handed to an
+     * insert -- which throws on one, so `POST /f/:slug` answered 500 for every
+     * plain HTML form while JSON kept working.
+     *
+     * toEqual does not catch it: a null-prototype object with the same keys
+     * passes. Only the prototype itself tells the two apart.
+     */
+    expect(Object.getPrototypeOf(input.payload)).not.toBeNull();
+  });
+
   it("records submission_received against the form's owner (W6)", async () => {
     await post();
 

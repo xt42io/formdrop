@@ -169,6 +169,19 @@ function PrivacyPolicy() {
                 associated with your account identifier only, not with your name
                 or email address.
               </p>
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
+                We record replays of sessions inside the dashboard only, at
+                formdrop.co/app, to see where the product is confusing. Every
+                input is masked before the recording leaves your browser, so
+                what you type is not captured. Recording never runs on the
+                sign-in, sign-up or verification pages, and never on the public
+                pages of this site.
+              </p>
+              <p className="mb-4 text-[15px] leading-relaxed text-ink-600">
+                None of this applies to the forms you host with FormDrop. We do
+                not place analytics on your pages, and the people who fill in
+                your forms are not tracked by us.
+              </p>
             </section>
 
             <section className="mb-10">

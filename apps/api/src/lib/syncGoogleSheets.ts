@@ -196,7 +196,8 @@ export async function syncGoogleSheets({
       throw new Error("Failed to fetch spreadsheet info");
     }
 
-    const spreadsheetInfo = (await spreadsheetResponse.json()) as SpreadsheetInfo;
+    const spreadsheetInfo =
+      (await spreadsheetResponse.json()) as SpreadsheetInfo;
     const sheet = spreadsheetInfo.sheets?.[0];
     const sheetName = sheet?.properties?.title || "Sheet1";
 

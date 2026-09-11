@@ -29,7 +29,6 @@ async function seed() {
     await db.delete(account);
     await db.delete(user);
 
-    // Create test users using Better Auth API
     console.log("👤 Creating users...");
 
     const user1Email = faker.internet.email();
@@ -38,7 +37,6 @@ async function seed() {
     console.log(`Creating user: ${user1Email}`);
     console.log(`Creating user: ${user2Email}`);
 
-    // Create user 1
     await auth.api.signUpEmail({
       body: {
         name: "John Doe",
@@ -48,7 +46,6 @@ async function seed() {
       },
     });
 
-    // Create user 2
     await auth.api.signUpEmail({
       body: {
         name: "Jane Smith",
@@ -61,7 +58,6 @@ async function seed() {
     // Wait a bit for the database to be consistent
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Get all users to find the ones we just created
     const allUsers = await db.select().from(user);
     console.log(`Found ${allUsers.length} users in database`);
 
@@ -83,7 +79,6 @@ async function seed() {
       );
     }
 
-    // Mark emails as verified
     await db
       .update(user)
       .set({ emailVerified: true })
@@ -100,7 +95,6 @@ async function seed() {
     console.log(`✅ Created 2 users with accounts and verified emails`);
     console.log(`   User 1: ${user1Email}`);
     console.log(`   User 2: ${user2Email}`);
-    // Create buckets for user 1
     console.log("🪣 Creating forms...");
     const [contactForm, newsletterForm, feedbackForm] = await db
       .insert(forms)
@@ -129,7 +123,6 @@ async function seed() {
       ])
       .returning();
 
-    // Create forms for user 2
     const [supportForm] = await db
       .insert(forms)
       .values([
@@ -145,7 +138,6 @@ async function seed() {
 
     console.log("✅ Created 4 forms");
 
-    // Create submissions for contact form
     console.log("📝 Creating submissions...");
     const contactSubmissions = Array.from({ length: 15 }, () => ({
       formId: contactForm.id,
@@ -223,7 +215,6 @@ async function seed() {
 
     console.log("✅ Created 58 submissions");
 
-    // Create usage data
     console.log("📊 Creating usage data...");
 
     const allSubmissions = [
@@ -264,7 +255,6 @@ async function seed() {
 
     console.log("✅ Created 4 API keys");
 
-    // Create notifications
     console.log("🔔 Creating notifications...");
     await db.insert(notifications).values([
       {
@@ -295,7 +285,6 @@ async function seed() {
 
     console.log("✅ Created 4 notifications");
 
-    // Create events
     console.log("📊 Creating events...");
     await db.insert(events).values([
       {

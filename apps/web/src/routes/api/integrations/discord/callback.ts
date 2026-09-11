@@ -12,7 +12,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
           const error = url.searchParams.get("error");
 
           if (error) {
-            // User denied access
             return Response.redirect(
               `${process.env.APP_URL}/app/forms/${state}/notifications?error=discord_denied`,
               302,
@@ -28,7 +27,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
 
           const formId = state;
 
-          // Exchange code for access token and webhook
           const tokenResponse = await fetch(
             "https://discord.com/api/oauth2/token",
             {
@@ -55,7 +53,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
             );
           }
 
-          // Extract webhook information
           const webhook = tokenData.webhook;
 
           if (!webhook || !webhook.url) {
@@ -69,7 +66,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
           const channelId = webhook.channel_id;
           const guildId = webhook.guild_id;
 
-          // Fetch guild information to get server name
           let guildName = "Discord Server";
           let channelName = webhook.name || "webhook-channel";
 
@@ -88,7 +84,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
               guildName = guildData.name;
             }
 
-            // Try to get channel name
             const channelResponse = await fetch(
               `https://discord.com/api/v10/channels/${channelId}`,
               {
@@ -107,7 +102,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
             console.error("Failed to fetch Discord guild/channel info:", e);
           }
 
-          // Update form with Discord information
           await updateFormById(formId, {
             discordWebhookUrl: webhookUrl,
             discordChannelId: channelId,
@@ -116,7 +110,6 @@ export const Route = createFileRoute("/api/integrations/discord/callback")({
             discordNotificationsEnabled: true,
           });
 
-          // Redirect back to notifications page
           return Response.redirect(
             `${process.env.APP_URL}/app/forms/${formId}/notifications?success=discord_connected`,
             302,

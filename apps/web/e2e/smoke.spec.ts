@@ -8,18 +8,11 @@ import { readVerificationOtp } from "./otp";
  * One account and one form are shared across the steps, so they run in order
  * in a single worker. Splitting them would mean signing up four times.
  *
- * KNOWN BLOCKER -- read before debugging a red run.
- *
- * The auth config sets Polar's `createCustomerOnSignUp: true`, and the plugin
- * re-throws a failed customer creation as INTERNAL_SERVER_ERROR rather than
- * warning and carrying on. So POST /sign-up/email fails outright unless
- * POLAR_ACCESS_TOKEN is a working token, and the first step below fails with
- * "Polar customer creation failed" rather than anything about this suite.
- *
- * Either give the run a Polar sandbox token, or make the app skip customer
- * creation when Polar is unconfigured. The second is the better fix -- signup
- * is currently broken in any environment without Polar credentials, which
- * includes a fresh clone -- but it is an app change, not a test change.
+ * This used to be blocked on Polar. `createCustomerOnSignUp` re-throws a
+ * failed customer creation as a 500, so signup failed outright without a
+ * working token -- on a fresh clone as much as in CI. The app now registers
+ * the billing plugin only when a token is configured, so the path below runs
+ * without one and billing is unchanged wherever one exists.
  */
 
 // A fresh identity per run, so a re-run never collides with the last one's rows.

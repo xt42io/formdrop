@@ -37,7 +37,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "size": "node scripts/size.mjs"
+    "size": "node scripts/size.mjs",
+    "test:contract": "vitest run --config vitest.contract.config.ts"
   },
   "devDependencies": {
     "@formdrop/tsconfig": "*",

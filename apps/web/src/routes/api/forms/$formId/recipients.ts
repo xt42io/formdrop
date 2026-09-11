@@ -30,7 +30,6 @@ const GET = async ({
 
     const { formId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
@@ -75,17 +74,14 @@ const POST = async ({
       return json({ error: "Email is required" }, { status: 400 });
     }
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, userId);
 
     if (!form) {
       return json({ error: "Form not found" }, { status: 404 });
     }
 
-    // Check if user is pro
     const isPro = await isUserPro(userId);
 
-    // Check recipient limit
     const existingRecipients = await listRecipientRowsForForm(formId);
 
     const limit = isPro ? 10 : 2;
@@ -98,20 +94,17 @@ const POST = async ({
       );
     }
 
-    // Check if recipient already exists
     const existingRecipient = existingRecipients.find((r) => r.email === email);
 
     if (existingRecipient) {
       return json({ error: "Recipient already exists" }, { status: 400 });
     }
 
-    // Create verification token
     const verificationToken = crypto.randomBytes(32).toString("hex");
     const verificationTokenExpiresAt = new Date(
       Date.now() + 24 * 60 * 60 * 1000,
     ); // 24 hours
 
-    // Create recipient
     const recipient = await createRecipient({
       formId,
       email,
@@ -119,7 +112,6 @@ const POST = async ({
       verificationTokenExpiresAt,
     });
 
-    // Send verification email
     const verificationLink = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
 
     await getResend().emails.send({

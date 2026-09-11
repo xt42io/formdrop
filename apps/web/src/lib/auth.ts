@@ -12,13 +12,15 @@ import {
 } from "@polar-sh/better-auth";
 import { Polar } from "@polar-sh/sdk";
 import { admin, emailOTP } from "better-auth/plugins";
-import { OTPEmail } from "@/emails/OTPEmail";
-import { getResend } from "@/lib/email";
+import { OtpEmail, sendEmail } from "@formdrop/email";
 
 const polarClient = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN,
   server: process.env.NODE_ENV === "development" ? "sandbox" : "production",
 });
+
+/** Kept in one place so the template and Better Auth cannot disagree. */
+const OTP_EXPIRY_MINUTES = 25;
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -43,27 +45,31 @@ export const auth = betterAuth({
     emailOTP({
       async sendVerificationOTP({ email, otp }) {
         try {
-          console.log(`Sending OTP email to ${email}`);
-
-          const { error } = await getResend().emails.send({
-            from: "FormDrop <onboarding@mail.formdrop.co>",
+          // The sender, the provider and the delivery log all live in
+          // @formdrop/email now, so this call site says what to send and to
+          // whom and nothing else.
+          await sendEmail({
             to: email,
-            subject: "Your Verification Code",
-            react: OTPEmail({ otp }),
+            subject: "Your FormDrop sign-in code",
+            templateName: "otp",
+            // expiresIn above is seconds; the template tells the reader
+            // minutes, which is what a person actually needs.
+            template: OtpEmail({
+              code: otp,
+              expiresInMinutes: OTP_EXPIRY_MINUTES,
+            }),
           });
-
-          if (error) {
-            throw new Error(`Failed to send email: ${error.message}`);
-          }
-
-          console.log(`Sent OTP email to ${email}`);
         } catch (error) {
-          console.error("Error sending email:", error);
+          // Swallowed as before: Better Auth surfaces "we sent you a code"
+          // regardless, and throwing here would show a stack trace to
+          // somebody trying to sign in. The failure is now a row in
+          // email_deliveries rather than only a line in a log.
+          console.error("Failed to send the OTP email", error);
         }
       },
       sendVerificationOnSignUp: true,
       otpLength: 6,
-      expiresIn: 1500,
+      expiresIn: OTP_EXPIRY_MINUTES * 60,
     }),
     polar({
       client: polarClient,

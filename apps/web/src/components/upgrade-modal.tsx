@@ -1,7 +1,8 @@
 import { Tick02Icon, Cancel01Icon, StarIcon } from "@hugeicons/core-free-icons";
 import { motion } from "motion/react";
 import { Icon, Modal } from "@formdrop/ui";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { capture } from "@formdrop/analytics";
 import { getBillingClient } from "@/lib/billing-client";
 
 interface UpgradeModalProps {
@@ -15,6 +16,19 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   );
   const [isLoading, setIsLoading] = useState(false);
 
+  /*
+   * Captured on the open transition rather than at each call site. Five
+   * components raise this modal -- the sidebar, billing settings, the
+   * recipients list, the Sheets section and the forms table -- and wiring the
+   * event into each of them is five chances for the sixth to be forgotten.
+   *
+   * Keyed on isOpen, so reopening after a close counts again: two attempts to
+   * upgrade are two data points, not one.
+   */
+  useEffect(() => {
+    if (isOpen) capture("upgrade_modal_opened");
+  }, [isOpen]);
+
   const benefits = [
     "Unlimited forms",
     "Form folders",
@@ -27,6 +41,8 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const handleUpgrade = async () => {
     setIsLoading(true);
     try {
+      capture("checkout_started");
+
       // Fetched on the click rather than with the page; see lib/billing-client.
       const billing = await getBillingClient();
       await billing.checkout({

@@ -5,7 +5,6 @@ import { json, type HandlerPayload } from "@/lib/api/respond";
 
 const GET = async ({ request }: { request: Request }) => {
   try {
-    // Verify admin authentication
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -13,7 +12,6 @@ const GET = async ({ request }: { request: Request }) => {
       return json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get recent submissions with form names
     const allSubmissions = await listRecentSubmissionsAcrossAllForms(100);
 
     return json({ submissions: allSubmissions }, { status: 200 });

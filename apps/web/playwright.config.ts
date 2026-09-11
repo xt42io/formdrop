@@ -4,13 +4,18 @@ import { API_PORT, WEB_PORT, WEB_URL, serverEnv } from "./e2e/env";
 
 /**
  * The smoke path spans both servers: the dashboard is TanStack Start in this
- * app, but `POST /f/:slug` is Express in apps/api, so a submission cannot be
+ * app, but `POST /f/:slug` is served by apps/api, so a submission cannot be
  * collected without both running.
  *
- * Both are run from their builds rather than their dev servers. The Nitro dev
+ * The web app runs from its build rather than its dev server. The Nitro dev
  * worker currently crashes on startup -- a pre-existing fault, unrelated to
- * these tests -- and a built server is closer to what CI and production run
- * anyway.
+ * these tests -- and a built server is closer to what CI and production run.
+ *
+ * The API runs from source under Bun, which is what `npm start` does and what
+ * D1 settled on. It used to be started as `node dist/index.js`, which was the
+ * Express entry point and has not been emitted since the Elysia port; the file
+ * survived in gitignored build output on one machine, so the suite passed
+ * locally against the old server and could never start at all in CI.
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -48,10 +53,8 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: "node dist/index.js",
-      // healthRouter is mounted at "/" with its route at "/", so the health
-      // check is the API root -- there is no /health path.
-      url: `http://localhost:${API_PORT}/`,
+      command: "bun src/elysia/server.ts",
+      url: `http://localhost:${API_PORT}/health`,
       // fileURLToPath, not a URL pathname: this repo's path contains a
       // space, which stays percent-encoded and produces a cwd that does
       // not exist, so the server would never start.

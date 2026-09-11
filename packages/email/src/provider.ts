@@ -1,15 +1,13 @@
 /**
  * The seam W7 is built on.
  *
- * D3 is still outstanding: SendByte's base URL, auth scheme, payload shape,
- * template support, webhooks, sandbox mode and rate limits are not specified
- * anywhere we have. The PRD's answer is to define our own interface now and
- * put the existing providers behind it, so that when the contract does arrive
- * the SendByte adapter is the only file it touches -- not every call site in
- * two applications.
+ * Three providers sit behind it -- Resend, ZeptoMail and SendByte -- and the
+ * product calls none of them directly. Switching is a configuration change
+ * plus one adapter, rather than an edit to every call site in two
+ * applications.
  *
- * Nothing in these shapes assumes a provider SDK -- the point is that they
- * survive being handed to a different one.
+ * Nothing in these shapes assumes a provider SDK, which is what lets that
+ * hold.
  */
 
 export interface EmailAddress {
@@ -30,6 +28,15 @@ export interface SendEmailInput {
    */
   text: string;
   replyTo?: EmailAddress;
+  /**
+   * Stable identifier for the logical send, when the caller has one.
+   *
+   * A provider that supports it returns the original message instead of
+   * creating a second one, which is what stops the outbox worker's retry
+   * putting a duplicate in somebody's inbox after a send that succeeded but
+   * timed out on the way back. Providers without the concept ignore it.
+   */
+  idempotencyKey?: string;
 }
 
 export interface SendEmailResult {

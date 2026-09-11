@@ -6,10 +6,9 @@ import {
   listRecipientsForForm,
 } from "@formdrop/core/data";
 import { auth } from "@/lib/auth";
-import { RecipientVerificationEmail } from "@/emails/RecipientVerificationEmail";
 import crypto from "crypto";
 import { isUserPro } from "@/lib/subscription-check";
-import { getResend } from "@/lib/email";
+import { RecipientVerificationEmail, sendEmail } from "@formdrop/email";
 import { json, type HandlerPayload } from "@/lib/api/respond";
 
 const GET = async ({
@@ -114,12 +113,13 @@ const POST = async ({
 
     const verificationLink = `${process.env.APP_URL}/verify-recipient?token=${verificationToken}`;
 
-    await getResend().emails.send({
-      from: "FormDrop <noreply@mail.formdrop.co>",
+    await sendEmail({
       to: email,
-      subject: "Verify your email address",
-      react: RecipientVerificationEmail({
-        verificationLink,
+      subject: `Confirm notifications for ${form.name}`,
+      templateName: "recipient_verification",
+      userId: form.userId,
+      template: RecipientVerificationEmail({
+        verificationUrl: verificationLink,
         formName: form.name,
       }),
     });

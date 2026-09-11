@@ -31,7 +31,6 @@ const GET = async ({
     const limit = parseInt(url.searchParams.get("limit") || "50");
     const offset = (page - 1) * limit;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
@@ -92,21 +91,18 @@ const DELETE = async ({
       return json({ error: "Invalid submission IDs" }, { status: 400 });
     }
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
       return json({ error: "Form not found" }, { status: 404 });
     }
 
-    // Verify submissions belong to form
     const validSubmissions = await findSubmissionsInForm(formId, submissionIds);
 
     if (validSubmissions.length !== submissionIds.length) {
       return json({ error: "Invalid submission IDs" }, { status: 400 });
     }
 
-    // Soft delete submissions
     await softDeleteSubmissions(submissionIds);
 
     return json({ success: true });

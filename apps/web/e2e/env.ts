@@ -44,9 +44,13 @@ export const API_URL = `http://localhost:${API_PORT}`;
  * Handed to both servers.
  *
  * The auth secret is fixed rather than generated so a session cookie survives
- * a server restart mid-run. POLAR_ACCESS_TOKEN is passed through from the
- * environment rather than stubbed -- see the note at the top of smoke.spec.ts
- * for why signup cannot currently succeed without it.
+ * a server restart mid-run.
+ *
+ * The billing and email keys are passed through from the environment rather
+ * than stubbed, and an empty string is a supported value for both: the Polar
+ * plugin is only registered when a token exists, and a failed OTP send is
+ * swallowed, so signup completes either way and writes the code this suite
+ * reads out of the database.
  */
 export const serverEnv: Record<string, string> = {
   DATABASE_URL: E2E_DATABASE_URL,
@@ -56,8 +60,8 @@ export const serverEnv: Record<string, string> = {
   POLAR_PRODUCT_ID: process.env.POLAR_PRODUCT_ID ?? "e2e-product",
   POLAR_PRODUCT_ID_YEARLY: process.env.POLAR_PRODUCT_ID_YEARLY ?? "e2e-product",
   POLAR_WEBHOOK_SECRET: process.env.POLAR_WEBHOOK_SECRET ?? "e2e-webhook",
-  // Absent on purpose: getResend() is never reached with a working key, and
-  // sendVerificationOTP swallows its own send failures, so the OTP is still
-  // written to the database where the suite reads it.
+  // Absent on purpose. @formdrop/email throws on a missing key, and
+  // sendVerificationOTP swallows that, so the OTP is still written to the
+  // database where the suite reads it -- no mail server in the loop.
   RESEND_API_KEY: process.env.RESEND_API_KEY ?? "",
 };

@@ -12,7 +12,6 @@ import { json, type HandlerPayload } from "@/lib/api/respond";
 
 const GET = async ({ request }: { request: Request }) => {
   try {
-    // Verify admin authentication
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -20,21 +19,17 @@ const GET = async ({ request }: { request: Request }) => {
       return json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get total counts
     const totalUsers = await countAllUsers();
     const totalForms = await countAllForms();
     const totalSubmissions = await countAllSubmissions();
 
-    // Get users over time (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const usersOverTime = await usersCreatedSince(thirtyDaysAgo);
 
-    // Get submissions over time (last 30 days)
     const submissionsOverTime = await submissionsCreatedSince(thirtyDaysAgo);
 
-    // Get top forms by submission count
     const topForms = await topFormsAcrossAllUsers(5);
 
     return json(

@@ -20,7 +20,6 @@ export async function recordNotificationUsage({
   target,
 }: RecordNotificationParams): Promise<void> {
   try {
-    // Record notification event
     await db.insert(events).values({
       userId,
       formId,
@@ -32,7 +31,6 @@ export async function recordNotificationUsage({
       },
     });
 
-    // Track notification usage
     await db
       .insert(notificationUsage)
       .values({

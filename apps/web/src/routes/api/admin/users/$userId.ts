@@ -15,7 +15,6 @@ const GET = async ({
   params: { userId: string };
 }) => {
   try {
-    // Verify admin authentication
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -25,17 +24,14 @@ const GET = async ({
 
     const { userId } = params;
 
-    // Get user details
     const userDetail = await findUserDetail(userId);
 
     if (!userDetail) {
       return json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get user's forms with submission counts
     const userForms = await listFormsForUserWithCounts(userId);
 
-    // Get user's recent submissions (last 20)
     const recentSubmissions = await listRecentSubmissionsForUser(userId, 20);
 
     return json(

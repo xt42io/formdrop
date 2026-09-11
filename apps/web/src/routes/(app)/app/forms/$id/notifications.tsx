@@ -71,7 +71,6 @@ function RouteComponent() {
 
   const handleCloseModal = () => {
     setShowSuccessModal(false);
-    // Remove the success param from URL
     navigate({
       to: "/app/forms/$id/notifications",
       params: { id },

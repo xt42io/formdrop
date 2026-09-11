@@ -15,7 +15,6 @@ export async function recordIntegrationUsage({
   integration,
 }: RecordIntegrationParams): Promise<void> {
   try {
-    // Record integration sync event
     await db.insert(events).values({
       userId,
       formId,

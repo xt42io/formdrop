@@ -1,6 +1,7 @@
 import { Add01Icon } from "@hugeicons/core-free-icons";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { capture } from "@formdrop/analytics";
 import { useForms } from "@/hooks/use-forms";
 import { appClient } from "@/lib/app-client";
 import { useState } from "react";
@@ -36,6 +37,7 @@ function RouteComponent() {
       return response.form;
     },
     onSuccess: () => {
+      capture("form_created");
       queryClient.invalidateQueries({ queryKey: ["forms"] });
       setIsCreateModalOpen(false);
       setNewFormName("");

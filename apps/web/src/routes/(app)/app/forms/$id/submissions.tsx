@@ -5,6 +5,7 @@ import {
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
+import { capture } from "@formdrop/analytics";
 import { appClient, type Submission } from "@/lib/app-client";
 import moment from "moment";
 import {
@@ -216,6 +217,8 @@ function RouteComponent() {
         `/api/forms/${id}/export?format=${exportFormat === "xlsx" ? "json" : exportFormat}&includeMetadata=${includeMetadata}`,
       );
       if (!response.ok) throw new Error("Export failed");
+
+      capture("submissions_exported");
 
       if (exportFormat === "xlsx") {
         const data = await response.json();

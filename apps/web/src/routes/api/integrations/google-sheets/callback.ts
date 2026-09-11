@@ -116,6 +116,25 @@ export const Route = createFileRoute(
             googleSheetsEnabled: true, // Enable immediately
           });
 
+          /*
+           * The connection happened here, exactly once. The owner is already
+           * loaded above, so unlike the Slack and Discord callbacks this costs
+           * no extra query.
+           *
+           * Lazily imported: posthog-node must not reach the client bundle.
+           */
+          try {
+            const { captureServer } = await import("@/lib/server-analytics");
+            captureServer(form.userId, "integration_connected", {
+              provider: "google_sheets",
+            });
+          } catch (analyticsError) {
+            console.error(
+              "integration_connected capture failed",
+              analyticsError,
+            );
+          }
+
           return Response.redirect(
             `${process.env.APP_URL}/app/forms/${formId}/integrations?success=google_sheets_connected`,
             302,

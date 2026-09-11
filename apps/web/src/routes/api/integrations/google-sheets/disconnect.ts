@@ -27,14 +27,12 @@ export const Route = createFileRoute(
             );
           }
 
-          // Verify form belongs to user
           const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
             return Response.json({ error: "Form not found" }, { status: 404 });
           }
 
-          // Clear Google Sheets integration data
           await updateFormById(formId, {
             googleSheetsAccessToken: null,
             googleSheetsRefreshToken: null,

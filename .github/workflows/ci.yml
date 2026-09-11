@@ -71,6 +71,12 @@ jobs:
           node-version: 20
           cache: npm
 
+      # The API runs on Bun (D1), and the smoke path starts it for real. Node
+      # alone is enough for every other job because none of them execute it.
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Install
         run: npm ci
 

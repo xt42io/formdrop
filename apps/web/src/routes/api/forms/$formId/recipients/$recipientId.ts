@@ -25,7 +25,6 @@ const DELETE = async ({
 
     const { formId, recipientId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {
@@ -65,7 +64,6 @@ const PATCH = async ({
     const { formId, recipientId } = params;
     const { enabled } = await request.json();
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {

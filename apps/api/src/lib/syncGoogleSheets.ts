@@ -22,9 +22,6 @@ interface TokenRefreshResponse {
   token_type: string;
 }
 
-/**
- * Refresh Google OAuth access token
- */
 async function refreshAccessToken(
   refreshToken: string,
   formId: string,
@@ -53,7 +50,6 @@ async function refreshAccessToken(
   const expiresIn = data.expires_in;
   const newTokenExpiry = new Date(Date.now() + expiresIn * 1000);
 
-  // Update form with new token
   await db
     .update(forms)
     .set({
@@ -65,16 +61,12 @@ async function refreshAccessToken(
   return newAccessToken;
 }
 
-/**
- * Get valid access token, refreshing if necessary
- */
 async function getValidAccessToken(
   accessToken: string,
   refreshToken: string | null | undefined,
   tokenExpiry: Date | null | undefined,
   formId: string,
 ): Promise<string> {
-  // Check if token is expired or about to expire (within 5 minutes)
   const now = new Date();
   const expiryThreshold = new Date(now.getTime() + 5 * 60 * 1000);
 
@@ -89,16 +81,12 @@ async function getValidAccessToken(
   return accessToken;
 }
 
-/**
- * Get or create header row in spreadsheet, and add new headers if needed
- */
 async function ensureHeaders(
   spreadsheetId: string,
   sheetName: string,
   headers: string[],
   accessToken: string,
 ): Promise<void> {
-  // Get current values in first row
   const range = `${sheetName}!A1:ZZ1`;
   const getResponse = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}`,
@@ -117,7 +105,6 @@ async function ensureHeaders(
   const getData = (await getResponse.json()) as ValueRange;
   const existingHeaders = getData.values?.[0] || [];
 
-  // If no headers exist, create them
   if (existingHeaders.length === 0) {
     const updateResponse = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
@@ -140,13 +127,11 @@ async function ensureHeaders(
     return;
   }
 
-  // Check if there are new headers that don't exist yet
   const newHeaders = headers.filter(
     (header) => !existingHeaders.includes(header),
   );
 
   if (newHeaders.length > 0) {
-    // Append new headers to the existing header row
     const updatedHeaders = [...existingHeaders, ...newHeaders];
     const updateResponse = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?valueInputOption=RAW`,
@@ -180,9 +165,6 @@ interface SpreadsheetInfo {
   sheets?: Array<{ properties?: { title?: string } }>;
 }
 
-/**
- * Append submission data to Google Sheet
- */
 export async function syncGoogleSheets({
   spreadsheetId,
   accessToken,
@@ -194,7 +176,6 @@ export async function syncGoogleSheets({
   userId,
 }: SyncGoogleSheetsParams) {
   try {
-    // Get valid access token (refresh if needed)
     const validToken = await getValidAccessToken(
       accessToken,
       refreshToken,
@@ -202,7 +183,6 @@ export async function syncGoogleSheets({
       formId,
     );
 
-    // Get spreadsheet info to find sheet name
     const spreadsheetResponse = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}`,
       {
@@ -220,17 +200,14 @@ export async function syncGoogleSheets({
     const sheet = spreadsheetInfo.sheets?.[0];
     const sheetName = sheet?.properties?.title || "Sheet1";
 
-    // Prepare headers and values
     const headers = [
       "Submission ID",
       "Timestamp",
       ...Object.keys(submissionData),
     ];
 
-    // Ensure headers exist (and add new ones if needed)
     await ensureHeaders(spreadsheetId, sheetName, headers, validToken);
 
-    // Get current headers to ensure proper column alignment
     const headersRange = `${sheetName}!A1:ZZ1`;
     const headersResponse = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(headersRange)}`,
@@ -248,14 +225,12 @@ export async function syncGoogleSheets({
     const headersData = (await headersResponse.json()) as ValueRange;
     const currentHeaders = headersData.values?.[0] || [];
 
-    // Create a map of submission data for easy lookup
     const dataMap: Record<string, any> = {
       "Submission ID": submissionId,
       Timestamp: new Date().toISOString(),
       ...submissionData,
     };
 
-    // Build values array in the correct order based on current headers
     const values = currentHeaders.map((header: string) => {
       const value = dataMap[header];
       if (value === undefined || value === null) {
@@ -267,7 +242,6 @@ export async function syncGoogleSheets({
       return String(value);
     });
 
-    // Append the row
     const range = `${sheetName}!A:ZZ`;
     const appendResponse = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`,

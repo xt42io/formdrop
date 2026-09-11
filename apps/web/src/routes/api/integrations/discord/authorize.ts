@@ -33,7 +33,6 @@ export const Route = createFileRoute("/api/integrations/discord/authorize")({
             );
           }
 
-          // Verify form belongs to user
           const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
@@ -50,7 +49,6 @@ export const Route = createFileRoute("/api/integrations/discord/authorize")({
             );
           }
 
-          // Build Discord OAuth URL
           const discordAuthUrl = new URL(
             "https://discord.com/api/oauth2/authorize",
           );
@@ -60,7 +58,6 @@ export const Route = createFileRoute("/api/integrations/discord/authorize")({
           discordAuthUrl.searchParams.set("redirect_uri", redirectUri);
           discordAuthUrl.searchParams.set("state", formId); // Pass formId in state
 
-          // Redirect to Discord OAuth
           return Response.redirect(discordAuthUrl.toString(), 302);
         } catch (error: any) {
           return Response.json(

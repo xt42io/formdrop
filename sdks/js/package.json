@@ -33,15 +33,17 @@
     "provenance": true
   },
   "scripts": {
-    "build": "tsup && node scripts/size.mjs",
+    "build": "npm run generate && tsup && node scripts/size.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "size": "node scripts/size.mjs",
-    "test:contract": "vitest run --config vitest.contract.config.ts"
+    "test:contract": "vitest run --config vitest.contract.config.ts",
+    "generate": "openapi-typescript ../../apps/api/openapi.json -o src/generated/openapi.ts"
   },
   "devDependencies": {
     "@formdrop/tsconfig": "*",
+    "openapi-typescript": "^7.13.0",
     "tsup": "^8.5.0",
     "typescript": "^5.7.2",
     "vitest": "^3.2.4"

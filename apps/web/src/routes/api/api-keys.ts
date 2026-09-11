@@ -17,7 +17,6 @@ const GET = async ({ request }: { request: Request }) => {
       return json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get existing keys
     const userApiKeys = await listApiKeysForUser(session.user.id);
 
     return json({

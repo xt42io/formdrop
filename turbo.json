@@ -5,6 +5,7 @@
   ],
   "globalEnv": [
     "VITE_*",
+    "NEXT_PUBLIC_*",
     "DOCS_ORIGIN",
     "DATABASE_URL",
     "BETTER_AUTH_SECRET",

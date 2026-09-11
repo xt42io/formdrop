@@ -33,6 +33,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   setEmailProvider(null);
   delete process.env.EMAIL_PROVIDER;
+  delete process.env.SENDBYTE_API_KEY;
 });
 
 describe("sendEmail", () => {
@@ -166,21 +167,20 @@ describe("provider selection", () => {
     expect(() => getEmailProvider()).toThrow(/not a provider/);
   });
 
-  it("refuses to send through SendByte until its contract exists", async () => {
+  it("builds the SendByte adapter when it is selected", () => {
     process.env.EMAIL_PROVIDER = "sendbyte";
+    process.env.SENDBYTE_API_KEY = "sk_test_abc";
+    process.env.EMAIL_FROM = "noreply@formdrop.co";
 
-    const provider = getEmailProvider();
-    expect(provider.name).toBe("sendbyte");
+    // The adapter's own behaviour is pinned in providers/sendbyte.test.ts;
+    // what matters here is that EMAIL_PROVIDER reaches it.
+    expect(getEmailProvider().name).toBe("sendbyte");
+  });
 
-    // D3 is outstanding. An adapter guessed at would pass a test written
-    // against the same guess and fail on the real API.
-    await expect(
-      provider.send({
-        to: { email: "a@b.test" },
-        subject: "s",
-        html: "",
-        text: "",
-      }),
-    ).rejects.toThrow(/not implemented/);
+  it("refuses to build it without a key rather than sending as nobody", () => {
+    process.env.EMAIL_PROVIDER = "sendbyte";
+    delete process.env.SENDBYTE_API_KEY;
+
+    expect(() => getEmailProvider()).toThrow(/SENDBYTE_API_KEY is not set/);
   });
 });

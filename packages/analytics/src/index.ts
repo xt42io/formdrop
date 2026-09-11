@@ -49,8 +49,21 @@ export async function initAnalytics({
     autocapture: false,
     capture_pageview: false,
     capture_pageleave: false,
-    // Replay is P5, and stays off auth routes when it lands.
+    /*
+     * Replay never starts on its own. The product decides per route by
+     * calling setSessionRecording, and defaulting to off means a route that
+     * nobody has classified yet -- a new auth screen, an error page, a
+     * password reset -- is not recorded by accident. Opting in is a decision
+     * somebody has to make; opting out must not be.
+     */
     disable_session_recording: true,
+    session_recording: {
+      // Every input, not just the ones that look sensitive. This is a form
+      // product: the fields being typed into belong to our customers' visitors
+      // and there is no version of recording them that is acceptable.
+      maskAllInputs: true,
+      maskTextSelector: "[data-private]",
+    },
     persistence: "localStorage+cookie",
     sanitize_properties: sanitize,
   });
@@ -85,6 +98,25 @@ export function capture<E extends AnalyticsEvent>(...args: CaptureArgs<E>) {
 export function identifyUser(userId: string) {
   identity = userId;
   client?.identify(userId);
+}
+
+/**
+ * Turns session replay on or off for the surface the person is currently on
+ * (PRD W6: "on for /app/*, off for auth routes, with input masking").
+ *
+ * Called on every navigation rather than once at init, because a single-page
+ * app never reloads: someone who signs out of the dashboard and lands on the
+ * login form is the same document, and a recorder left running would follow
+ * them onto it.
+ *
+ * Safe before init -- with no client there is nothing to start, and the next
+ * navigation after one appears will call this again.
+ */
+export function setSessionRecording(enabled: boolean) {
+  if (!client) return;
+
+  if (enabled) client.startSessionRecording();
+  else client.stopSessionRecording();
 }
 
 /** On sign-out, so the next person on this browser is a separate person. */

@@ -20,17 +20,11 @@ function isValidEmail(email: string): boolean {
 /**
  * The new-submission notification (PRD W7).
  *
- * This file used to hold the whole send: a ZeptoMail client, a dead Plunk
- * path behind a hardcoded `EMAIL_PROVIDER` constant that could never be
- * anything but "zepto", and the email's markup as a template literal. All
- * three are gone. The provider is chosen once in @formdrop/email, the markup
- * is a React Email component, and every send gets a row in email_deliveries.
- *
- * The markup change is not only tidiness. The old HTML interpolated
- * submission values straight into a string, so a field containing a tag put
- * that tag in the notification -- content from a stranger, rendered in the
- * form owner's mail client. React escapes children, so the template cannot
- * do that.
+ * The body must stay a React Email component rather than an HTML string.
+ * The payload is whatever a stranger typed into somebody else's form, and
+ * building markup by interpolation puts a submitted tag straight into the
+ * form owner's mail client. React escapes children; a template literal does
+ * not.
  */
 export async function sendEmailNotification({
   recipientEmail,
@@ -53,6 +47,16 @@ export async function sendEmailNotification({
       subject: `New submission for ${formName}`,
       templateName: "new_submission",
       userId,
+      /*
+       * One logical send is one submission to one recipient, and that pair is
+       * stable across every retry the outbox makes.
+       *
+       * It matters because a send that reached the provider but timed out on
+       * the way back is indistinguishable here from one that never left. The
+       * worker retries either way, and without this the recipient gets the
+       * same notification twice.
+       */
+      idempotencyKey: `submission:${submissionId}:${recipientEmail}`,
       template: NewSubmissionEmail({
         formName,
         payload: data,

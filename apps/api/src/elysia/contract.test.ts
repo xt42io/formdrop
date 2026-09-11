@@ -33,6 +33,7 @@ const findFormBySlug = vi.fn();
 const findFormOwnerEmail = vi.fn();
 const listDeliverableRecipients = vi.fn();
 const recordSubmission = vi.fn();
+const countLifetimeSubmissionsForUser = vi.fn();
 const captureServer = vi.fn();
 
 /*
@@ -58,6 +59,8 @@ vi.mock("@formdrop/core/data", () => ({
   listDeliverableRecipients: (...a: unknown[]) =>
     listDeliverableRecipients(...a),
   recordSubmission: (...a: unknown[]) => recordSubmission(...a),
+  countLifetimeSubmissionsForUser: (...a: unknown[]) =>
+    countLifetimeSubmissionsForUser(...a),
 }));
 
 // Stubbed so the suite needs no project key and sends nothing. What is being
@@ -131,7 +134,13 @@ describe("POST /f/:slug -- queues delivery instead of firing it (D8)", () => {
     listDeliverableRecipients.mockResolvedValue([
       { email: "team@example.com" },
     ]);
-    recordSubmission.mockResolvedValue({ id: SUBMISSION_ID });
+    // periodCount above 1 keeps the activation lookup out of these cases;
+    // first_submission_received has its own test below.
+    recordSubmission.mockResolvedValue({
+      submission: { id: SUBMISSION_ID },
+      periodCount: 2,
+    });
+    countLifetimeSubmissionsForUser.mockResolvedValue(1);
   });
 
   const post = () =>
@@ -175,6 +184,65 @@ describe("POST /f/:slug -- queues delivery instead of firing it (D8)", () => {
     // Only the server can see this: nobody's browser is open when a stranger
     // posts to somebody else's form.
     expect(captureServer).toHaveBeenCalledWith("u1", "submission_received");
+  });
+
+  it("records first_submission_received when this is the account's first (W6)", async () => {
+    recordSubmission.mockResolvedValue({
+      submission: { id: SUBMISSION_ID },
+      periodCount: 1,
+    });
+    countLifetimeSubmissionsForUser.mockResolvedValue(1);
+
+    await post();
+    // The capture is deliberately not awaited by the route, so the 201 does
+    // not wait on it. One turn of the microtask queue is enough to let it land.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(captureServer).toHaveBeenCalledWith(
+      "u1",
+      "first_submission_received",
+    );
+  });
+
+  it("does not record it for an account that already had one", async () => {
+    recordSubmission.mockResolvedValue({
+      submission: { id: SUBMISSION_ID },
+      periodCount: 1,
+    });
+    // A new form, or a new day on an existing one: periodCount is 1 either
+    // way, which is why the account-wide total is what actually decides.
+    countLifetimeSubmissionsForUser.mockResolvedValue(14);
+
+    await post();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(captureServer).not.toHaveBeenCalledWith(
+      "u1",
+      "first_submission_received",
+    );
+  });
+
+  it("does not look the total up at all once the period counter has moved on", async () => {
+    await post();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // periodCount is 2 from the fixture. Skipping the query here is the whole
+    // point of the two-stage check: collect must not pay for it per request.
+    expect(countLifetimeSubmissionsForUser).not.toHaveBeenCalled();
+  });
+
+  it("still answers 201 when the activation lookup fails", async () => {
+    recordSubmission.mockResolvedValue({
+      submission: { id: SUBMISSION_ID },
+      periodCount: 1,
+    });
+    countLifetimeSubmissionsForUser.mockRejectedValue(new Error("db down"));
+
+    const res = await post();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // An analytics read must never decide whether a submission was accepted.
+    expect(res.status).toBe(201);
   });
 
   it("sends no properties with it, so no payload can leak", async () => {

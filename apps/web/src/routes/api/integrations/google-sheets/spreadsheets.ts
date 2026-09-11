@@ -28,7 +28,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Get form with tokens
           const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
@@ -42,7 +41,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Check if token is expired or about to expire (within 5 minutes)
           let accessToken = form.googleSheetsAccessToken;
           const isExpired =
             form.googleSheetsTokenExpiry &&
@@ -57,7 +55,6 @@ export const Route = createFileRoute(
               accessToken = newAccessToken;
               const newExpiry = new Date(Date.now() + expiresIn * 1000);
 
-              // Update form with new token
               await updateFormById(formId, {
                 googleSheetsAccessToken: newAccessToken,
                 googleSheetsTokenExpiry: newExpiry,
@@ -69,7 +66,6 @@ export const Route = createFileRoute(
             }
           }
 
-          // List spreadsheets from Google Drive
           const response = await fetch(
             "https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.spreadsheet'&pageSize=50&fields=files(id,name,modifiedTime)",
             {

@@ -3,7 +3,6 @@ import { recordNotificationUsage } from "./recordNotificationUsage";
 import { SendMailClient } from "zeptomail";
 import { palette } from "@formdrop/ui/palette";
 
-// Configure which email provider to use: 'plunk' or 'zepto'
 const EMAIL_PROVIDER: "plunk" | "zepto" = "zepto";
 
 interface SendEmailNotificationParams {
@@ -16,7 +15,6 @@ interface SendEmailNotificationParams {
   period: string;
 }
 
-// Simple email validation
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
@@ -165,7 +163,6 @@ export async function sendEmailNotification({
   period,
 }: SendEmailNotificationParams): Promise<void> {
   try {
-    // Validate email before sending
     if (!recipientEmail || !isValidEmail(recipientEmail)) {
       console.error("Invalid email address:", {
         recipientEmail,
@@ -175,14 +172,12 @@ export async function sendEmailNotification({
       throw new Error(`Invalid email address: ${recipientEmail}`);
     }
 
-    // Send email using configured provider
     if (EMAIL_PROVIDER === "zepto") {
       await sendViaZepto(recipientEmail, formName, data, submissionId);
     } else {
       await sendViaPlunk(recipientEmail, formName, data, submissionId);
     }
 
-    // Record notification usage
     await recordNotificationUsage({
       userId,
       formId,
@@ -200,7 +195,6 @@ export async function sendEmailNotification({
       submissionId,
     });
 
-    // Don't fail the request if email fails
     throw error;
   }
 }

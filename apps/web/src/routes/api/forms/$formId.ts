@@ -72,7 +72,6 @@ const PATCH = async ({
       airtableEnabled,
     } = body;
 
-    // Verify form belongs to user
     const existingForm = await findOwnedForm(formId, session.user.id);
 
     if (!existingForm) {
@@ -134,7 +133,6 @@ const DELETE = async ({
 
     const { formId } = params;
 
-    // Verify form belongs to user
     const form = await findOwnedForm(formId, session.user.id);
 
     if (!form) {

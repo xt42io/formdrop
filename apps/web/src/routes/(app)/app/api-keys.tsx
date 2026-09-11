@@ -8,6 +8,7 @@ import {
   Delete02Icon,
 } from "@hugeicons/core-free-icons";
 import moment from "moment";
+import { capture } from "@formdrop/analytics";
 import { CopyButton } from "@/components/copy-button";
 import { Button, Icon, Modal } from "@formdrop/ui";
 
@@ -60,6 +61,7 @@ function ApiKeysPage() {
       return response;
     },
     onSuccess: (response) => {
+      capture("api_key_created");
       queryClient.invalidateQueries({ queryKey: ["api-keys"] });
       setIsCreating(false);
       setNewKeyName("");

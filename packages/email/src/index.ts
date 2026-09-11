@@ -83,7 +83,10 @@ export function getEmailProvider(): EmailProvider {
       break;
 
     case "sendbyte":
-      cached = sendByteProvider();
+      cached = sendByteProvider(required("SENDBYTE_API_KEY"), {
+        email: required("EMAIL_FROM"),
+        name: process.env.EMAIL_FROM_NAME ?? "FormDrop",
+      });
       break;
 
     default:
@@ -113,6 +116,8 @@ export interface SendEmailOptions {
   /** The account this belongs to, when there is one. */
   userId?: string;
   replyTo?: EmailAddress;
+  /** Passed to providers that support it, so a retry cannot send twice. */
+  idempotencyKey?: string;
 }
 
 /**
@@ -141,6 +146,7 @@ export async function sendEmail(options: SendEmailOptions) {
       html,
       text,
       replyTo: options.replyTo,
+      idempotencyKey: options.idempotencyKey,
     });
 
     await log({

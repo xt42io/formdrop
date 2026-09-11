@@ -6,6 +6,7 @@ import {
   usagePeriod,
 } from "@formdrop/core";
 import {
+  countLifetimeSubmissionsForUser,
   findFormBySlug,
   findFormOwnerEmail,
   listDeliverableRecipients,
@@ -113,7 +114,7 @@ export const collect = new Elysia().post(
      * is what keeps p95 on this endpoint about the write.
      */
 
-    const submission = await recordSubmission({
+    const { submission, periodCount } = await recordSubmission({
       formId: form.id,
       userId: form.userId,
       payload,
@@ -140,6 +141,34 @@ export const collect = new Elysia().post(
      * own site and is not asked for by the taxonomy.
      */
     captureServer(form.userId, "submission_received");
+
+    /*
+     * Activation: the first submission this account has ever collected, which
+     * is the step the signup funnel ends on.
+     *
+     * Two stages, because the cheap one is wrong on its own. `periodCount` is
+     * this form's counter for this period and comes back from the write that
+     * already happened, so it costs nothing -- but periods are daily, so it
+     * reads 1 on the first submission of every form every day. Only when it
+     * does is the account-wide total worth asking for.
+     *
+     * Deliberately not awaited. The total is a second round trip and this
+     * endpoint's contract is that it answers fast; a 201 must not wait on a
+     * number nobody reads until a dashboard is opened. The catch is not
+     * optional -- an unhandled rejection here would take the API process down
+     * over an analytics lookup.
+     */
+    if (periodCount === 1) {
+      void countLifetimeSubmissionsForUser(form.userId)
+        .then((total) => {
+          if (total === 1) {
+            captureServer(form.userId, "first_submission_received");
+          }
+        })
+        .catch((error) => {
+          console.error("first_submission_received check failed", error);
+        });
+    }
 
     return status(201, {
       success: true,

@@ -11,9 +11,9 @@ const ZEPTO_URL = "https://api.zeptomail.com/v1.1/email";
 /**
  * ZeptoMail, behind the interface.
  *
- * The second of the two providers already in the repository -- it is what
- * submission notifications go through today. Here for the same reason as the
- * Resend adapter: so the structural half of W7 can land before D3 resolves.
+ * What submission notifications went through before W7. Kept for the same
+ * reason as the Resend adapter: something has to keep sending while the
+ * SendByte cutover is proved out.
  */
 export function zeptoMailProvider(
   token: string,

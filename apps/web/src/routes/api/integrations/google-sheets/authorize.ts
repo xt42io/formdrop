@@ -35,7 +35,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Verify form belongs to user
           const form = await findOwnedForm(formId, session.user.id);
 
           if (!form) {
@@ -52,7 +51,6 @@ export const Route = createFileRoute(
             );
           }
 
-          // Build Google OAuth URL
           const googleAuthUrl = new URL(
             "https://accounts.google.com/o/oauth2/v2/auth",
           );
@@ -67,7 +65,6 @@ export const Route = createFileRoute(
           googleAuthUrl.searchParams.set("prompt", "consent");
           googleAuthUrl.searchParams.set("state", formId); // Pass formId in state
 
-          // Redirect to Google OAuth
           return Response.redirect(googleAuthUrl.toString(), 302);
         } catch (error: any) {
           return Response.json(

@@ -9,7 +9,7 @@
     "sdks/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "outray secrets run --watch -- turbo run dev --env-mode=loose",
     "dev:web": "turbo run dev --filter=@formdrop/web",
     "dev:api": "turbo run dev --filter=@formdrop/api",
     "build": "turbo run build",

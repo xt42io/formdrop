@@ -22,21 +22,36 @@ import {
  * backend for developers" to anything consuming text rather than pixels.
  */
 const WORDS = [
-  { label: "contact", icon: Mail01Icon, fill: "bg-tint-lilac" },
-  { label: "waitlist", icon: UserGroupIcon, fill: "bg-tint-blue" },
-  { label: "feedback", icon: Message01Icon, fill: "bg-tint-green" },
-  { label: "survey", icon: TableIcon, fill: "bg-tint-amber" },
-  { label: "signup", icon: Login03Icon, fill: "bg-tint-pink" },
+  { label: "contact", icon: Mail01Icon, fill: "bg-pop-violet" },
+  { label: "waitlist", icon: UserGroupIcon, fill: "bg-pop-blue" },
+  { label: "feedback", icon: Message01Icon, fill: "bg-pop-green" },
+  { label: "survey", icon: TableIcon, fill: "bg-pop-amber" },
+  { label: "signup", icon: Login03Icon, fill: "bg-pop-pink" },
 ];
 
 const HOLD_MS = 2600;
 const ROW = "1.2em";
 
+/**
+ * One spring for the width and for the word itself.
+ *
+ * Both used to animate on their own clock — the width on a 500ms CSS
+ * transition, the word on a 450ms motion tween — so the tag finished sliding
+ * while its container was still resizing and the line visibly settled twice.
+ * Sharing a spring is what makes it read as one object moving.
+ */
+const SPRING = {
+  type: "spring",
+  stiffness: 260,
+  damping: 30,
+  mass: 0.9,
+} as const;
+
 export function RotatingWord() {
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [width, setWidth] = useState<number>();
-  const tagRef = useRef<HTMLSpanElement | null>(null);
+  const [widths, setWidths] = useState<number[]>([]);
+  const measureRef = useRef<HTMLSpanElement | null>(null);
 
   const word = WORDS[index];
 
@@ -50,47 +65,89 @@ export function RotatingWord() {
     return () => clearInterval(id);
   }, [reduceMotion]);
 
-  // The clip animates to the active tag's own width, so the line re-centres
-  // instead of every tag being sized to the longest word.
+  /*
+   * Every width is measured up front, from a hidden copy of the whole set.
+   *
+   * Measuring the live tag instead meant the number for a word only existed
+   * once that word had mounted, so the first frame of every transition used
+   * the previous word's width and the container caught up a frame late. That
+   * late catch-up was the jolt.
+   */
   useLayoutEffect(() => {
-    const el = tagRef.current;
+    const el = measureRef.current;
     if (!el) return;
 
-    const measure = () => setWidth(el.getBoundingClientRect().width);
+    const measure = () =>
+      setWidths(
+        Array.from(el.children).map(
+          (child) => child.getBoundingClientRect().width,
+        ),
+      );
 
     measure();
     document.fonts?.ready.then(measure).catch(() => {});
 
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [index]);
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <span
-      className="relative inline-block overflow-hidden align-baseline transition-[width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
-      style={{ height: ROW, width }}
-    >
-      {/* initial={false} so the first tag mounts already in place rather than
-          waiting on an animation frame to become visible */}
-      <AnimatePresence initial={false}>
-        <motion.span
-          key={word.label}
-          ref={tagRef}
-          initial={reduceMotion ? false : { y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "-100%" }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className={`absolute inset-y-0 left-0 flex items-center gap-[0.18em] rounded-[0.26em] px-[0.22em] whitespace-nowrap ${word.fill}`}
-        >
-          <Icon
-            aria-hidden="true"
-            icon={word.icon}
-            className="h-[0.62em] w-[0.62em] shrink-0 text-ink-950"
-            strokeWidth={2.2}
-          />
-          {word.label}
-        </motion.span>
-      </AnimatePresence>
+    <span className="relative inline-flex align-baseline">
+      {/* The measurer: the full set, laid out but never painted, so every
+          width is known before the first swap rather than after it.
+
+          It sits inside a zero-sized clip because it is genuinely wide — five
+          headline-sized words in a row came to 2119px on a 1280px viewport,
+          and being absolutely positioned does not keep that out of the
+          document's scroll width. It put a horizontal scrollbar on the whole
+          landing page. Children still report their true width from inside an
+          overflow:hidden box, which is all the measurement needs. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute h-0 w-0 overflow-hidden"
+      >
+        <span ref={measureRef} className="flex w-max whitespace-nowrap">
+          {WORDS.map((entry) => (
+            <span
+              key={entry.label}
+              className="flex items-center gap-[0.18em] px-[0.22em]"
+            >
+              <span className="h-[0.62em] w-[0.62em] shrink-0" />
+              {entry.label}
+            </span>
+          ))}
+        </span>
+      </span>
+
+      <motion.span
+        className="relative inline-block overflow-hidden align-baseline"
+        style={{ height: ROW }}
+        animate={{ width: widths[index] }}
+        initial={false}
+        transition={reduceMotion ? { duration: 0 } : SPRING}
+      >
+        {/* initial={false} so the first tag mounts already in place rather than
+            waiting on an animation frame to become visible */}
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.span
+            key={word.label}
+            initial={reduceMotion ? false : { y: "105%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "-105%", opacity: 0 }}
+            transition={reduceMotion ? { duration: 0 } : SPRING}
+            className={`absolute inset-y-0 left-0 flex items-center gap-[0.18em] rounded-[0.26em] px-[0.22em] whitespace-nowrap ${word.fill}`}
+          >
+            <Icon
+              aria-hidden="true"
+              icon={word.icon}
+              className="h-[0.62em] w-[0.62em] shrink-0 text-ink-950"
+              strokeWidth={2.2}
+            />
+            {word.label}
+          </motion.span>
+        </AnimatePresence>
+      </motion.span>
     </span>
   );
 }

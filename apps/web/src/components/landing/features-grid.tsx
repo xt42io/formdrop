@@ -1,12 +1,12 @@
+import { motion, useReducedMotion } from "motion/react";
 import { Icon } from "@formdrop/ui";
+import { Discord, Gmail, Notion, Slack } from "@ridemountainpig/svgl-react";
+import { AnalyticsVisual } from "./analytics-visual";
+import { useCycle } from "./use-cycle";
 import {
   CheckmarkCircle02Icon,
-  DiscordIcon,
   Key01Icon,
   LockKeyIcon,
-  Mail01Icon,
-  SlackIcon,
-  TableIcon,
 } from "@hugeicons/core-free-icons";
 
 /**
@@ -16,6 +16,11 @@ import {
  *
  * Borders are set per cell instead of with `divide-*` — on a two-column grid the
  * divide utilities follow DOM order and rule the wrong edges.
+ *
+ * Every brand mark here is the real logo, from svgl. The generic glyphs this
+ * replaces were the same weight and colour as the interface icons beside them,
+ * so "Slack" and "Discord" read as decoration rather than as the products a
+ * reader is looking for.
  */
 const CELLS = [
   {
@@ -23,6 +28,7 @@ const CELLS = [
     body: "Track form views, submissions, and conversion rates in real-time. Get insights into how your forms are performing.",
     edges: "border-b md:border-r",
     visual: <AnalyticsVisual />,
+    interactive: true,
   },
   {
     title: "Instant Alerts",
@@ -45,6 +51,8 @@ const CELLS = [
 ];
 
 export function FeaturesGrid() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section className="px-6 py-24">
       <div className="mx-auto max-w-6xl">
@@ -60,13 +68,23 @@ export function FeaturesGrid() {
 
         <div className="mt-12 overflow-hidden rounded-panel border border-ink-200 bg-ink-50/70">
           <div className="grid md:grid-cols-2">
-            {CELLS.map((cell) => (
-              <div
+            {CELLS.map((cell, i) => (
+              <motion.div
                 key={cell.title}
-                className={`border-ink-200 p-8 sm:p-10 ${cell.edges}`}
+                className={`group border-ink-200 p-8 transition-colors hover:bg-white/60 sm:p-10 ${cell.edges}`}
+                initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.35 }}
+                transition={{
+                  duration: reduceMotion ? 0 : 0.38,
+                  delay: reduceMotion ? 0 : i * 0.07,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
               >
+                {/* The chart takes pointer and keyboard input, so it is not
+                    hidden from assistive tech the way the other three are. */}
                 <div
-                  aria-hidden="true"
+                  aria-hidden={cell.interactive ? undefined : "true"}
                   className="flex h-60 items-center justify-center overflow-hidden"
                 >
                   {cell.visual}
@@ -78,7 +96,7 @@ export function FeaturesGrid() {
                 <p className="mt-2 max-w-md text-[15px] leading-relaxed text-ink-600">
                   {cell.body}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -102,167 +120,93 @@ function Float({
   );
 }
 
-const WAVES = [
-  { points: [30, 42, 36, 52, 45, 62, 55, 72, 64, 80, 74, 90], opacity: 0.32 },
-  { points: [20, 30, 26, 38, 33, 46, 40, 52, 46, 58, 52, 66], opacity: 0.22 },
-  { points: [12, 18, 16, 24, 21, 29, 26, 34, 30, 38, 34, 44], opacity: 0.14 },
-];
-
-/**
- * The wave on its own: three layered bands rising together, the leading one
- * drawn as a lit line with its own bloom and a live point at its tip. No card
- * and no chrome around it, because the heading underneath already names it.
- */
-function AnalyticsVisual() {
-  const w = 340;
-  const h = 170;
-  const inset = 4;
-
-  const plot = (points: number[]) => {
-    const step = (w - inset * 2) / (points.length - 1);
-    const coords = points.map(
-      (point, i) => [inset + i * step, h - (point / 100) * h] as const,
-    );
-    const line = coords
-      .map(([x, y], i) => {
-        if (i === 0) return `M ${x} ${y}`;
-        const [px, py] = coords[i - 1];
-        const cx = px + step / 2;
-        return `C ${cx} ${py} ${cx} ${y} ${x} ${y}`;
-      })
-      .join(" ");
-    return {
-      coords,
-      line,
-      area: `${line} L ${w - inset} ${h} L ${inset} ${h} Z`,
-    };
-  };
-
-  // Tallest band first, so the shorter ones layer over it.
-  const bands = WAVES.map((wave) => ({ ...wave, ...plot(wave.points) }));
-  const [lastX, lastY] = bands[0].coords[bands[0].coords.length - 1];
-
+/** A brand mark on its own tile, sized so every logo reads at the same weight. */
+function Mark({ children }: { children: React.ReactNode }) {
   return (
-    <svg
-      aria-hidden="true"
-      viewBox={`0 0 ${w} ${h}`}
-      className="w-full max-w-sm overflow-visible"
-      fill="none"
-    >
-      <defs>
-        <linearGradient id="fd-wave-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop
-            offset="0"
-            stopColor="var(--color-accent-500)"
-            stopOpacity="0.9"
-          />
-          <stop
-            offset="1"
-            stopColor="var(--color-accent-500)"
-            stopOpacity="0"
-          />
-        </linearGradient>
-        <linearGradient id="fd-wave-line" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="var(--color-accent-400)" />
-          <stop offset="1" stopColor="var(--color-accent-600)" />
-        </linearGradient>
-        <filter id="fd-wave-glow" x="-20%" y="-40%" width="140%" height="200%">
-          <feGaussianBlur stdDeviation="7" />
-        </filter>
-      </defs>
-
-      {/* the ground the waves sit on */}
-      <line
-        x1="0"
-        x2={w}
-        y1={h}
-        y2={h}
-        stroke="var(--color-ink-200)"
-        strokeWidth="1"
-        strokeDasharray="2 4"
-      />
-
-      {bands.map((band, i) => (
-        <g key={i} opacity={band.opacity}>
-          <path d={band.area} fill="url(#fd-wave-fill)" />
-          {i > 0 && (
-            <path
-              d={band.line}
-              stroke="var(--color-accent-500)"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            />
-          )}
-        </g>
-      ))}
-
-      {/* the leading band, lit */}
-      <path
-        d={bands[0].line}
-        stroke="var(--color-accent-500)"
-        strokeWidth="6"
-        strokeLinecap="round"
-        opacity="0.35"
-        filter="url(#fd-wave-glow)"
-      />
-      <path
-        d={bands[0].line}
-        stroke="url(#fd-wave-line)"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-
-      {/* the live point */}
-      <circle
-        cx={lastX}
-        cy={lastY}
-        r="7"
-        fill="var(--color-accent-500)"
-        opacity="0.3"
-        className="animate-ping-soft"
-      />
-      <circle
-        cx={lastX}
-        cy={lastY}
-        r="4.5"
-        fill="var(--color-accent-500)"
-        stroke="white"
-        strokeWidth="2.5"
-      />
-    </svg>
+    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-ink-200/70 bg-white [&>svg]:h-4 [&>svg]:w-4">
+      {children}
+    </span>
   );
 }
 
+/**
+ * Notifications arriving, one channel at a time and then round again.
+ *
+ * The heading says "instant", so the cell shows delivery happening rather
+ * than three settled rows. The lit row lifts and takes an accent ring; the
+ * other two stay exactly as they were.
+ */
 function AlertsVisual() {
+  const reduceMotion = useReducedMotion();
+  const live = useCycle(3, 1600, !reduceMotion);
+
   const rows = [
-    { icon: Mail01Icon, label: "you@company.com", meta: "Email" },
-    { icon: SlackIcon, label: "#leads", meta: "Slack" },
-    { icon: DiscordIcon, label: "#submissions", meta: "Discord" },
+    { mark: <Gmail />, label: "you@company.com", meta: "Email", offset: "" },
+    { mark: <Slack />, label: "#leads", meta: "Slack", offset: "ml-6" },
+    {
+      mark: <Discord />,
+      label: "#submissions",
+      meta: "Discord",
+      offset: "ml-3",
+    },
   ];
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-2">
       {rows.map((row, i) => (
-        <Float
+        <motion.div
           key={row.meta}
-          className={`flex items-center gap-2.5 px-3.5 py-2.5 ${
-            i === 1 ? "ml-6" : i === 2 ? "ml-3" : ""
-          }`}
+          className={row.offset}
+          initial={reduceMotion ? false : { opacity: 0, x: -14 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.4,
+            delay: reduceMotion ? 0 : 0.15 + i * 0.12,
+            ease: [0.16, 1, 0.3, 1],
+          }}
         >
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-ink-100 text-ink-700">
-            <Icon icon={row.icon} size={14} />
-          </span>
-          <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink-900">
-            {row.label}
-          </span>
-          <span className="text-[10px] text-ink-500">{row.meta}</span>
-        </Float>
+          <motion.div
+            animate={reduceMotion ? undefined : { y: live === i ? -3 : 0 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+          >
+            <Float
+              className={`flex items-center gap-2.5 px-3.5 py-2.5 transition-[background-color,border-color] duration-500 group-hover:translate-x-1 ${
+                live === i ? "border-accent-500 bg-accent-100" : ""
+              }`}
+            >
+              <Mark>{row.mark}</Mark>
+              <span className="min-w-0 flex-1 truncate text-xs font-medium text-ink-900">
+                {row.label}
+              </span>
+              <span className="text-[10px] text-ink-500">{row.meta}</span>
+            </Float>
+          </motion.div>
+        </motion.div>
       ))}
     </div>
   );
 }
 
+/**
+ * The submission reaching each destination in turn, then starting over.
+ *
+ * A pulse runs down the connector and the target it lands on lifts and
+ * lights, so the row below reads as somewhere submissions go rather than as
+ * four logos sitting in a line.
+ */
 function IntegrationsVisual() {
+  const reduceMotion = useReducedMotion();
+  const live = useCycle(4, 1500, !reduceMotion);
+
+  const targets = [
+    { name: "Google Sheets", node: <img src="/google-sheet.svg" alt="" /> },
+    // svgl has no Airtable mark; this is the real logo, already in public/.
+    { name: "Airtable", node: <img src="/airtable.svg" alt="" /> },
+    { name: "Slack", node: <Slack /> },
+    { name: "Notion", node: <Notion /> },
+  ];
+
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <Float className="flex items-center gap-2.5 px-4 py-2.5">
@@ -274,60 +218,160 @@ function IntegrationsVisual() {
         </span>
       </Float>
 
-      <div className="h-4 w-px bg-ink-300" />
+      {/* The connector fills downward on entry, then carries a pulse each time
+          a submission is dispatched. */}
+      <motion.div
+        className="relative w-px origin-top overflow-hidden bg-ink-300"
+        style={{ height: 16 }}
+        initial={reduceMotion ? false : { scaleY: 0 }}
+        whileInView={{ scaleY: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: reduceMotion ? 0 : 0.35, delay: 0.2 }}
+      >
+        {!reduceMotion && (
+          <motion.span
+            key={live}
+            className="absolute inset-x-0 h-2 bg-accent-500"
+            initial={{ top: "-50%" }}
+            animate={{ top: "100%" }}
+            transition={{ duration: 0.45, ease: "easeIn" }}
+          />
+        )}
+      </motion.div>
 
       <div className="flex gap-2">
-        {[
-          { image: "/google-sheet.svg", tint: "bg-tint-mint" },
-          { image: "/airtable.svg", tint: "bg-tint-amber" },
-          { icon: SlackIcon, tint: "bg-tint-lavender text-tint-violet-ink" },
-          { icon: TableIcon, tint: "bg-ink-100 text-ink-700" },
-        ].map((node, i) => (
-          <Float key={i} className="p-2.5">
-            <span
-              className={`flex h-8 w-8 items-center justify-center rounded-lg ${node.tint}`}
+        {targets.map((target, i) => (
+          <motion.div
+            key={target.name}
+            title={target.name}
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{
+              duration: reduceMotion ? 0 : 0.35,
+              delay: reduceMotion ? 0 : 0.35 + i * 0.08,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            whileHover={reduceMotion ? undefined : { y: -4 }}
+          >
+            <motion.div
+              animate={reduceMotion ? undefined : { y: live === i ? -5 : 0 }}
+              transition={{ type: "spring", stiffness: 420, damping: 26 }}
             >
-              {node.image ? (
-                <img src={node.image} alt="" className="h-4 w-4" />
-              ) : (
-                <Icon icon={node.icon!} size={16} />
-              )}
-            </span>
-          </Float>
+              <Float
+                className={`p-2.5 transition-[background-color,border-color] duration-500 ${
+                  live === i ? "border-accent-500 bg-accent-100" : ""
+                }`}
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg [&>img]:h-4.5 [&>img]:w-4.5 [&>svg]:h-4.5 [&>svg]:w-4.5">
+                  {target.node}
+                </span>
+              </Float>
+            </motion.div>
+          </motion.div>
         ))}
       </div>
     </div>
   );
 }
 
+/**
+ * The three checks running in sequence, then again.
+ *
+ * Spam filtering, the domain allowlist and key rotation are things that
+ * happen on every submission, so the cell runs them rather than listing them.
+ * The row being checked lights; the other two hold their resting state.
+ */
 function SecurityVisual() {
-  return (
-    <div className="flex w-full max-w-sm flex-col gap-2.5">
-      <Float className="flex items-center gap-2.5 px-3.5 py-3">
+  const reduceMotion = useReducedMotion();
+  const live = useCycle(3, 1500, !reduceMotion);
+
+  const rows = [
+    {
+      key: "spam",
+      offset: "",
+      icon: (
         <Icon
           icon={CheckmarkCircle02Icon}
           size={16}
-          className="shrink-0 text-accent-600"
+          className="shrink-0 text-tint-green-ink"
         />
-        <span className="text-xs font-semibold text-ink-900">
-          Spam Check Passed
-        </span>
-        <span className="ml-auto text-[10px] text-ink-500">Score: 98/100</span>
-      </Float>
-
-      <Float className="ml-5 flex items-center gap-2.5 px-3.5 py-3">
+      ),
+      body: (
+        <>
+          <span className="text-xs font-semibold text-ink-900">
+            Spam Check Passed
+          </span>
+          <span className="ml-auto rounded-full bg-tint-green px-2 py-0.5 text-[10px] font-semibold text-tint-green-ink">
+            Score: 98/100
+          </span>
+        </>
+      ),
+    },
+    {
+      key: "domain",
+      offset: "ml-5",
+      icon: (
         <Icon icon={LockKeyIcon} size={16} className="shrink-0 text-ink-500" />
-        <span className="text-xs font-medium text-ink-900">yoursite.com</span>
-        <span className="ml-auto text-[10px] text-ink-500">Allowed</span>
-      </Float>
-
-      <Float className="ml-2 flex items-center gap-2.5 px-3.5 py-3">
+      ),
+      body: (
+        <>
+          <span className="text-xs font-medium text-ink-900">yoursite.com</span>
+          <span className="ml-auto rounded-full bg-tint-blue px-2 py-0.5 text-[10px] font-semibold text-tint-blue-ink">
+            Allowed
+          </span>
+        </>
+      ),
+    },
+    {
+      key: "key",
+      offset: "ml-2",
+      icon: (
         <Icon icon={Key01Icon} size={16} className="shrink-0 text-ink-500" />
-        <span className="font-mono text-[11px] text-ink-700">
-          fd_sk_••••4f9c
-        </span>
-        <span className="ml-auto text-[10px] text-ink-500">Rotated</span>
-      </Float>
+      ),
+      body: (
+        <>
+          <span className="font-mono text-[11px] text-ink-700">
+            fd_sk_••••4f9c
+          </span>
+          <span className="ml-auto rounded-full bg-tint-amber px-2 py-0.5 text-[10px] font-semibold text-tint-amber-ink">
+            Rotated
+          </span>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="flex w-full max-w-sm flex-col gap-2.5">
+      {rows.map((row, i) => (
+        <motion.div
+          key={row.key}
+          className={row.offset}
+          initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{
+            duration: reduceMotion ? 0 : 0.4,
+            delay: reduceMotion ? 0 : 0.15 + i * 0.12,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+        >
+          <motion.div
+            animate={reduceMotion ? undefined : { x: live === i ? 4 : 0 }}
+            transition={{ type: "spring", stiffness: 420, damping: 28 }}
+          >
+            <Float
+              className={`flex items-center gap-2.5 px-3.5 py-3 transition-[background-color,border-color] duration-500 ${
+                live === i ? "border-accent-500 bg-accent-100" : ""
+              }`}
+            >
+              {row.icon}
+              {row.body}
+            </Float>
+          </motion.div>
+        </motion.div>
+      ))}
     </div>
   );
 }

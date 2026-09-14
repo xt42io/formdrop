@@ -118,9 +118,18 @@ export function SubmissionFlow() {
               </span>
             </div>
 
-            {/* fixed height so the row entering and leaving doesn't resize the
-                whole panel on every cycle */}
-            <div className="flex min-h-[26rem] flex-col pb-14">
+            {/* A fixed height, not a floor.
+
+                This was `min-h-[26rem]`, which the six resting rows sat just
+                inside — so the seventh animating in from height:0 pushed the
+                list past it and grew the panel by a row. That resized the hero
+                on every cycle and shunted every section below it up and down
+                on a 6.4 second loop.
+
+                Clipping instead means the arriving row displaces the oldest
+                one out of view, which is what a list of recent submissions
+                does anyway. */}
+            <div className="flex h-[26rem] flex-col overflow-hidden pb-14">
               <AnimatePresence initial={false}>
                 {landed && (
                   <motion.div
@@ -151,7 +160,7 @@ export function SubmissionFlow() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.25 }}
-                    className="flex items-center gap-2.5 rounded-xl border border-ink-200 bg-ink-950 px-3.5 py-2.5 shadow-lift"
+                    className="flex items-center gap-2.5 rounded-xl border border-ink-200 bg-ink-950 px-3.5 py-2.5"
                   >
                     <Icon icon={SlackIcon} size={16} className="text-white" />
                     <span className="text-xs font-medium text-white">
@@ -207,7 +216,13 @@ function Field({
         className={`rounded-lg border bg-white px-3 py-2 text-sm transition-colors ${
           filled ? "border-ink-200 text-ink-800" : "border-ink-100 text-ink-300"
         }`}
-        style={{ minHeight: lines > 1 ? 108 : undefined }}
+        /* A single-line field is pinned outright rather than given a floor.
+           The filled state holds a text node whose line box measures 37.5px
+           with the padding; the empty state holds a 16px inline-block and
+           comes to 36. A minimum simply never binds on the taller of the two,
+           so the column — and with it the hero and every section below it —
+           grew by 2px each time the loop filled the form. */
+        style={lines > 1 ? { minHeight: 108 } : { height: 38 }}
       >
         {filled ? (
           value

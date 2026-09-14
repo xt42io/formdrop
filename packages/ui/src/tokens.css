@@ -47,20 +47,32 @@
      Sheets" in one place and "verified" in another -- a semantic name would be
      wrong in half the call sites. W4 asks for zero raw hex outside this file;
      these are the values that were inlined as `bg-[#cdf0dd]` and friends. */
-  --color-tint-green: #cdf0dd;
-  --color-tint-green-ink: #1f6b45;
-  --color-tint-mint: #e2f4ea;
-  --color-tint-violet: #e5d9ff;
-  --color-tint-violet-ink: #5b3ba8;
-  --color-tint-lavender: #f3ebff;
-  --color-tint-lilac: #d8d0fb;
-  --color-tint-blue: #cfe2ff;
-  --color-tint-blue-ink: #2b4c9b;
-  --color-tint-amber: #ffeac0;
-  --color-tint-amber-ink: #8a5a00;
-  --color-tint-rose: #fde3dd;
-  --color-tint-rose-ink: #b4341f;
-  --color-tint-pink: #ffd6e3;
+  --color-tint-green: #5fe3a1;
+  --color-tint-green-ink: #0f5232;
+  --color-tint-mint: #a8ecc9;
+  --color-tint-violet: #c9adff;
+  --color-tint-violet-ink: #4a2d91;
+  --color-tint-lavender: #e3d6ff;
+  --color-tint-lilac: #a78bfa;
+  --color-tint-blue: #7cc4ff;
+  --color-tint-blue-ink: #1d3c7d;
+  --color-tint-amber: #ffc53d;
+  --color-tint-amber-ink: #6b4400;
+  --color-tint-rose: #ffb3a0;
+  --color-tint-rose-ink: #8f2411;
+  --color-tint-pink: #ff8fb8;
+
+  /* The hero's cycling word, and nothing else.
+   *
+   * Its own set because it wants to be the loudest thing on the page,
+   * while the tints it used to borrow are backgrounds for small label
+   * text and cannot go this far without losing their contrast. Every
+   * one of these clears 4.5:1 against ink-950. */
+  --color-pop-violet: #9370f8;
+  --color-pop-blue: #38bdf8;
+  --color-pop-green: #34d399;
+  --color-pop-amber: #fbbf24;
+  --color-pop-pink: #f472b6;
 
   /* String literals in the landing code preview. The other four token classes
      it uses already come from the ink and accent ramps; this coral does not

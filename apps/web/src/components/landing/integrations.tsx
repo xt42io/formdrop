@@ -1,11 +1,7 @@
+import type { ReactNode } from "react";
 import { Icon } from "@formdrop/ui";
-import {
-  CheckmarkCircle02Icon,
-  DiscordIcon,
-  Mail01Icon,
-  SlackIcon,
-  TableIcon,
-} from "@hugeicons/core-free-icons";
+import { Discord, Gmail, Slack } from "@ridemountainpig/svgl-react";
+import { CheckmarkCircle02Icon } from "@hugeicons/core-free-icons";
 
 const CHECKLIST = [
   "Unlimited Forms",
@@ -21,35 +17,37 @@ const CHECKLIST = [
  * "none", so an x of 14 is 14% across the panel and the HTML chips can be
  * positioned with the same numbers.
  */
-const NODES = [
+const NODES: Array<{
+  name: string;
+  mark: ReactNode;
+  x: number;
+  path: string;
+  delay: string;
+}> = [
   {
     name: "Google Sheets",
-    icon: TableIcon,
-    tint: "bg-tint-green text-tint-green-ink",
+    mark: <img src="/google-sheet.svg" alt="" />,
     x: 12,
     path: "M 50 26 C 50 52 12 54 12 72",
     delay: "0s",
   },
   {
     name: "Slack",
-    icon: SlackIcon,
-    tint: "bg-tint-violet text-tint-violet-ink",
+    mark: <Slack />,
     x: 37.3,
     path: "M 50 26 C 50 52 37.3 54 37.3 72",
     delay: "0.75s",
   },
   {
     name: "Discord",
-    icon: DiscordIcon,
-    tint: "bg-tint-blue text-tint-blue-ink",
+    mark: <Discord />,
     x: 62.7,
     path: "M 50 26 C 50 52 62.7 54 62.7 72",
     delay: "1.5s",
   },
   {
     name: "Email",
-    icon: Mail01Icon,
-    tint: "bg-accent-200 text-accent-700",
+    mark: <Gmail />,
     x: 88,
     path: "M 50 26 C 50 52 88 54 88 72",
     delay: "2.25s",
@@ -158,10 +156,8 @@ function FanOut() {
             className="absolute bottom-0 -translate-x-1/2"
           >
             <div className="flex flex-col items-center gap-2">
-              <span
-                className={`flex h-12 w-12 items-center justify-center rounded-2xl border border-ink-200/70 shadow-lift ${node.tint}`}
-              >
-                <Icon icon={node.icon} size={20} />
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-ink-200/70 bg-white transition-transform duration-300 hover:-translate-y-1 [&>img]:h-5 [&>img]:w-5 [&>svg]:h-5 [&>svg]:w-5">
+                {node.mark}
               </span>
               <span className="max-w-16 text-center text-[11px] leading-tight font-medium text-ink-600">
                 {node.name}

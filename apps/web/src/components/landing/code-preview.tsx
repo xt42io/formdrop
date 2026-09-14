@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Icon } from "@formdrop/ui";
 import {
   Copy01Icon,
   Html5Icon,
   JavaScriptIcon,
+  PackageIcon,
   Tick02Icon,
 } from "@hugeicons/core-free-icons";
 import { capture } from "@formdrop/analytics";
@@ -38,6 +40,16 @@ const SNIPPETS = {
   .then(data => console.log(data))
   .catch(err => console.error(err))`,
   },
+  sdk: {
+    label: "SDK",
+    icon: PackageIcon,
+    code: `import { FormDrop } from "@formdrop/js";
+
+await FormDrop.submit("your-form-slug", {
+  name: "John Doe",
+  email: "john.doe@example.com"
+})`,
+  },
 } as const;
 
 type Tab = keyof typeof SNIPPETS;
@@ -54,8 +66,8 @@ const METHOD = "text-ink-400";
 const PUNCT = "text-ink-500";
 
 /**
- * Just enough highlighting for the two snippets on show, so the section reads
- * like an editor without pulling in a highlighter. Every alternative is a whole
+ * Just enough highlighting for the snippets on show, so the section reads like
+ * an editor without pulling in a highlighter. Every alternative is a whole
  * match, and the class is picked by which group landed, so the original text is
  * always reproduced verbatim — only wrapped.
  */
@@ -66,6 +78,10 @@ const GRAMMARS: Record<Tab, { re: RegExp; classes: string[] }> = {
   },
   fetch: {
     re: /('[^']*'|"[^"]*")|\b(fetch|JSON|console)\b|([a-zA-Z_$][\w$]*)(?=\s*:)|(\.[a-zA-Z_$][\w$]*)|(=>|[{}()[\],;])/g,
+    classes: [STRING, KEYWORD, NAME, METHOD, PUNCT],
+  },
+  sdk: {
+    re: /('[^']*'|"[^"]*")|\b(import|from|await)\b|([a-zA-Z_$][\w$]*)(?=\s*:)|(\.[a-zA-Z_$][\w$]*)|(=>|[{}()[\],;])/g,
     classes: [STRING, KEYWORD, NAME, METHOD, PUNCT],
   },
 };
@@ -94,7 +110,10 @@ function tokenize(line: string, tab: Tab): Token[] {
   return out;
 }
 
+const TABS = Object.keys(SNIPPETS) as Tab[];
+
 export function CodePreview() {
+  const reduceMotion = useReducedMotion();
   const [tab, setTab] = useState<Tab>("html");
   const [copied, setCopied] = useState(false);
   const active = SNIPPETS[tab];
@@ -108,32 +127,58 @@ export function CodePreview() {
 
   return (
     <section className="px-6 pb-8">
-      {/* The switcher sits above the frame as its own control, rather than
-          inside the panel chrome. */}
-      <div className="mx-auto flex w-fit gap-1 rounded-full border border-ink-200 bg-ink-50 p-1.5">
-        {(Object.keys(SNIPPETS) as Tab[]).map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setTab(key)}
-            className={`flex items-center gap-1.5 rounded-full px-5 py-2 text-[13px] font-semibold transition-colors ${
-              tab === key
-                ? "border border-ink-200/70 bg-white text-ink-950"
-                : "border border-transparent text-ink-500 hover:text-ink-800"
-            }`}
-          >
-            <Icon icon={SNIPPETS[key].icon} size={15} />
-            {SNIPPETS[key].label}
-          </button>
-        ))}
-      </div>
-
-      {/* the frame, holding the surface off the page the way the reference does */}
-      <div className="mx-auto mt-8 max-w-4xl rounded-panel border border-ink-200 bg-ink-50/70 p-2.5">
+      {/* One frame holding the whole thing. The switcher used to float above
+          it as a separate pill, which read as two unrelated controls with a
+          gap between them; the tabs belong to the panel they change. */}
+      <div className="mx-auto max-w-4xl rounded-panel border border-ink-200 bg-ink-50/70 p-2.5">
         <div className="overflow-hidden rounded-card border border-white/10 bg-ink-950">
+          {/* tab strip */}
+          <div
+            role="tablist"
+            aria-label="Choose a snippet"
+            className="flex items-center gap-1 border-b border-white/[0.07] px-2 pt-2"
+          >
+            {TABS.map((key) => {
+              const selected = tab === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setTab(key)}
+                  className={`relative flex items-center gap-1.5 rounded-t-lg px-4 py-2.5 text-[13px] font-semibold transition-colors ${
+                    selected ? "text-white" : "text-ink-500 hover:text-ink-200"
+                  }`}
+                >
+                  {/* The lit ground follows the selection rather than each tab
+                      fading its own in, so the eye tracks one object moving. */}
+                  {selected && (
+                    <motion.span
+                      layoutId="snippet-tab"
+                      className="absolute inset-0 rounded-t-lg bg-white/[0.07]"
+                      transition={
+                        reduceMotion
+                          ? { duration: 0 }
+                          : { type: "spring", stiffness: 420, damping: 34 }
+                      }
+                    />
+                  )}
+                  <Icon
+                    icon={SNIPPETS[key].icon}
+                    size={15}
+                    className="relative"
+                  />
+                  <span className="relative">{SNIPPETS[key].label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* the request line, and the copy control */}
           <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] px-5 py-3">
             <span className="flex min-w-0 items-center gap-2 font-mono text-[11.5px] text-ink-400">
-              <span className="rounded bg-accent-500/20 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-accent-300">
+              <span className="rounded bg-accent-500/25 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-accent-300">
                 POST
               </span>
               <span className="truncate">api.formdrop.co/f/your-form-slug</span>
@@ -154,20 +199,35 @@ export function CodePreview() {
             </button>
           </div>
 
-          <pre className="overflow-x-auto px-5 py-4 text-left font-mono text-[12.5px] leading-[1.8] text-ink-300">
-            <code>
-              {active.code.split("\n").map((line, index) => (
-                <span key={index} className="block">
-                  {tokenize(line, tab).map((token, position) => (
-                    <span key={position} className={token.cls}>
-                      {token.text}
-                    </span>
-                  ))}
-                  {line === "" ? "\n" : ""}
-                </span>
-              ))}
-            </code>
-          </pre>
+          {/* mode="wait" so one snippet is gone before the next arrives —
+              crossfading two blocks of code at different line counts reads as
+              a flicker rather than a change. */}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.pre
+              key={tab}
+              initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -6 }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.18,
+                ease: "easeOut",
+              }}
+              className="overflow-x-auto px-5 py-4 text-left font-mono text-[12.5px] leading-[1.8] text-ink-300"
+            >
+              <code>
+                {active.code.split("\n").map((line, index) => (
+                  <span key={index} className="block">
+                    {tokenize(line, tab).map((token, position) => (
+                      <span key={position} className={token.cls}>
+                        {token.text}
+                      </span>
+                    ))}
+                    {line === "" ? "\n" : ""}
+                  </span>
+                ))}
+              </code>
+            </motion.pre>
+          </AnimatePresence>
         </div>
       </div>
     </section>

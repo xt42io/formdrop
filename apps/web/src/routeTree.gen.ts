@@ -27,6 +27,7 @@ import { Route as appAppRouteImport } from './routes/(app)/app'
 import { Route as adminAdminRouteImport } from './routes/(admin)/admin'
 import { Route as adminAdminIndexRouteImport } from './routes/(admin)/admin/index'
 import { Route as ApiUserSettingsRouteImport } from './routes/api/user/settings'
+import { Route as ApiUserReportFrequencyRouteImport } from './routes/api/user/report-frequency'
 import { Route as ApiFormsFormIdRouteImport } from './routes/api/forms/$formId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiAdminSubmissionsRouteImport } from './routes/api/admin/submissions'
@@ -158,6 +159,11 @@ const adminAdminIndexRoute = adminAdminIndexRouteImport.update({
 const ApiUserSettingsRoute = ApiUserSettingsRouteImport.update({
   id: '/api/user/settings',
   path: '/api/user/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUserReportFrequencyRoute = ApiUserReportFrequencyRouteImport.update({
+  id: '/api/user/report-frequency',
+  path: '/api/user/report-frequency',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiFormsFormIdRoute = ApiFormsFormIdRouteImport.update({
@@ -414,6 +420,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/forms/$formId': typeof ApiFormsFormIdRouteWithChildren
+  '/api/user/report-frequency': typeof ApiUserReportFrequencyRoute
   '/api/user/settings': typeof ApiUserSettingsRoute
   '/admin/': typeof adminAdminIndexRoute
   '/admin/users/$userId': typeof adminAdminUsersUserIdRoute
@@ -474,6 +481,7 @@ export interface FileRoutesByTo {
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/forms/$formId': typeof ApiFormsFormIdRouteWithChildren
+  '/api/user/report-frequency': typeof ApiUserReportFrequencyRoute
   '/api/user/settings': typeof ApiUserSettingsRoute
   '/admin': typeof adminAdminIndexRoute
   '/admin/users/$userId': typeof adminAdminUsersUserIdRoute
@@ -536,6 +544,7 @@ export interface FileRoutesById {
   '/api/admin/submissions': typeof ApiAdminSubmissionsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/forms/$formId': typeof ApiFormsFormIdRouteWithChildren
+  '/api/user/report-frequency': typeof ApiUserReportFrequencyRoute
   '/api/user/settings': typeof ApiUserSettingsRoute
   '/(admin)/admin/': typeof adminAdminIndexRoute
   '/(admin)/admin/users/$userId': typeof adminAdminUsersUserIdRoute
@@ -599,6 +608,7 @@ export interface FileRouteTypes {
     | '/api/admin/submissions'
     | '/api/auth/$'
     | '/api/forms/$formId'
+    | '/api/user/report-frequency'
     | '/api/user/settings'
     | '/admin/'
     | '/admin/users/$userId'
@@ -659,6 +669,7 @@ export interface FileRouteTypes {
     | '/api/admin/submissions'
     | '/api/auth/$'
     | '/api/forms/$formId'
+    | '/api/user/report-frequency'
     | '/api/user/settings'
     | '/admin'
     | '/admin/users/$userId'
@@ -720,6 +731,7 @@ export interface FileRouteTypes {
     | '/api/admin/submissions'
     | '/api/auth/$'
     | '/api/forms/$formId'
+    | '/api/user/report-frequency'
     | '/api/user/settings'
     | '/(admin)/admin/'
     | '/(admin)/admin/users/$userId'
@@ -775,6 +787,7 @@ export interface RootRouteChildren {
   ApiAdminStatsRoute: typeof ApiAdminStatsRoute
   ApiAdminSubmissionsRoute: typeof ApiAdminSubmissionsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiUserReportFrequencyRoute: typeof ApiUserReportFrequencyRoute
   ApiUserSettingsRoute: typeof ApiUserSettingsRoute
   ApiAdminSettingsClearOldSubmissionsRoute: typeof ApiAdminSettingsClearOldSubmissionsRoute
   ApiAdminUsersUserIdRoute: typeof ApiAdminUsersUserIdRoute
@@ -915,6 +928,13 @@ declare module '@tanstack/react-router' {
       path: '/api/user/settings'
       fullPath: '/api/user/settings'
       preLoaderRoute: typeof ApiUserSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/user/report-frequency': {
+      id: '/api/user/report-frequency'
+      path: '/api/user/report-frequency'
+      fullPath: '/api/user/report-frequency'
+      preLoaderRoute: typeof ApiUserReportFrequencyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/forms/$formId': {
@@ -1380,6 +1400,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminStatsRoute: ApiAdminStatsRoute,
   ApiAdminSubmissionsRoute: ApiAdminSubmissionsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiUserReportFrequencyRoute: ApiUserReportFrequencyRoute,
   ApiUserSettingsRoute: ApiUserSettingsRoute,
   ApiAdminSettingsClearOldSubmissionsRoute:
     ApiAdminSettingsClearOldSubmissionsRoute,

@@ -11,7 +11,13 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 import { isNull } from "drizzle-orm";
-import { account, session, user, verification } from "./auth-schema";
+import {
+  account,
+  reportFrequencyEnum,
+  session,
+  user,
+  verification,
+} from "./auth-schema";
 
 export const notificationTypeEnum = pgEnum("notification_type", [
   "email",
@@ -462,4 +468,9 @@ export const emailDeliveries = pgTable(
   ],
 );
 
-export { account, session, user, verification };
+/*
+ * The enum is re-exported so drizzle-kit sees it *declared*, not merely
+ * referenced: without this the generated migration carried the ALTER TABLE
+ * but no CREATE TYPE, and would have failed on apply.
+ */
+export { account, reportFrequencyEnum, session, user, verification };

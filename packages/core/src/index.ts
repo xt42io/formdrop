@@ -25,6 +25,13 @@ export {
   type Quota,
 } from "./quota.ts";
 export { usagePeriod } from "./period.ts";
+export {
+  changePercent,
+  lastCompletedPeriod,
+  previousPeriod,
+  type ReportFrequency,
+  type ReportPeriod,
+} from "./report-period.ts";
 export { generateFormSlug, SLUG_LENGTH } from "./slug.ts";
 export {
   resolveNotificationTargets,

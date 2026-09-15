@@ -79,6 +79,14 @@ export {
   listAllSubmissionsForForm,
 } from "./submissions.ts";
 export {
+  REPORT_TEMPLATE,
+  findAccountsDueForReport,
+  findReportFrequency,
+  reportStatsForUser,
+  setReportFrequency,
+  submissionsInRange,
+} from "./reports.ts";
+export {
   countLifetimeSubmissionsForUser,
   findFormBySlug,
   findFormOwnerEmail,

@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { createApp } from "./app";
 import { startOutboxWorker } from "../worker";
+import { startReportScheduler } from "../report-scheduler";
 import { initSentry } from "../lib/sentry";
 import {
   initServerAnalytics,
@@ -48,11 +49,23 @@ createApp().listen(port, ({ hostname, port }) => {
 const stopWorker =
   process.env.OUTBOX_WORKER === "off" ? undefined : startOutboxWorker();
 
+/*
+ * The weekly and monthly summary (W7), on the worker's terms above.
+ *
+ * Unlike the outbox it is not safe to run two of these against one database:
+ * the guard against double-sending is a read of email_deliveries followed by
+ * a send, and two schedulers can both pass that read before either writes.
+ * Scaling the API horizontally means REPORT_SCHEDULER=off on all but one.
+ */
+const stopReports =
+  process.env.REPORT_SCHEDULER === "off" ? undefined : startReportScheduler();
+
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.on(signal, () => {
     // Stops claiming new rows. Anything already claimed has had its next
     // attempt scheduled, so an interrupted send is retried rather than lost.
     stopWorker?.();
+    stopReports?.();
 
     // posthog-node batches, so without a flush a shutdown drops up to ten
     // seconds of events -- on a worker that mostly idles, potentially every

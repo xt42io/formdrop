@@ -10,12 +10,14 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
     "db:studio": "drizzle-kit studio",
     "db:deploy": "tsx scripts/migrate.ts",
+    "db:encrypt-tokens": "tsx scripts/encrypt-oauth-tokens.ts",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -29,6 +31,7 @@
     "@types/pg": "^8.10.0",
     "drizzle-kit": "^0.30.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^3.2.4"
   }
 }

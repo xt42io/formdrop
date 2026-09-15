@@ -5,12 +5,16 @@ import { useSession } from "@/lib/auth-client";
 import { ProfileSettings } from "@/components/settings/profile-settings";
 import { PasswordSettings } from "@/components/settings/password-settings";
 import { BillingSettings } from "@/components/settings/billing-settings";
+import { ReportSettings } from "@/components/settings/report-settings";
 
-type Tab = "profile" | "password" | "billing";
+type Tab = "profile" | "password" | "notifications" | "billing";
 
 const TABS = [
   { id: "profile", label: "Profile" },
   { id: "password", label: "Password" },
+  // The summary email tells people to turn it off in Settings, so the tab it
+  // names has to exist.
+  { id: "notifications", label: "Notifications" },
   { id: "billing", label: "Billing" },
 ] as const;
 
@@ -20,7 +24,7 @@ export const Route = createFileRoute("/(app)/app/settings")({
   }),
   validateSearch: (search: Record<string, unknown>): { tab: Tab } => {
     const tab = (search.tab as string) || "profile";
-    if (["profile", "password", "billing"].includes(tab)) {
+    if (["profile", "password", "notifications", "billing"].includes(tab)) {
       return { tab: tab as Tab };
     }
     return { tab: "profile" };
@@ -127,6 +131,7 @@ function SettingsPage() {
         {activeTab === "password" && (
           <PasswordSettings hasPassword={settings?.hasPassword} />
         )}
+        {activeTab === "notifications" && <ReportSettings />}
         {activeTab === "billing" && <BillingSettings settings={settings} />}
       </div>
     </div>

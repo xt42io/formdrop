@@ -11,6 +11,7 @@ import {
   boolean,
 } from "drizzle-orm/pg-core";
 import { isNull } from "drizzle-orm";
+import { encryptedText } from "./encrypted-text.ts";
 import {
   account,
   reportFrequencyEnum,
@@ -68,8 +69,10 @@ export const forms = pgTable(
       .notNull(),
 
     // Google Sheets integration
-    googleSheetsAccessToken: text("google_sheets_access_token"),
-    googleSheetsRefreshToken: text("google_sheets_refresh_token"),
+    // Encrypted at rest (PRD appendix 5). Same "text" column; the value in
+    // it is now a sealed envelope.
+    googleSheetsAccessToken: encryptedText("google_sheets_access_token"),
+    googleSheetsRefreshToken: encryptedText("google_sheets_refresh_token"),
     googleSheetsTokenExpiry: timestamp("google_sheets_token_expiry"),
     googleSheetsSpreadsheetId: text("google_sheets_spreadsheet_id"),
     googleSheetsSpreadsheetName: text("google_sheets_spreadsheet_name"),
@@ -79,8 +82,8 @@ export const forms = pgTable(
       .notNull(),
 
     // Airtable integration
-    airtableAccessToken: text("airtable_access_token"),
-    airtableRefreshToken: text("airtable_refresh_token"),
+    airtableAccessToken: encryptedText("airtable_access_token"),
+    airtableRefreshToken: encryptedText("airtable_refresh_token"),
     airtableTokenExpiry: timestamp("airtable_token_expiry"),
     airtableBaseId: text("airtable_base_id"),
     airtableBaseName: text("airtable_base_name"),

@@ -1,5 +1,24 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  pgEnum,
+  text,
+  timestamp,
+  boolean,
+  index,
+} from "drizzle-orm/pg-core";
+
+/**
+ * How often an account gets its summary email (PRD W7).
+ *
+ * "off" is a real choice rather than an absence: new accounts arrive opted in
+ * because the pricing page sells the report, so there has to be a way out.
+ */
+export const reportFrequencyEnum = pgEnum("report_frequency", [
+  "off",
+  "weekly",
+  "monthly",
+]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -14,6 +33,12 @@ export const user = pgTable("user", {
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
+
+  // Weekly by default, because the pricing page promises the report. Existing
+  // rows pick the default up, which is the intent: they were sold it too.
+  reportFrequency: reportFrequencyEnum("report_frequency")
+    .default("weekly")
+    .notNull(),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
